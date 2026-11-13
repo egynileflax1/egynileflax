@@ -18,137 +18,108 @@ import {
 } from "lucide-react";
 
 export default function Footer() {
-  const { t, company, setActiveView, openPortalWithCode } = useFlax();
+  const { t, company } = useFlax();
   const [wechatModalOpen, setWechatModalOpen] = useState(false);
   const [copiedId, setCopiedId] = useState(false);
-  const [dockMinimized, setDockMinimized] = useState(false);
+  const [dockMinimized, setDockMinimized] = useState(true);
+
+  const scrollTo = (id: string) => document.getElementById(id)?.scrollIntoView({ behavior: "smooth" });
+
+  const whatsappHref = `https://wa.me/${company.whatsappNumber}?text=${encodeURIComponent(
+    `Hello ${company.brandName}, I found your website and would like to get in touch.`
+  )}`;
 
   return (
     <>
-      <footer className="bg-[#0F1C14] text-stone-300 border-t border-white/10 pb-20 md:pb-16">
-        <div className="w-full max-w-[1600px] mx-auto px-4 sm:px-8 lg:px-12 xl:px-16 py-10 sm:py-14">
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-12 gap-8 lg:gap-10 pb-10 sm:pb-12 border-b border-white/10">
-            {/* Col 1: Brand & Credentials */}
+      <footer className="bg-[#F4F0EA] text-stone-700 border-t border-stone-200 pb-20 md:pb-16">
+        <div className="w-full max-w-[1440px] mx-auto px-4 sm:px-6 lg:px-10 xl:px-14 py-10 sm:py-14">
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-12 gap-8 lg:gap-10 pb-10 sm:pb-12 border-b border-stone-200">
+            {/* Brand */}
             <div className="sm:col-span-2 lg:col-span-4 space-y-4">
               <div className="flex items-center gap-3">
-                <EgyNileLogo className="w-11 h-11 sm:w-12 sm:h-12 shrink-0 drop-shadow-sm" />
+                <EgyNileLogo className="w-11 h-11 sm:w-12 sm:h-12 shrink-0 drop-shadow-xs" />
                 <div>
-                  <span className="text-lg font-extrabold text-white block">
-                    {company.brandName}™
-                  </span>
-                  <span className="text-[11px] text-amber-300 font-semibold">
-                    SINCE {company.foundedYear} • GAMASA, EGYPT
+                  <span className="text-lg font-extrabold text-stone-900 block">{company.brandName}™</span>
+                  <span className="text-[11px] text-[#3F166B] font-semibold">
+                    {t.brand.locationLine}
                   </span>
                 </div>
               </div>
-              <p className="text-xs text-stone-400 leading-relaxed">
-                {t.footer.tagline}
-              </p>
-              <div className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-white/5 border border-white/10 text-[11px] sm:text-xs text-amber-300 font-semibold">
+              <p className="text-xs text-stone-600 leading-relaxed">{t.footer.tagline}</p>
+              <div className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-white border border-stone-200 text-[11px] sm:text-xs text-[#3F166B] font-semibold">
                 <ShieldCheck className="w-4 h-4 shrink-0" />
                 <span>
-                  {company.isoCert} • {company.councilMembership}
+                  {t.brand.isoCert} • {t.brand.councilMembership}
                 </span>
               </div>
             </div>
 
-            {/* Col 2: Quick Navigation */}
+            {/* Navigation */}
             <div className="lg:col-span-2 space-y-3 text-xs">
-              <h4 className="font-bold text-white uppercase tracking-wider">
-                Navigation
-              </h4>
-              <ul className="space-y-2 text-stone-400">
-                <li>
-                  <button
-                    onClick={() => setActiveView("showcase")}
-                    className="hover:text-amber-300 cursor-pointer"
-                  >
-                    {t.nav.about}
-                  </button>
-                </li>
-                <li>
-                  <button
-                    onClick={() => setActiveView("showcase")}
-                    className="hover:text-amber-300 cursor-pointer"
-                  >
-                    {t.nav.services}
-                  </button>
-                </li>
-                <li>
-                  <button
-                    onClick={() => setActiveView("showcase")}
-                    className="hover:text-amber-300 cursor-pointer"
-                  >
-                    {t.nav.products}
-                  </button>
-                </li>
-                <li>
-                  <button
-                    onClick={() => openPortalWithCode("ENF-2026-8841")}
-                    className="hover:text-amber-300 text-amber-200 font-semibold cursor-pointer"
-                  >
-                    {t.nav.clientPortal}
-                  </button>
-                </li>
-                <li>
-                  <button
-                    onClick={() => setActiveView("admin")}
-                    className="hover:text-amber-300 cursor-pointer"
-                  >
-                    {t.nav.adminPanel}
-                  </button>
-                </li>
+              <h4 className="font-bold text-stone-900 uppercase tracking-wider">{t.footer.navigation}</h4>
+              <ul className="space-y-2 text-stone-600">
+                {(
+                  [
+                    ["about", t.nav.about],
+                    ["products", t.nav.products],
+                    ["process", t.nav.process],
+                    ["contact", t.nav.contact],
+                  ] as const
+                ).map(([id, label]) => (
+                  <li key={id}>
+                    <button onClick={() => scrollTo(id)} className="hover:text-[#3F166B] cursor-pointer">
+                      {label}
+                    </button>
+                  </li>
+                ))}
               </ul>
             </div>
 
-            {/* Col 3: Flax Product Lines */}
+            {/* Product lines */}
             <div className="lg:col-span-3 space-y-3 text-xs">
-              <h4 className="font-bold text-white uppercase tracking-wider">
-                Egyptian Flax Lines
-              </h4>
-              <ul className="space-y-2 text-stone-400">
-                <li>Scutched Long Flax (Grades C, D, E, EK)</li>
-                <li>Hackled Long Fibres & Sliver Tops</li>
-                <li>Machine Tow & Arrous Short Fibres</li>
-                <li>Cottonised Flax (32–38mm Ring/OE)</li>
-                <li>Plumbing Flax (Jokia Dolls & Spools)</li>
-                <li>Flax Twines, Butcher Twine & Ropes</li>
+              <h4 className="font-bold text-stone-900 uppercase tracking-wider">{t.footer.productLines}</h4>
+              <ul className="space-y-2 text-stone-600">
+                <li>{t.products.catScutched}</li>
+                <li>{t.products.catHackled}</li>
+                <li>{t.products.catPlumbing}</li>
+                <li>{t.products.catTwine}</li>
               </ul>
             </div>
 
-            {/* Col 4: Direct Export Desk & WeChat QR */}
+            {/* Contact */}
             <div className="sm:col-span-2 lg:col-span-3 space-y-3 text-xs">
-              <h4 className="font-bold text-white uppercase tracking-wider">
-                Export Desk & WeChat
-              </h4>
-              <div className="space-y-2 text-stone-400">
+              <h4 className="font-bold text-stone-900 uppercase tracking-wider">{t.footer.contactTitle}</h4>
+              <div className="space-y-2 text-stone-600">
                 <div className="flex items-start gap-2">
-                  <MapPin className="w-4 h-4 text-amber-400 shrink-0 mt-0.5" />
+                  <MapPin className="w-4 h-4 text-[#3F166B] shrink-0 mt-0.5" />
                   <span>{company.factoryAddress}</span>
                 </div>
-                <div className="flex items-center gap-2">
-                  <Phone className="w-4 h-4 text-amber-400 shrink-0" />
+                <a
+                  href={`tel:${company.egyptPhone1.replace(/\s+/g, "")}`}
+                  className="flex items-center gap-2 hover:text-[#3F166B]"
+                >
+                  <Phone className="w-4 h-4 text-[#3F166B] shrink-0" />
                   <span dir="ltr">{company.egyptPhone1}</span>
-                </div>
-                <div className="flex items-center gap-2">
-                  <Mail className="w-4 h-4 text-amber-400 shrink-0" />
+                </a>
+                <a href={`mailto:${company.primaryEmail}`} className="flex items-center gap-2 hover:text-[#3F166B]">
+                  <Mail className="w-4 h-4 text-[#3F166B] shrink-0" />
                   <span className="break-all">{company.primaryEmail}</span>
-                </div>
+                </a>
               </div>
 
               <div className="pt-1 flex flex-wrap gap-2">
                 <button
                   onClick={() => setWechatModalOpen(true)}
-                  className="inline-flex items-center gap-1.5 px-3 py-2 rounded-xl bg-white/10 hover:bg-white/15 text-amber-300 border border-white/15 font-bold text-xs cursor-pointer"
+                  className="inline-flex items-center gap-1.5 px-3 py-2 rounded-xl bg-white hover:bg-stone-50 text-[#3F166B] border border-stone-300 font-bold text-xs cursor-pointer"
                 >
                   <QrCode className="w-4 h-4 shrink-0" />
-                  <span>WeChat QR</span>
+                  <span>{t.contact.wechat}</span>
                 </button>
                 <a
-                  href={`https://wa.me/${company.whatsappNumber}`}
+                  href={whatsappHref}
                   target="_blank"
                   rel="noreferrer"
-                  className="inline-flex items-center gap-1.5 px-3 py-2 rounded-xl bg-emerald-700/80 hover:bg-emerald-600 text-white font-bold text-xs"
+                  className="inline-flex items-center gap-1.5 px-3 py-2 rounded-xl bg-emerald-700 hover:bg-emerald-800 text-white font-bold text-xs"
                 >
                   <MessageSquare className="w-4 h-4 shrink-0" />
                   <span>WhatsApp</span>
@@ -157,91 +128,72 @@ export default function Footer() {
             </div>
           </div>
 
-          <div className="pt-6 sm:pt-8 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 text-xs text-stone-400">
+          <div className="pt-6 sm:pt-8 text-xs text-stone-500">
             <p>{t.footer.rights}</p>
-            <p className="font-mono text-[11px]">
-              Damietta Port (EGDAM) • Alexandria Port (EGALY) • ISO 9001:2015
-            </p>
           </div>
         </div>
       </footer>
 
-      {/* Multi-Channel Floating Export Dock (WhatsApp + WeChat + Email) on Desktop/Tablet (Smooth Expand/Collapse) */}
+      {/* Floating contact dock (tablet & desktop) */}
       <div className="hidden md:flex fixed bottom-4 end-5 z-40 items-center">
         <div
-          className={`relative flex items-center rounded-full bg-[#14231A]/95 backdrop-blur-md shadow-2xl transition-all duration-300 ease-in-out ${
-            dockMinimized
-              ? "p-0 border border-amber-400/40 hover:bg-[#1B3325]"
-              : "p-1.5 border border-white/15"
+          className={`relative flex items-center rounded-full bg-white/95 backdrop-blur-md shadow-lg transition-all duration-300 ease-in-out ${
+            dockMinimized ? "p-0 border border-stone-300 hover:bg-stone-50" : "p-1.5 border border-stone-200"
           }`}
         >
-          {/* Minimized "Export Desk" Trigger */}
+          {/* Minimized trigger */}
           <div
             className={`grid transition-all duration-300 ease-in-out ${
-              dockMinimized
-                ? "grid-cols-[1fr] opacity-100"
-                : "grid-cols-[0fr] opacity-0 pointer-events-none"
+              dockMinimized ? "grid-cols-[1fr] opacity-100" : "grid-cols-[0fr] opacity-0 pointer-events-none"
             }`}
           >
             <div className="overflow-hidden">
               <button
                 onClick={() => setDockMinimized(false)}
-                className="inline-flex items-center gap-1.5 px-3.5 py-2.5 rounded-full text-amber-300 font-bold text-xs whitespace-nowrap cursor-pointer"
-                title="Expand Export Desk (WhatsApp, WeChat, Email)"
+                className="inline-flex items-center gap-1.5 px-3.5 py-2.5 rounded-full text-[#3F166B] font-bold text-xs whitespace-nowrap cursor-pointer"
               >
-                <ChevronLeft className="w-3.5 h-3.5 text-amber-300/80 shrink-0 rtl:rotate-180" />
-                <MessageSquare className="w-4 h-4 text-emerald-400 shrink-0" />
-                <QrCode className="w-4 h-4 text-amber-300 shrink-0" />
-                <span>Export Desk</span>
+                <ChevronLeft className="w-3.5 h-3.5 text-stone-400 shrink-0 rtl:rotate-180" />
+                <MessageSquare className="w-4 h-4 text-[#3F166B] shrink-0" />
+                <span>{t.nav.contact}</span>
               </button>
             </div>
           </div>
 
-          {/* Expanded Multi-Channel Buttons (WhatsApp | WeChat | Email) */}
+          {/* Expanded buttons */}
           <div
             className={`grid transition-all duration-300 ease-in-out ${
-              dockMinimized
-                ? "grid-cols-[0fr] opacity-0 pointer-events-none"
-                : "grid-cols-[1fr] opacity-100"
+              dockMinimized ? "grid-cols-[0fr] opacity-0 pointer-events-none" : "grid-cols-[1fr] opacity-100"
             }`}
           >
             <div className="overflow-hidden">
               <div className="inline-flex items-center gap-1.5 whitespace-nowrap">
                 <a
-                  href={`https://wa.me/${company.whatsappNumber}?text=${encodeURIComponent(
-                    `Hello ${company.brandName}, I am visiting your website and would like to inquire about Egyptian flax export.`
-                  )}`}
+                  href={whatsappHref}
                   target="_blank"
                   rel="noreferrer"
-                  className="inline-flex items-center gap-1.5 px-3.5 py-2 rounded-full bg-emerald-600 hover:bg-emerald-500 text-white font-bold text-xs transition-colors"
-                  title="Chat on WhatsApp"
+                  className="inline-flex items-center gap-1.5 px-3.5 py-2 rounded-full bg-emerald-600 hover:bg-emerald-700 text-white font-bold text-xs transition-colors"
                 >
                   <MessageSquare className="w-3.5 h-3.5 shrink-0" />
-                  <span>WhatsApp</span>
+                  <span>{t.contact.whatsapp}</span>
                 </a>
-
                 <button
                   onClick={() => setWechatModalOpen(true)}
-                  className="inline-flex items-center gap-1.5 px-3.5 py-2 rounded-full bg-amber-400 hover:bg-amber-300 text-stone-950 font-bold text-xs transition-colors cursor-pointer"
-                  title="Connect on WeChat (QR Code & ID)"
+                  className="inline-flex items-center gap-1.5 px-3.5 py-2 rounded-full bg-[#3F166B] hover:bg-[#2F1052] text-[#EDC271] font-bold text-xs transition-colors cursor-pointer"
                 >
                   <QrCode className="w-3.5 h-3.5 shrink-0" />
-                  <span>WeChat</span>
+                  <span>{t.contact.wechat}</span>
                 </button>
-
                 <a
                   href={`mailto:${company.primaryEmail}`}
-                  className="inline-flex items-center gap-1.5 px-3 py-2 rounded-full bg-white/10 hover:bg-white/20 text-stone-200 font-semibold text-xs transition-colors"
-                  title={`Email ${company.primaryEmail}`}
+                  className="inline-flex items-center gap-1.5 px-3 py-2 rounded-full bg-stone-100 hover:bg-stone-200 text-stone-800 font-semibold text-xs transition-colors"
                 >
-                  <Mail className="w-3.5 h-3.5 text-amber-300 shrink-0" />
-                  <span>Email</span>
+                  <Mail className="w-3.5 h-3.5 text-[#3F166B] shrink-0" />
+                  <span>{t.contact.emailLabel}</span>
                 </a>
-
                 <button
                   onClick={() => setDockMinimized(true)}
-                  className="p-1.5 rounded-full text-stone-400 hover:text-white hover:bg-white/10 transition-colors cursor-pointer"
-                  title="Collapse Export Desk"
+                  className="p-1.5 rounded-full text-stone-400 hover:text-stone-800 hover:bg-stone-100 transition-colors cursor-pointer"
+                  title={t.contact.collapse}
                 >
                   <ChevronRight className="w-4 h-4 rtl:rotate-180" />
                 </button>
@@ -251,7 +203,7 @@ export default function Footer() {
         </div>
       </div>
 
-      {/* Smooth WeChat QR Code Modal */}
+      {/* WeChat modal */}
       <div
         aria-hidden={!wechatModalOpen}
         onClick={() => setWechatModalOpen(false)}
@@ -264,15 +216,11 @@ export default function Footer() {
         <div
           onClick={(e) => e.stopPropagation()}
           className={`bg-white rounded-3xl max-w-sm w-full p-6 text-center space-y-4 shadow-2xl transition-all duration-300 ease-out ${
-            wechatModalOpen
-              ? "opacity-100 translate-y-0 scale-100"
-              : "opacity-0 translate-y-4 scale-95"
+            wechatModalOpen ? "opacity-100 translate-y-0 scale-100" : "opacity-0 translate-y-4 scale-95"
           }`}
         >
           <div className="flex items-center justify-between">
-            <span className="text-xs font-bold uppercase tracking-wider text-emerald-800">
-              OFFICIAL WECHAT EXPORT DESK
-            </span>
+            <span className="text-xs font-bold uppercase tracking-wider text-[#3F166B]">{t.contact.wechat}</span>
             <button
               onClick={() => setWechatModalOpen(false)}
               className="p-1 rounded-lg hover:bg-stone-100 text-stone-500 cursor-pointer"
@@ -281,33 +229,26 @@ export default function Footer() {
             </button>
           </div>
           <div className="w-44 h-44 sm:w-48 sm:h-48 mx-auto rounded-2xl bg-stone-100 border-2 border-stone-300 flex flex-col items-center justify-center p-4">
-            <QrCode className="w-24 h-24 sm:w-28 sm:h-28 text-[#1B3325]" />
-            <span className="text-[11px] font-mono font-bold text-stone-700 mt-2">
-              ID: {company.wechatId}
-            </span>
+            <QrCode className="w-24 h-24 sm:w-28 sm:h-28 text-[#3F166B]" />
+            <span className="text-[11px] font-mono font-bold text-stone-700 mt-2">ID: {company.wechatId}</span>
           </div>
-          <p className="text-xs text-stone-600">
-            Scan or add WeChat ID <strong>{company.wechatId}</strong> or{" "}
-            <strong dir="ltr">{company.egyptPhone1}</strong> for direct Chinese &
-            English mill support.
-          </p>
           <button
             onClick={() => {
               navigator.clipboard?.writeText(company.wechatId);
               setCopiedId(true);
               setTimeout(() => setCopiedId(false), 2000);
             }}
-            className="w-full py-2.5 rounded-xl bg-[#1B3325] text-amber-300 font-bold text-xs inline-flex items-center justify-center gap-1.5 cursor-pointer"
+            className="w-full py-2.5 rounded-xl bg-[#3F166B] hover:bg-[#2F1052] text-[#EDC271] font-bold text-xs inline-flex items-center justify-center gap-1.5 cursor-pointer"
           >
             {copiedId ? (
               <>
                 <Check className="w-4 h-4" />
-                <span>WeChat ID Copied!</span>
+                <span>{t.contact.wechatCopied}</span>
               </>
             ) : (
               <>
                 <Copy className="w-4 h-4" />
-                <span>Copy WeChat ID ({company.wechatId})</span>
+                <span>{t.contact.copyWechatId} ({company.wechatId})</span>
               </>
             )}
           </button>

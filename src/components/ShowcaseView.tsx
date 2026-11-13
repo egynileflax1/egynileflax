@@ -6,6 +6,7 @@ import { ScrollTrigger } from "gsap/ScrollTrigger";
 import { useFlax } from "@/context/FlaxContext";
 import { ProductItem } from "@/data/initialData";
 import FlaxScrollPlant from "@/components/FlaxScrollPlant";
+import { contactSchema, ContactFieldErrorKey } from "@/lib/contactSchema";
 import {
   ShieldCheck,
   ArrowRight,
@@ -126,6 +127,16 @@ export default function ShowcaseView() {
   const [formSubmitted, setFormSubmitted] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [submitError, setSubmitError] = useState<string | null>(null);
+  const [fieldErrors, setFieldErrors] = useState<
+    Partial<Record<"name" | "email" | "phone" | "message", string>>
+  >({});
+
+  const updateContactField = (field: keyof typeof contactForm, value: string) => {
+    setContactForm((prev) => ({ ...prev, [field]: value }));
+    if (field === "name" || field === "email" || field === "phone" || field === "message") {
+      setFieldErrors((prev) => (prev[field] ? { ...prev, [field]: undefined } : prev));
+    }
+  };
 
   useEffect(() => {
     if (!productDropdownOpen) return;
@@ -156,15 +167,33 @@ export default function ShowcaseView() {
     e.preventDefault();
     if (isSubmitting) return;
 
-    setIsSubmitting(true);
     setSubmitError(null);
     setFormSubmitted(false);
+
+    const parsed = contactSchema.safeParse({ ...contactForm, lang });
+    if (!parsed.success) {
+      const nextErrors: Partial<Record<"name" | "email" | "phone" | "message", string>> = {};
+      for (const issue of parsed.error.issues) {
+        const field = issue.path[0];
+        if (field === "name" || field === "email" || field === "phone" || field === "message") {
+          if (!nextErrors[field]) {
+            const key = issue.message as ContactFieldErrorKey;
+            nextErrors[field] = t.contact.validation[key] || issue.message;
+          }
+        }
+      }
+      setFieldErrors(nextErrors);
+      return;
+    }
+
+    setFieldErrors({});
+    setIsSubmitting(true);
 
     try {
       const res = await fetch("/api/contact", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ ...contactForm, lang }),
+        body: JSON.stringify(parsed.data),
       });
 
       if (!res.ok) {
@@ -624,7 +653,7 @@ export default function ShowcaseView() {
                   </div>
                 )}
 
-                <form onSubmit={handleContactSubmit} className="space-y-4">
+                <form onSubmit={handleContactSubmit} noValidate className="space-y-4">
                   <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                     <div>
                       <label className="block text-xs font-bold text-stone-700 mb-1">
@@ -632,11 +661,18 @@ export default function ShowcaseView() {
                       </label>
                       <input
                         type="text"
-                        required
                         value={contactForm.name}
-                        onChange={(e) => setContactForm({ ...contactForm, name: e.target.value })}
-                        className="w-full px-3.5 py-2.5 rounded-xl border border-stone-300 text-base sm:text-xs focus:outline-none focus:border-[#3F166B]"
+                        onChange={(e) => updateContactField("name", e.target.value)}
+                        aria-invalid={Boolean(fieldErrors.name)}
+                        className={`w-full px-3.5 py-2.5 rounded-xl border text-base sm:text-xs focus:outline-none ${
+                          fieldErrors.name
+                            ? "border-red-400 focus:border-red-500"
+                            : "border-stone-300 focus:border-[#3F166B]"
+                        }`}
                       />
+                      {fieldErrors.name && (
+                        <p className="mt-1 text-[11px] font-medium text-red-600">{fieldErrors.name}</p>
+                      )}
                     </div>
                     <div>
                       <label className="block text-xs font-bold text-stone-700 mb-1">
@@ -645,7 +681,7 @@ export default function ShowcaseView() {
                       <input
                         type="text"
                         value={contactForm.company}
-                        onChange={(e) => setContactForm({ ...contactForm, company: e.target.value })}
+                        onChange={(e) => updateContactField("company", e.target.value)}
                         className="w-full px-3.5 py-2.5 rounded-xl border border-stone-300 text-base sm:text-xs focus:outline-none focus:border-[#3F166B]"
                       />
                     </div>
@@ -658,11 +694,18 @@ export default function ShowcaseView() {
                       </label>
                       <input
                         type="email"
-                        required
                         value={contactForm.email}
-                        onChange={(e) => setContactForm({ ...contactForm, email: e.target.value })}
-                        className="w-full px-3.5 py-2.5 rounded-xl border border-stone-300 text-base sm:text-xs focus:outline-none focus:border-[#3F166B]"
+                        onChange={(e) => updateContactField("email", e.target.value)}
+                        aria-invalid={Boolean(fieldErrors.email)}
+                        className={`w-full px-3.5 py-2.5 rounded-xl border text-base sm:text-xs focus:outline-none ${
+                          fieldErrors.email
+                            ? "border-red-400 focus:border-red-500"
+                            : "border-stone-300 focus:border-[#3F166B]"
+                        }`}
                       />
+                      {fieldErrors.email && (
+                        <p className="mt-1 text-[11px] font-medium text-red-600">{fieldErrors.email}</p>
+                      )}
                     </div>
                     <div>
                       <label className="block text-xs font-bold text-stone-700 mb-1">
@@ -671,9 +714,17 @@ export default function ShowcaseView() {
                       <input
                         type="text"
                         value={contactForm.phone}
-                        onChange={(e) => setContactForm({ ...contactForm, phone: e.target.value })}
-                        className="w-full px-3.5 py-2.5 rounded-xl border border-stone-300 text-base sm:text-xs focus:outline-none focus:border-[#3F166B]"
+                        onChange={(e) => updateContactField("phone", e.target.value)}
+                        aria-invalid={Boolean(fieldErrors.phone)}
+                        className={`w-full px-3.5 py-2.5 rounded-xl border text-base sm:text-xs focus:outline-none ${
+                          fieldErrors.phone
+                            ? "border-red-400 focus:border-red-500"
+                            : "border-stone-300 focus:border-[#3F166B]"
+                        }`}
                       />
+                      {fieldErrors.phone && (
+                        <p className="mt-1 text-[11px] font-medium text-red-600">{fieldErrors.phone}</p>
+                      )}
                     </div>
                   </div>
 
@@ -763,12 +814,19 @@ export default function ShowcaseView() {
                     </label>
                     <textarea
                       rows={4}
-                      required
                       value={contactForm.message}
-                      onChange={(e) => setContactForm({ ...contactForm, message: e.target.value })}
+                      onChange={(e) => updateContactField("message", e.target.value)}
                       placeholder={t.contact.messagePlaceholder}
-                      className="w-full px-3.5 py-2.5 rounded-xl border border-stone-300 text-base sm:text-xs focus:outline-none focus:border-[#3F166B]"
+                      aria-invalid={Boolean(fieldErrors.message)}
+                      className={`w-full px-3.5 py-2.5 rounded-xl border text-base sm:text-xs focus:outline-none ${
+                        fieldErrors.message
+                          ? "border-red-400 focus:border-red-500"
+                          : "border-stone-300 focus:border-[#3F166B]"
+                      }`}
                     />
+                    {fieldErrors.message && (
+                      <p className="mt-1 text-[11px] font-medium text-red-600">{fieldErrors.message}</p>
+                    )}
                   </div>
 
                   <button

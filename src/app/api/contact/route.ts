@@ -1,38 +1,22 @@
 import { NextResponse } from "next/server";
-
-interface ContactPayload {
-  name?: string;
-  company?: string;
-  email?: string;
-  phone?: string;
-  product?: string;
-  message?: string;
-  lang?: string;
-}
-
-const cleanField = (value: unknown, maxLength = 1024): string => {
-  if (typeof value !== "string") return "";
-  return value.trim().slice(0, maxLength);
-};
+import { contactSchema } from "@/lib/contactSchema";
 
 export async function POST(request: Request) {
   try {
-    const body = (await request.json()) as ContactPayload;
+    const rawBody = await request.json();
+    const parsed = contactSchema.safeParse(rawBody);
 
-    const name = cleanField(body.name, 200);
-    const company = cleanField(body.company, 200);
-    const email = cleanField(body.email, 200);
-    const phone = cleanField(body.phone, 100);
-    const product = cleanField(body.product, 250);
-    const message = cleanField(body.message, 1900);
-    const lang = cleanField(body.lang, 16) || "en";
-
-    if (!name || !email || !message) {
+    if (!parsed.success) {
       return NextResponse.json(
-        { error: "Name, email, and message are required." },
+        {
+          error: "Validation failed.",
+          fieldErrors: parsed.error.flatten().fieldErrors,
+        },
         { status: 400 }
       );
     }
+
+    const { name, company, email, phone, product, message, lang } = parsed.data;
 
     const webhookUrl = process.env.DISCORD_WEBHOOK_URL;
     if (!webhookUrl) {
@@ -84,4 +68,3 @@ export async function POST(request: Request) {
     );
   }
 }
-

@@ -111,6 +111,13 @@ export interface UITranslations {
     copied: string;
     wechatCopied: string;
     collapse: string;
+    validation: {
+      nameMin: string;
+      emailRequired: string;
+      emailInvalid: string;
+      phoneInvalid: string;
+      messageMin: string;
+    };
   };
   footer: {
     rights: string;
@@ -266,6 +273,13 @@ export const TRANSLATIONS: Record<LanguageCode, UITranslations> = {
       copied: "Copied!",
       wechatCopied: "WeChat ID Copied!",
       collapse: "Collapse",
+      validation: {
+        nameMin: "Please enter your name (at least 2 characters).",
+        emailRequired: "Please enter your email address.",
+        emailInvalid: "Please enter a valid email address.",
+        phoneInvalid: "Please enter a valid phone or WhatsApp number.",
+        messageMin: "Please enter a message (at least 10 characters).",
+      },
     },
     footer: {
       rights: "© 2026 Egy Nile Flax™ Overseas Co. All rights reserved. Operating Since 2008.",
@@ -419,6 +433,13 @@ export const TRANSLATIONS: Record<LanguageCode, UITranslations> = {
       copied: "تم النسخ!",
       wechatCopied: "تم نسخ معرّف وي شات!",
       collapse: "طي",
+      validation: {
+        nameMin: "يرجى إدخال اسمك (حرفان على الأقل).",
+        emailRequired: "يرجى إدخال البريد الإلكتروني.",
+        emailInvalid: "يرجى إدخال بريد إلكتروني صحيح.",
+        phoneInvalid: "يرجى إدخال رقم هاتف أو واتساب صحيح.",
+        messageMin: "يرجى كتابة رسالتك (١٠ أحرف على الأقل).",
+      },
     },
     footer: {
       rights: "© ٢٠٢٦ شركة إيجي نايل فلاكس (Egy Nile Flax™ Overseas Co.). جميع الحقوق محفوظة. نعمل منذ ٢٠٠٨.",
@@ -572,6 +593,13 @@ export const TRANSLATIONS: Record<LanguageCode, UITranslations> = {
       copied: "已复制！",
       wechatCopied: "微信号已复制！",
       collapse: "收起",
+      validation: {
+        nameMin: "请输入您的姓名（至少 2 个字符）。",
+        emailRequired: "请输入您的电子邮箱。",
+        emailInvalid: "请输入有效的电子邮箱地址。",
+        phoneInvalid: "请输入有效的电话或 WhatsApp 号码。",
+        messageMin: "请输入留言内容（至少 10 个字符）。",
+      },
     },
     footer: {
       rights: "© 2026 Egy Nile Flax™ Overseas Co. 版权所有 • 始于 2008 年",

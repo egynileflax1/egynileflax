@@ -1,6 +1,7 @@
 import type { Metadata, Viewport } from "next";
 import "./globals.css";
 import { FlaxProvider } from "@/context/FlaxContext";
+import PageLoader from "@/components/PageLoader";
 
 export const viewport: Viewport = {
   width: "device-width",
@@ -51,6 +52,7 @@ export default function RootLayout({
         suppressHydrationWarning
         className="antialiased selection:bg-[#EDC271] selection:text-[#260C42]"
       >
+        <PageLoader />
         <FlaxProvider>{children}</FlaxProvider>
       </body>
     </html>

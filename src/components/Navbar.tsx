@@ -315,7 +315,7 @@ export default function Navbar() {
                   <span>{t.contact.whatsapp}</span>
                 </span>
                 <span className="font-mono text-[11px] opacity-90" dir="ltr">
-                  {company.egyptPhone1}
+                  +{company.whatsappNumber}
                 </span>
               </a>
 
@@ -347,24 +347,26 @@ export default function Navbar() {
                 </button>
               </div>
 
-              <div className="grid grid-cols-2 gap-2.5">
+              <div className="flex items-center justify-center gap-3 pt-0.5">
                 <a
                   href={`https://www.facebook.com/${company.facebookId}`}
                   target="_blank"
                   rel="noreferrer"
-                  className="py-3 px-3 rounded-xl bg-[#1877F2] hover:bg-[#166FE5] active:scale-[0.98] text-white font-bold flex items-center justify-center gap-1.5 shadow-sm transition-all"
+                  aria-label={t.contact.facebook}
+                  title={t.contact.facebook}
+                  className="w-11 h-11 rounded-xl bg-[#1877F2] hover:bg-[#166FE5] active:scale-[0.96] text-white flex items-center justify-center shadow-sm transition-all"
                 >
-                  <FacebookIcon className="w-4 h-4 shrink-0" />
-                  <span>{t.contact.facebook}</span>
+                  <FacebookIcon className="w-5 h-5" />
                 </a>
                 <a
                   href={`https://www.instagram.com/${company.instagramId}`}
                   target="_blank"
                   rel="noreferrer"
-                  className="py-3 px-3 rounded-xl bg-gradient-to-r from-[#833AB4] via-[#FD1D1D] to-[#F77737] hover:opacity-90 active:scale-[0.98] text-white font-bold flex items-center justify-center gap-1.5 shadow-sm transition-all"
+                  aria-label={t.contact.instagram}
+                  title={t.contact.instagram}
+                  className="w-11 h-11 rounded-xl bg-gradient-to-tr from-[#F77737] via-[#FD1D1D] to-[#833AB4] hover:opacity-90 active:scale-[0.96] text-white flex items-center justify-center shadow-sm transition-all"
                 >
-                  <InstagramIcon className="w-4 h-4 shrink-0" />
-                  <span>{t.contact.instagram}</span>
+                  <InstagramIcon className="w-5 h-5" />
                 </a>
               </div>
 

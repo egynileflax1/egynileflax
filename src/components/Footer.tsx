@@ -108,40 +108,44 @@ export default function Footer() {
                 </a>
               </div>
 
-              <div className="pt-1 flex flex-wrap gap-2">
-                <button
-                  onClick={() => setWechatModalOpen(true)}
-                  className="inline-flex items-center gap-1.5 px-3 py-2 rounded-xl bg-white hover:bg-stone-50 text-[#3F166B] border border-stone-300 font-bold text-xs cursor-pointer"
-                >
-                  <WeChatIcon className="w-4 h-4 shrink-0" />
-                  <span>{t.contact.wechat}</span>
-                </button>
+              <div className="pt-1 flex items-center gap-2.5">
                 <a
                   href={whatsappHref}
                   target="_blank"
                   rel="noreferrer"
-                  className="inline-flex items-center gap-1.5 px-3 py-2 rounded-xl bg-emerald-700 hover:bg-emerald-800 text-white font-bold text-xs"
+                  aria-label={t.contact.whatsapp}
+                  title={t.contact.whatsapp}
+                  className="w-10 h-10 rounded-xl bg-emerald-700 hover:bg-emerald-800 text-white inline-flex items-center justify-center transition-colors shadow-xs"
                 >
-                  <WhatsAppIcon className="w-4 h-4 shrink-0" />
-                  <span>WhatsApp</span>
+                  <WhatsAppIcon className="w-5 h-5" />
                 </a>
+                <button
+                  onClick={() => setWechatModalOpen(true)}
+                  aria-label={t.contact.wechat}
+                  title={t.contact.wechat}
+                  className="w-10 h-10 rounded-xl bg-white hover:bg-stone-50 text-[#07C160] border border-stone-300 inline-flex items-center justify-center transition-colors cursor-pointer shadow-xs"
+                >
+                  <WeChatIcon className="w-5 h-5" />
+                </button>
                 <a
                   href={`https://www.facebook.com/${company.facebookId}`}
                   target="_blank"
                   rel="noreferrer"
-                  className="inline-flex items-center gap-1.5 px-3 py-2 rounded-xl bg-[#1877F2] hover:bg-[#166FE5] text-white font-bold text-xs"
+                  aria-label={t.contact.facebook}
+                  title={t.contact.facebook}
+                  className="w-10 h-10 rounded-xl bg-[#1877F2] hover:bg-[#166FE5] text-white inline-flex items-center justify-center transition-colors shadow-xs"
                 >
-                  <FacebookIcon className="w-4 h-4 shrink-0" />
-                  <span>{t.contact.facebook}</span>
+                  <FacebookIcon className="w-5 h-5" />
                 </a>
                 <a
                   href={`https://www.instagram.com/${company.instagramId}`}
                   target="_blank"
                   rel="noreferrer"
-                  className="inline-flex items-center gap-1.5 px-3 py-2 rounded-xl bg-gradient-to-r from-[#833AB4] via-[#FD1D1D] to-[#F77737] hover:opacity-90 text-white font-bold text-xs"
+                  aria-label={t.contact.instagram}
+                  title={t.contact.instagram}
+                  className="w-10 h-10 rounded-xl bg-gradient-to-tr from-[#F77737] via-[#FD1D1D] to-[#833AB4] hover:opacity-90 text-white inline-flex items-center justify-center transition-opacity shadow-xs"
                 >
-                  <InstagramIcon className="w-4 h-4 shrink-0" />
-                  <span>{t.contact.instagram}</span>
+                  <InstagramIcon className="w-5 h-5" />
                 </a>
               </div>
             </div>
@@ -190,42 +194,47 @@ export default function Footer() {
                   href={whatsappHref}
                   target="_blank"
                   rel="noreferrer"
-                  className="inline-flex items-center gap-1.5 px-3.5 py-2 rounded-full bg-emerald-600 hover:bg-emerald-700 text-white font-bold text-xs transition-colors"
+                  aria-label={t.contact.whatsapp}
+                  title={t.contact.whatsapp}
+                  className="w-9 h-9 rounded-full bg-emerald-600 hover:bg-emerald-700 text-white inline-flex items-center justify-center transition-colors"
                 >
-                  <WhatsAppIcon className="w-3.5 h-3.5 shrink-0" />
-                  <span>{t.contact.whatsapp}</span>
+                  <WhatsAppIcon className="w-4 h-4" />
                 </a>
                 <button
                   onClick={() => setWechatModalOpen(true)}
-                  className="inline-flex items-center gap-1.5 px-3.5 py-2 rounded-full bg-[#3F166B] hover:bg-[#2F1052] text-[#EDC271] font-bold text-xs transition-colors cursor-pointer"
+                  aria-label={t.contact.wechat}
+                  title={t.contact.wechat}
+                  className="w-9 h-9 rounded-full bg-[#3F166B] hover:bg-[#2F1052] text-[#EDC271] inline-flex items-center justify-center transition-colors cursor-pointer"
                 >
-                  <WeChatIcon className="w-3.5 h-3.5 shrink-0" />
-                  <span>{t.contact.wechat}</span>
+                  <WeChatIcon className="w-4 h-4" />
                 </button>
                 <a
                   href={`https://www.facebook.com/${company.facebookId}`}
                   target="_blank"
                   rel="noreferrer"
-                  className="inline-flex items-center gap-1.5 px-3.5 py-2 rounded-full bg-[#1877F2] hover:bg-[#166FE5] text-white font-bold text-xs transition-colors"
+                  aria-label={t.contact.facebook}
+                  title={t.contact.facebook}
+                  className="w-9 h-9 rounded-full bg-[#1877F2] hover:bg-[#166FE5] text-white inline-flex items-center justify-center transition-colors"
                 >
-                  <FacebookIcon className="w-3.5 h-3.5 shrink-0" />
-                  <span>{t.contact.facebook}</span>
+                  <FacebookIcon className="w-4 h-4" />
                 </a>
                 <a
                   href={`https://www.instagram.com/${company.instagramId}`}
                   target="_blank"
                   rel="noreferrer"
-                  className="inline-flex items-center gap-1.5 px-3.5 py-2 rounded-full bg-gradient-to-r from-[#833AB4] via-[#FD1D1D] to-[#F77737] hover:opacity-90 text-white font-bold text-xs transition-opacity"
+                  aria-label={t.contact.instagram}
+                  title={t.contact.instagram}
+                  className="w-9 h-9 rounded-full bg-gradient-to-tr from-[#F77737] via-[#FD1D1D] to-[#833AB4] hover:opacity-90 text-white inline-flex items-center justify-center transition-opacity"
                 >
-                  <InstagramIcon className="w-3.5 h-3.5 shrink-0" />
-                  <span>{t.contact.instagram}</span>
+                  <InstagramIcon className="w-4 h-4" />
                 </a>
                 <a
                   href={`mailto:${company.primaryEmail}`}
-                  className="inline-flex items-center gap-1.5 px-3 py-2 rounded-full bg-stone-100 hover:bg-stone-200 text-stone-800 font-semibold text-xs transition-colors"
+                  aria-label={t.contact.emailLabel}
+                  title={t.contact.emailLabel}
+                  className="w-9 h-9 rounded-full bg-stone-100 hover:bg-stone-200 text-[#3F166B] inline-flex items-center justify-center transition-colors"
                 >
-                  <Mail className="w-3.5 h-3.5 text-[#3F166B] shrink-0" />
-                  <span>{t.contact.emailLabel}</span>
+                  <Mail className="w-4 h-4" />
                 </a>
                 <button
                   onClick={() => setDockMinimized(true)}

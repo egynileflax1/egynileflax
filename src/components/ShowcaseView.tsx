@@ -576,44 +576,48 @@ export default function ShowcaseView() {
                 </div>
               </div>
 
-              <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+              <div className="flex items-center gap-3">
                 <a
                   href={`https://wa.me/${company.whatsappNumber}?text=${encodeURIComponent(
                     `Hello ${company.brandName}, I found your website and would like to get in touch.`
                   )}`}
                   target="_blank"
                   rel="noreferrer"
-                  className="inline-flex items-center justify-center gap-2 px-4 py-3 rounded-xl bg-emerald-700 hover:bg-emerald-800 text-white font-bold text-xs shadow-xs transition-all"
+                  aria-label={t.contact.whatsapp}
+                  title={t.contact.whatsapp}
+                  className="w-11 h-11 rounded-xl bg-emerald-700 hover:bg-emerald-800 text-white inline-flex items-center justify-center shadow-xs transition-all"
                 >
-                  <WhatsAppIcon className="w-4 h-4 shrink-0" />
-                  <span className="truncate">{t.contact.whatsapp} (+{company.whatsappNumber})</span>
+                  <WhatsAppIcon className="w-5 h-5" />
                 </a>
                 <button
                   type="button"
                   onClick={() => setContactWechatOpen(!contactWechatOpen)}
                   aria-expanded={contactWechatOpen}
-                  className="inline-flex items-center justify-center gap-2 px-4 py-3 rounded-xl bg-white hover:bg-stone-100 text-[#3F166B] border border-stone-300 font-bold text-xs shadow-xs transition-all cursor-pointer min-w-0"
+                  aria-label={t.contact.wechat}
+                  title={`${t.contact.wechat} (${company.wechatId})`}
+                  className="w-11 h-11 rounded-xl bg-white hover:bg-stone-100 text-[#07C160] border border-stone-300 inline-flex items-center justify-center shadow-xs transition-all cursor-pointer"
                 >
-                  <WeChatIcon className="w-4 h-4 shrink-0" />
-                  <span className="truncate">{t.contact.wechat} ({company.wechatId})</span>
+                  <WeChatIcon className="w-5 h-5" />
                 </button>
                 <a
                   href={`https://www.facebook.com/${company.facebookId}`}
                   target="_blank"
                   rel="noreferrer"
-                  className="inline-flex items-center justify-center gap-2 px-4 py-3 rounded-xl bg-[#1877F2] hover:bg-[#166FE5] text-white font-bold text-xs shadow-xs transition-all"
+                  aria-label={t.contact.facebook}
+                  title={t.contact.facebook}
+                  className="w-11 h-11 rounded-xl bg-[#1877F2] hover:bg-[#166FE5] text-white inline-flex items-center justify-center shadow-xs transition-all"
                 >
-                  <FacebookIcon className="w-4 h-4 shrink-0" />
-                  <span className="truncate">{t.contact.facebook} (/{company.facebookId})</span>
+                  <FacebookIcon className="w-5 h-5" />
                 </a>
                 <a
                   href={`https://www.instagram.com/${company.instagramId}`}
                   target="_blank"
                   rel="noreferrer"
-                  className="inline-flex items-center justify-center gap-2 px-4 py-3 rounded-xl bg-gradient-to-r from-[#833AB4] via-[#FD1D1D] to-[#F77737] hover:opacity-90 text-white font-bold text-xs shadow-xs transition-all"
+                  aria-label={t.contact.instagram}
+                  title={t.contact.instagram}
+                  className="w-11 h-11 rounded-xl bg-gradient-to-tr from-[#F77737] via-[#FD1D1D] to-[#833AB4] hover:opacity-90 text-white inline-flex items-center justify-center shadow-xs transition-all"
                 >
-                  <InstagramIcon className="w-4 h-4 shrink-0" />
-                  <span className="truncate">{t.contact.instagram} (@{company.instagramId})</span>
+                  <InstagramIcon className="w-5 h-5" />
                 </a>
               </div>
 

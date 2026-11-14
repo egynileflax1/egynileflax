@@ -21,6 +21,8 @@ export const contactSchema = z.object({
     .optional()
     .default(""),
   product: z.string().trim().max(250).optional().default(""),
+  quantity: z.string().trim().max(120).optional().default(""),
+  destination: z.string().trim().max(120).optional().default(""),
   message: z
     .string()
     .trim()

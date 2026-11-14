@@ -25,7 +25,7 @@ export async function POST(request: Request) {
       );
     }
 
-    const { name, company, email, phone, product, message, lang } = parsed.data;
+    const { name, company, email, phone, product, quantity, destination, message, lang } = parsed.data;
     const webhookUrl = process.env.DISCORD_WEBHOOK_URL;
     const brevoApiKey = process.env.BREVO_API_KEY;
     const resendApiKey = process.env.RESEND_API_KEY;
@@ -46,6 +46,8 @@ export async function POST(request: Request) {
       company ? `Company: ${company}` : null,
       phone ? `Phone / WhatsApp: ${phone}` : null,
       product ? `Product of Interest: ${product}` : null,
+      quantity ? `Estimated Quantity: ${quantity}` : null,
+      destination ? `Destination Country: ${destination}` : null,
       `Language: ${lang.toUpperCase()}`,
       "",
       "Message:",
@@ -63,6 +65,8 @@ export async function POST(request: Request) {
           ${company ? `<tr><td style="padding:6px 0;color:#666;"><strong>Company</strong></td><td style="padding:6px 0;">${escapeHtml(company)}</td></tr>` : ""}
           ${phone ? `<tr><td style="padding:6px 0;color:#666;"><strong>Phone / WhatsApp</strong></td><td style="padding:6px 0;">${escapeHtml(phone)}</td></tr>` : ""}
           ${product ? `<tr><td style="padding:6px 0;color:#666;"><strong>Product</strong></td><td style="padding:6px 0;">${escapeHtml(product)}</td></tr>` : ""}
+          ${quantity ? `<tr><td style="padding:6px 0;color:#666;"><strong>Estimated quantity</strong></td><td style="padding:6px 0;">${escapeHtml(quantity)}</td></tr>` : ""}
+          ${destination ? `<tr><td style="padding:6px 0;color:#666;"><strong>Destination country</strong></td><td style="padding:6px 0;">${escapeHtml(destination)}</td></tr>` : ""}
           <tr><td style="padding:6px 0;color:#666;"><strong>Language</strong></td><td style="padding:6px 0;">${escapeHtml(lang.toUpperCase())}</td></tr>
         </table>
         <div style="margin-top:16px;padding:14px;background:#FAF8F5;border:1px solid #e7e5e4;border-radius:10px;white-space:pre-wrap;font-size:14px;">${escapeHtml(message)}</div>
@@ -78,6 +82,8 @@ export async function POST(request: Request) {
         ...(company ? [{ name: "Company", value: company, inline: true }] : []),
         ...(phone ? [{ name: "Phone / WhatsApp", value: phone, inline: true }] : []),
         ...(product ? [{ name: "Product of Interest", value: product, inline: false }] : []),
+        ...(quantity ? [{ name: "Estimated Quantity", value: quantity, inline: true }] : []),
+        ...(destination ? [{ name: "Destination Country", value: destination, inline: true }] : []),
         { name: "Message", value: message, inline: false },
       ];
 

@@ -179,6 +179,8 @@ export default function ShowcaseView() {
     email: "",
     phone: "",
     product: "",
+    quantity: "",
+    destination: "",
     message: "",
   });
   const [formSubmitted, setFormSubmitted] = useState(false);
@@ -267,6 +269,8 @@ export default function ShowcaseView() {
         email: "",
         phone: "",
         product: "",
+        quantity: "",
+        destination: "",
         message: "",
       });
     } catch {
@@ -983,6 +987,27 @@ export default function ShowcaseView() {
                           );
                         })}
                       </div>
+                    </div>
+                  </div>
+
+                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                    <div>
+                      <label htmlFor="inquiry-quantity" className="block text-xs font-bold text-stone-700 mb-1">
+                        {t.contact.quantityLabel}
+                      </label>
+                      <input id="inquiry-quantity" type="text" value={contactForm.quantity}
+                        onChange={(e) => updateContactField("quantity", e.target.value)}
+                        placeholder={t.contact.quantityPlaceholder} autoComplete="off"
+                        className="w-full px-3.5 py-2.5 rounded-xl border border-stone-300 text-base sm:text-xs focus:outline-none focus:border-[#3F166B]" />
+                    </div>
+                    <div>
+                      <label htmlFor="inquiry-destination" className="block text-xs font-bold text-stone-700 mb-1">
+                        {t.contact.destinationLabel}
+                      </label>
+                      <input id="inquiry-destination" type="text" value={contactForm.destination}
+                        onChange={(e) => updateContactField("destination", e.target.value)}
+                        placeholder={t.contact.destinationPlaceholder} autoComplete="country-name"
+                        className="w-full px-3.5 py-2.5 rounded-xl border border-stone-300 text-base sm:text-xs focus:outline-none focus:border-[#3F166B]" />
                     </div>
                   </div>
 

@@ -101,6 +101,10 @@ export interface UITranslations {
     emailFieldLabel: string;
     phoneFieldLabel: string;
     productLabel: string;
+    quantityLabel: string;
+    quantityPlaceholder: string;
+    destinationLabel: string;
+    destinationPlaceholder: string;
     messageLabel: string;
     messagePlaceholder: string;
     submitBtn: string;
@@ -270,6 +274,10 @@ export const TRANSLATIONS: Record<LanguageCode, UITranslations> = {
       emailFieldLabel: "Email Address",
       phoneFieldLabel: "Phone / WhatsApp",
       productLabel: "Product of Interest",
+      quantityLabel: "Estimated quantity (optional)",
+      quantityPlaceholder: "e.g. 5 tonnes or 20 bales",
+      destinationLabel: "Destination country (optional)",
+      destinationPlaceholder: "e.g. Germany",
       messageLabel: "Message",
       messagePlaceholder: "Tell us about the flax grade, specification, or question you have...",
       submitBtn: "Send Message",
@@ -437,6 +445,10 @@ export const TRANSLATIONS: Record<LanguageCode, UITranslations> = {
       emailFieldLabel: "البريد الإلكتروني",
       phoneFieldLabel: "الهاتف / واتساب",
       productLabel: "المنتج المطلوب",
+      quantityLabel: "الكمية التقديرية (اختياري)",
+      quantityPlaceholder: "مثال: ٥ أطنان أو ٢٠ بالة",
+      destinationLabel: "بلد الوصول (اختياري)",
+      destinationPlaceholder: "مثال: ألمانيا",
       messageLabel: "الرسالة",
       messagePlaceholder: "اكتب استفسارك عن الدرجة أو المواصفات المطلوبة...",
       submitBtn: "إرسال الرسالة",
@@ -604,6 +616,10 @@ export const TRANSLATIONS: Record<LanguageCode, UITranslations> = {
       emailFieldLabel: "电子邮箱",
       phoneFieldLabel: "电话 / WhatsApp",
       productLabel: "意向产品",
+      quantityLabel: "预计采购量（选填）",
+      quantityPlaceholder: "例如：5吨或20包",
+      destinationLabel: "目的国家（选填）",
+      destinationPlaceholder: "例如：德国",
       messageLabel: "留言内容",
       messagePlaceholder: "请简述您关注的亚麻等级、规格或咨询内容...",
       submitBtn: "发送留言",

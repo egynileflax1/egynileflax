@@ -91,6 +91,7 @@ export interface UITranslations {
     whatsapp: string;
     email: string;
     wechat: string;
+    rednote: string;
     facebook: string;
     instagram: string;
     linkedin: string;
@@ -112,8 +113,10 @@ export interface UITranslations {
     sendViaEmail: string;
     copyId: string;
     copyWechatId: string;
+    copyRednoteId: string;
     copied: string;
     wechatCopied: string;
+    rednoteCopied: string;
     collapse: string;
     validation: {
       nameMin: string;
@@ -257,6 +260,7 @@ export const TRANSLATIONS: Record<LanguageCode, UITranslations> = {
       whatsapp: "Chat on WhatsApp",
       email: "Send an Email",
       wechat: "WeChat",
+      rednote: "RedNote",
       facebook: "Facebook",
       instagram: "Instagram",
       linkedin: "LinkedIn",
@@ -278,8 +282,10 @@ export const TRANSLATIONS: Record<LanguageCode, UITranslations> = {
       sendViaEmail: "Send via Email App",
       copyId: "Copy ID",
       copyWechatId: "Copy WeChat ID",
+      copyRednoteId: "Copy RedNote ID",
       copied: "Copied!",
       wechatCopied: "WeChat ID Copied!",
+      rednoteCopied: "RedNote ID Copied!",
       collapse: "Collapse",
       validation: {
         nameMin: "Please enter your name (at least 2 characters).",
@@ -421,6 +427,7 @@ export const TRANSLATIONS: Record<LanguageCode, UITranslations> = {
       whatsapp: "تحدث معنا عبر واتساب",
       email: "أرسل بريداً إلكترونياً",
       wechat: "وي تشات",
+      rednote: "ريد نوت",
       facebook: "فيسبوك",
       instagram: "إنستغرام",
       linkedin: "لينكدإن",
@@ -442,8 +449,10 @@ export const TRANSLATIONS: Record<LanguageCode, UITranslations> = {
       sendViaEmail: "إرسال عبر البريد الإلكتروني",
       copyId: "نسخ المعرّف",
       copyWechatId: "نسخ معرّف وي شات",
+      copyRednoteId: "نسخ معرّف ريد نوت",
       copied: "تم النسخ!",
       wechatCopied: "تم نسخ معرّف وي شات!",
+      rednoteCopied: "تم نسخ معرّف ريد نوت!",
       collapse: "طي",
       validation: {
         nameMin: "يرجى إدخال اسمك (حرفان على الأقل).",
@@ -585,6 +594,7 @@ export const TRANSLATIONS: Record<LanguageCode, UITranslations> = {
       whatsapp: "通过 WhatsApp 沟通",
       email: "发送邮件",
       wechat: "微信",
+      rednote: "小红书",
       facebook: "Facebook",
       instagram: "Instagram",
       linkedin: "LinkedIn",
@@ -606,8 +616,10 @@ export const TRANSLATIONS: Record<LanguageCode, UITranslations> = {
       sendViaEmail: "通过邮箱客户端发送",
       copyId: "复制 ID",
       copyWechatId: "复制微信号",
+      copyRednoteId: "复制小红书号",
       copied: "已复制！",
       wechatCopied: "微信号已复制！",
+      rednoteCopied: "小红书号已复制！",
       collapse: "收起",
       validation: {
         nameMin: "请输入您的姓名（至少 2 个字符）。",

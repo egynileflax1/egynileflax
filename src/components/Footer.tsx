@@ -3,7 +3,7 @@
 import React, { useState } from "react";
 import { useFlax } from "@/context/FlaxContext";
 import EgyNileLogo from "@/components/EgyNileLogo";
-import { WhatsAppIcon, WeChatIcon, FacebookIcon, InstagramIcon, LinkedInIcon } from "@/components/BrandIcons";
+import { WhatsAppIcon, WeChatIcon, RedNoteIcon, FacebookIcon, InstagramIcon, LinkedInIcon } from "@/components/BrandIcons";
 import {
   Phone,
   Mail,
@@ -19,9 +19,35 @@ import {
 
 export default function Footer() {
   const { t, company } = useFlax();
-  const [wechatModalOpen, setWechatModalOpen] = useState(false);
+  const [qrModal, setQrModal] = useState<"wechat" | "rednote" | null>(null);
+  const [activeQrType, setActiveQrType] = useState<"wechat" | "rednote">("wechat");
   const [copiedId, setCopiedId] = useState(false);
   const [dockMinimized, setDockMinimized] = useState(true);
+
+  const openQrModal = (type: "wechat" | "rednote") => {
+    setActiveQrType(type);
+    setCopiedId(false);
+    setQrModal(type);
+  };
+
+  const activeQr =
+    activeQrType === "rednote"
+      ? {
+          title: t.contact.rednote,
+          id: company.rednoteId,
+          src: "/rednote qrcode.webp",
+          copyLabel: t.contact.copyRednoteId,
+          copiedLabel: t.contact.rednoteCopied,
+          icon: <RedNoteIcon className="w-4 h-4 shrink-0 text-[#FF2442]" />,
+        }
+      : {
+          title: t.contact.wechat,
+          id: company.wechatId,
+          src: "/wechat qrcode.webp",
+          copyLabel: t.contact.copyWechatId,
+          copiedLabel: t.contact.wechatCopied,
+          icon: <WeChatIcon className="w-4 h-4 shrink-0 text-[#07C160]" />,
+        };
 
   const scrollTo = (id: string) => document.getElementById(id)?.scrollIntoView({ behavior: "smooth" });
 
@@ -119,12 +145,20 @@ export default function Footer() {
                   <WhatsAppIcon className="w-5 h-5" />
                 </a>
                 <button
-                  onClick={() => setWechatModalOpen(true)}
+                  onClick={() => openQrModal("wechat")}
                   aria-label={t.contact.wechat}
                   title={t.contact.wechat}
                   className="w-10 h-10 rounded-xl bg-white hover:bg-stone-50 text-[#07C160] border border-stone-300 inline-flex items-center justify-center transition-colors cursor-pointer shadow-xs"
                 >
                   <WeChatIcon className="w-5 h-5" />
+                </button>
+                <button
+                  onClick={() => openQrModal("rednote")}
+                  aria-label={t.contact.rednote}
+                  title={t.contact.rednote}
+                  className="w-10 h-10 rounded-xl bg-white hover:bg-stone-50 text-[#FF2442] border border-stone-300 inline-flex items-center justify-center transition-colors cursor-pointer shadow-xs"
+                >
+                  <RedNoteIcon className="w-5 h-5" />
                 </button>
                 <a
                   href={`https://www.facebook.com/${company.facebookId}`}
@@ -210,12 +244,20 @@ export default function Footer() {
                   <WhatsAppIcon className="w-4 h-4" />
                 </a>
                 <button
-                  onClick={() => setWechatModalOpen(true)}
+                  onClick={() => openQrModal("wechat")}
                   aria-label={t.contact.wechat}
                   title={t.contact.wechat}
                   className="w-9 h-9 rounded-full bg-[#3F166B] hover:bg-[#2F1052] text-[#EDC271] inline-flex items-center justify-center transition-colors cursor-pointer"
                 >
                   <WeChatIcon className="w-4 h-4" />
+                </button>
+                <button
+                  onClick={() => openQrModal("rednote")}
+                  aria-label={t.contact.rednote}
+                  title={t.contact.rednote}
+                  className="w-9 h-9 rounded-full bg-[#FF2442] hover:bg-[#E01E3B] text-white inline-flex items-center justify-center transition-colors cursor-pointer"
+                >
+                  <RedNoteIcon className="w-4 h-4" />
                 </button>
                 <a
                   href={`https://www.facebook.com/${company.facebookId}`}
@@ -268,12 +310,12 @@ export default function Footer() {
         </div>
       </div>
 
-      {/* WeChat modal */}
+      {/* WeChat & RedNote QR modal */}
       <div
-        aria-hidden={!wechatModalOpen}
-        onClick={() => setWechatModalOpen(false)}
+        aria-hidden={!qrModal}
+        onClick={() => setQrModal(null)}
         className={`fixed inset-0 z-50 flex items-center justify-center p-4 transition-all duration-300 ease-in-out ${
-          wechatModalOpen
+          qrModal
             ? "bg-black/75 backdrop-blur-xs opacity-100 pointer-events-auto"
             : "bg-black/0 opacity-0 pointer-events-none"
         }`}
@@ -281,16 +323,16 @@ export default function Footer() {
         <div
           onClick={(e) => e.stopPropagation()}
           className={`bg-white rounded-3xl max-w-sm w-full p-6 text-center space-y-4 shadow-2xl transition-all duration-300 ease-out ${
-            wechatModalOpen ? "opacity-100 translate-y-0 scale-100" : "opacity-0 translate-y-4 scale-95"
+            qrModal ? "opacity-100 translate-y-0 scale-100" : "opacity-0 translate-y-4 scale-95"
           }`}
         >
           <div className="flex items-center justify-between">
             <span className="inline-flex items-center gap-1.5 text-xs font-bold uppercase tracking-wider text-[#3F166B]">
-              <WeChatIcon className="w-4 h-4 shrink-0" />
-              <span>{t.contact.wechat}</span>
+              {activeQr.icon}
+              <span>{activeQr.title}</span>
             </span>
             <button
-              onClick={() => setWechatModalOpen(false)}
+              onClick={() => setQrModal(null)}
               className="p-1 rounded-lg hover:bg-stone-100 text-stone-500 cursor-pointer"
             >
               <X className="w-5 h-5" />
@@ -298,15 +340,15 @@ export default function Footer() {
           </div>
           <div className="mx-auto rounded-2xl bg-stone-50 border border-stone-200 p-3 inline-flex flex-col items-center">
             <img
-              src="/wechat qrcode.webp"
-              alt={`WeChat QR Code — ${company.wechatId}`}
+              src={activeQr.src}
+              alt={`${activeQr.title} QR Code — ${activeQr.id}`}
               className="w-44 h-44 sm:w-48 sm:h-48 rounded-xl object-contain bg-white"
             />
-            <span className="text-[11px] font-mono font-bold text-stone-700 mt-2">ID: {company.wechatId}</span>
+            <span className="text-[11px] font-mono font-bold text-stone-700 mt-2">ID: {activeQr.id}</span>
           </div>
           <button
             onClick={() => {
-              navigator.clipboard?.writeText(company.wechatId);
+              navigator.clipboard?.writeText(activeQr.id);
               setCopiedId(true);
               setTimeout(() => setCopiedId(false), 2000);
             }}
@@ -315,12 +357,12 @@ export default function Footer() {
             {copiedId ? (
               <>
                 <Check className="w-4 h-4" />
-                <span>{t.contact.wechatCopied}</span>
+                <span>{activeQr.copiedLabel}</span>
               </>
             ) : (
               <>
                 <Copy className="w-4 h-4" />
-                <span>{t.contact.copyWechatId} ({company.wechatId})</span>
+                <span>{activeQr.copyLabel} ({activeQr.id})</span>
               </>
             )}
           </button>

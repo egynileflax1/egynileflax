@@ -38,6 +38,7 @@ export interface CompanyInfo {
   egyptPhone2: string;
   whatsappNumber: string;
   wechatId: string;
+  rednoteId: string;
   facebookId: string;
   instagramId: string;
   linkedinId: string;
@@ -56,6 +57,7 @@ export const COMPANY: CompanyInfo = {
   egyptPhone2: "+20 10 50505673",
   whatsappNumber: "201017316801",
   wechatId: "hazem_1111",
+  rednoteId: "egynileflax",
   facebookId: "egynileflax",
   instagramId: "egynileflax",
   linkedinId: "egy-nile-flax",

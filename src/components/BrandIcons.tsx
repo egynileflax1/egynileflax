@@ -68,3 +68,16 @@ export function LinkedInIcon({ className = "w-4 h-4" }: IconProps) {
     </svg>
   );
 }
+
+export function RedNoteIcon({ className = "w-4 h-4" }: IconProps) {
+  return (
+    <svg
+      viewBox="0 0 24 24"
+      fill="currentColor"
+      aria-hidden="true"
+      className={className}
+    >
+      <path d="M6.2 2h11.6A4.2 4.2 0 0 1 22 6.2v11.6a4.2 4.2 0 0 1-4.2 4.2H6.2A4.2 4.2 0 0 1 2 17.8V6.2A4.2 4.2 0 0 1 6.2 2Zm5.15 5.4v6.7c0 .44-.12.66-.47.66-.27 0-.62-.05-.9-.12l.24 1.56c.38.07.77.11 1.14.11 1.19 0 1.79-.63 1.79-1.91V7.4h-1.8Zm-3.65 1.85c-.22 1.87-.68 3.63-1.42 4.92l1.46.78c.82-1.47 1.33-3.44 1.57-5.5l-1.61-.2Zm7.32.22c.78 1.5 1.32 3.23 1.55 4.86l1.58-.48c-.28-1.65-.86-3.42-1.66-4.96l-1.47.58Z" />
+    </svg>
+  );
+}

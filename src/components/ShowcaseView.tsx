@@ -8,7 +8,7 @@ import { ProductItem } from "@/data/initialData";
 import FlaxScrollPlant from "@/components/FlaxScrollPlant";
 import { LOADER_DONE_EVENT } from "@/components/PageLoader";
 import { contactSchema, ContactFieldErrorKey } from "@/lib/contactSchema";
-import { WhatsAppIcon, WeChatIcon, FacebookIcon, InstagramIcon, LinkedInIcon } from "@/components/BrandIcons";
+import { WhatsAppIcon, WeChatIcon, RedNoteIcon, FacebookIcon, InstagramIcon, LinkedInIcon } from "@/components/BrandIcons";
 import {
   ShieldCheck,
   ArrowRight,
@@ -167,8 +167,9 @@ export default function ShowcaseView() {
   useEffect(() => {
     return () => window.clearTimeout(modalCloseTimerRef.current);
   }, []);
-  const [contactWechatOpen, setContactWechatOpen] = useState(false);
-  const [copiedWechat, setCopiedWechat] = useState(false);
+  const [contactQrType, setContactQrType] = useState<"wechat" | "rednote" | null>(null);
+  const [lastQrType, setLastQrType] = useState<"wechat" | "rednote">("wechat");
+  const [copiedQrId, setCopiedQrId] = useState(false);
   const [productDropdownOpen, setProductDropdownOpen] = useState(false);
   const productDropdownRef = useRef<HTMLDivElement>(null);
   const contactCardRef = useRef<HTMLDivElement>(null);
@@ -275,10 +276,35 @@ export default function ShowcaseView() {
     }
   };
 
-  const copyWechatId = () => {
-    navigator.clipboard?.writeText(company.wechatId);
-    setCopiedWechat(true);
-    setTimeout(() => setCopiedWechat(false), 2000);
+  const toggleContactQr = (type: "wechat" | "rednote") => {
+    setCopiedQrId(false);
+    if (contactQrType === type) {
+      setContactQrType(null);
+    } else {
+      setLastQrType(type);
+      setContactQrType(type);
+    }
+  };
+
+  const activeQr =
+    lastQrType === "rednote"
+      ? {
+          title: t.contact.rednote,
+          id: company.rednoteId,
+          src: "/rednote qrcode.webp",
+          copyLabel: t.contact.copyRednoteId,
+        }
+      : {
+          title: t.contact.wechat,
+          id: company.wechatId,
+          src: "/wechat qrcode.webp",
+          copyLabel: t.contact.copyWechatId,
+        };
+
+  const copyQrId = () => {
+    navigator.clipboard?.writeText(activeQr.id);
+    setCopiedQrId(true);
+    setTimeout(() => setCopiedQrId(false), 2000);
   };
 
   return (
@@ -323,12 +349,19 @@ export default function ShowcaseView() {
             </div>
 
             <div className="lg:col-span-5">
-              <div className="hero-media relative aspect-[16/10] lg:aspect-[4/3] max-h-[240px] sm:max-h-[340px] lg:max-h-[360px] w-full rounded-2xl sm:rounded-3xl overflow-hidden border border-stone-200 shadow-sm bg-stone-100">
+              <div className="hero-media relative aspect-[16/10] lg:aspect-[4/3] max-h-[200px] sm:max-h-[340px] lg:max-h-[360px] w-full rounded-2xl sm:rounded-3xl overflow-hidden border border-stone-200 shadow-sm bg-stone-100">
                 <img
                   src="/IMG_9066.webp"
                   alt="Egy Nile Flax Factory"
+                  fetchPriority="high"
+                  decoding="async"
                   className="hero-img w-full h-[112%] -mt-[4%] object-cover will-change-transform"
                 />
+                <div className="pointer-events-none absolute inset-x-0 bottom-0 h-20 bg-gradient-to-t from-black/55 to-transparent" />
+                <div className="absolute bottom-3 start-3 inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-black/55 backdrop-blur-md border border-white/15 text-white text-[11px] font-semibold">
+                  <MapPin className="w-3.5 h-3.5 text-[#EDC271] shrink-0" />
+                  <span>{t.brand.locationLine}</span>
+                </div>
               </div>
             </div>
           </div>
@@ -623,13 +656,23 @@ export default function ShowcaseView() {
                 </a>
                 <button
                   type="button"
-                  onClick={() => setContactWechatOpen(!contactWechatOpen)}
-                  aria-expanded={contactWechatOpen}
+                  onClick={() => toggleContactQr("wechat")}
+                  aria-expanded={contactQrType === "wechat"}
                   aria-label={t.contact.wechat}
                   title={`${t.contact.wechat} (${company.wechatId})`}
                   className="w-11 h-11 rounded-xl bg-white hover:bg-stone-100 text-[#07C160] border border-stone-300 inline-flex items-center justify-center shadow-xs transition-all cursor-pointer"
                 >
                   <WeChatIcon className="w-5 h-5" />
+                </button>
+                <button
+                  type="button"
+                  onClick={() => toggleContactQr("rednote")}
+                  aria-expanded={contactQrType === "rednote"}
+                  aria-label={t.contact.rednote}
+                  title={`${t.contact.rednote} (${company.rednoteId})`}
+                  className="w-11 h-11 rounded-xl bg-white hover:bg-stone-100 text-[#FF2442] border border-stone-300 inline-flex items-center justify-center shadow-xs transition-all cursor-pointer"
+                >
+                  <RedNoteIcon className="w-5 h-5" />
                 </button>
                 <a
                   href={`https://www.facebook.com/${company.facebookId}`}
@@ -663,11 +706,11 @@ export default function ShowcaseView() {
                 </a>
               </div>
 
-              {/* WeChat details */}
+              {/* WeChat & RedNote QR details */}
               <div
-                aria-hidden={!contactWechatOpen}
+                aria-hidden={!contactQrType}
                 className={`grid transition-all duration-300 ease-in-out ${
-                  contactWechatOpen ? "grid-rows-[1fr] opacity-100" : "grid-rows-[0fr] opacity-0 pointer-events-none"
+                  contactQrType ? "grid-rows-[1fr] opacity-100" : "grid-rows-[0fr] opacity-0 pointer-events-none"
                 }`}
               >
                 <div className="overflow-hidden">
@@ -675,21 +718,21 @@ export default function ShowcaseView() {
                     <div className="flex items-center gap-3">
                       <div className="w-20 h-20 rounded-xl bg-white border border-stone-200 p-1 flex items-center justify-center shrink-0">
                         <img
-                          src="/wechat qrcode.webp"
-                          alt={`WeChat QR Code — ${company.wechatId}`}
+                          src={activeQr.src}
+                          alt={`${activeQr.title} QR Code — ${activeQr.id}`}
                           className="w-full h-full object-contain rounded-lg"
                         />
                       </div>
                       <div className="text-xs">
                         <div className="font-bold text-stone-900">
-                          WeChat ID: <span className="font-mono">{company.wechatId}</span>
+                          {activeQr.title} ID: <span className="font-mono">{activeQr.id}</span>
                         </div>
                         <button
                           type="button"
-                          onClick={copyWechatId}
+                          onClick={copyQrId}
                           className="mt-1 inline-flex items-center gap-1 text-[11px] font-bold text-[#3F166B] hover:underline cursor-pointer"
                         >
-                          {copiedWechat ? (
+                          {copiedQrId ? (
                             <>
                               <Check className="w-3.5 h-3.5" />
                               <span>{t.contact.copied}</span>
@@ -697,7 +740,7 @@ export default function ShowcaseView() {
                           ) : (
                             <>
                               <Copy className="w-3.5 h-3.5" />
-                              <span>{t.contact.copyWechatId}</span>
+                              <span>{activeQr.copyLabel}</span>
                             </>
                           )}
                         </button>
@@ -705,7 +748,7 @@ export default function ShowcaseView() {
                     </div>
                     <button
                       type="button"
-                      onClick={() => setContactWechatOpen(false)}
+                      onClick={() => setContactQrType(null)}
                       className="p-1 text-stone-400 hover:text-stone-800 self-start cursor-pointer"
                     >
                       <X className="w-4 h-4" />

@@ -4,7 +4,7 @@ import React, { useRef, useState } from "react";
 import { useFlax } from "@/context/FlaxContext";
 import { LanguageCode } from "@/data/initialData";
 import EgyNileLogo from "@/components/EgyNileLogo";
-import { WhatsAppIcon, WeChatIcon, FacebookIcon, InstagramIcon, LinkedInIcon } from "@/components/BrandIcons";
+import { WhatsAppIcon, WeChatIcon, RedNoteIcon, FacebookIcon, InstagramIcon, LinkedInIcon } from "@/components/BrandIcons";
 import {
   ShieldCheck,
   Globe,
@@ -29,6 +29,7 @@ export default function Navbar() {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [mobileContactSheetOpen, setMobileContactSheetOpen] = useState(false);
   const [copiedWechat, setCopiedWechat] = useState(false);
+  const [copiedRednote, setCopiedRednote] = useState(false);
   const [sheetDragY, setSheetDragY] = useState(0);
   const [isDraggingSheet, setIsDraggingSheet] = useState(false);
   const dragStartYRef = useRef<number | null>(null);
@@ -344,6 +345,34 @@ export default function Navbar() {
                 >
                   {copiedWechat ? <Check className="w-4 h-4" /> : <Copy className="w-4 h-4" />}
                   <span>{copiedWechat ? t.contact.copied : t.contact.copyId}</span>
+                </button>
+              </div>
+
+              <div className="p-3.5 rounded-2xl bg-[#3F166B] text-white flex items-center justify-between gap-3">
+                <div className="flex items-center gap-3 min-w-0">
+                  <div className="w-11 h-11 rounded-xl bg-white p-1.5 flex items-center justify-center shrink-0">
+                    <RedNoteIcon className="w-7 h-7 text-[#FF2442]" />
+                  </div>
+                  <div className="min-w-0">
+                    <span className="text-[10px] text-[#EDC271] font-bold uppercase tracking-wider block">
+                      {t.contact.rednote}
+                    </span>
+                    <span className="font-mono text-[#EDC271] text-xs font-extrabold truncate block">
+                      {company.rednoteId}
+                    </span>
+                  </div>
+                </div>
+                <button
+                  type="button"
+                  onClick={() => {
+                    navigator.clipboard?.writeText(company.rednoteId);
+                    setCopiedRednote(true);
+                    setTimeout(() => setCopiedRednote(false), 2000);
+                  }}
+                  className="px-3 py-2 rounded-xl bg-[#EDC271] hover:bg-[#F5D693] text-[#260C42] font-extrabold text-xs inline-flex items-center gap-1.5 shrink-0 cursor-pointer"
+                >
+                  {copiedRednote ? <Check className="w-4 h-4" /> : <Copy className="w-4 h-4" />}
+                  <span>{copiedRednote ? t.contact.copied : t.contact.copyId}</span>
                 </button>
               </div>
 

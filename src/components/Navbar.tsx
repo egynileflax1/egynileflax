@@ -14,6 +14,7 @@ import {
   X,
   ArrowUpRight,
   MessageSquare,
+  QrCode,
   Copy,
   Check,
 } from "lucide-react";
@@ -30,6 +31,7 @@ export default function Navbar() {
   const [mobileContactSheetOpen, setMobileContactSheetOpen] = useState(false);
   const [copiedWechat, setCopiedWechat] = useState(false);
   const [copiedRednote, setCopiedRednote] = useState(false);
+  const [mobileQr, setMobileQr] = useState<"wechat" | "rednote" | null>(null);
   const [sheetDragY, setSheetDragY] = useState(0);
   const [isDraggingSheet, setIsDraggingSheet] = useState(false);
   const dragStartYRef = useRef<number | null>(null);
@@ -320,60 +322,122 @@ export default function Navbar() {
                 </span>
               </a>
 
-              <div className="p-3.5 rounded-2xl bg-[#3F166B] text-white flex items-center justify-between gap-3">
-                <div className="flex items-center gap-3 min-w-0">
-                  <div className="w-11 h-11 rounded-xl bg-white p-1.5 flex items-center justify-center shrink-0">
-                    <WeChatIcon className="w-7 h-7 text-[#07C160]" />
+              <div className="p-3.5 rounded-2xl bg-[#3F166B] text-white">
+                <div className="flex items-center justify-between gap-2.5">
+                  <div className="flex items-center gap-3 min-w-0">
+                    <div className="w-11 h-11 rounded-xl bg-white p-1.5 flex items-center justify-center shrink-0">
+                      <WeChatIcon className="w-7 h-7 text-[#07C160]" />
+                    </div>
+                    <div className="min-w-0">
+                      <span className="text-[10px] text-[#EDC271] font-bold uppercase tracking-wider block">
+                        {t.contact.wechat}
+                      </span>
+                      <span className="font-mono text-[#EDC271] text-xs font-extrabold truncate block">
+                        {company.wechatId}
+                      </span>
+                    </div>
                   </div>
-                  <div className="min-w-0">
-                    <span className="text-[10px] text-[#EDC271] font-bold uppercase tracking-wider block">
-                      {t.contact.wechat}
-                    </span>
-                    <span className="font-mono text-[#EDC271] text-xs font-extrabold truncate block">
-                      {company.wechatId}
-                    </span>
+                  <div className="flex items-center gap-1.5 shrink-0">
+                    <button
+                      type="button"
+                      onClick={() => setMobileQr(mobileQr === "wechat" ? null : "wechat")}
+                      aria-expanded={mobileQr === "wechat"}
+                      aria-label={`${t.contact.wechat} QR`}
+                      className={`p-2 rounded-xl border transition-colors cursor-pointer ${
+                        mobileQr === "wechat"
+                          ? "bg-white text-[#3F166B] border-white"
+                          : "bg-white/10 hover:bg-white/20 text-[#EDC271] border-white/15"
+                      }`}
+                    >
+                      <QrCode className="w-4 h-4" />
+                    </button>
+                    <button
+                      type="button"
+                      onClick={() => {
+                        navigator.clipboard?.writeText(company.wechatId);
+                        setCopiedWechat(true);
+                        setTimeout(() => setCopiedWechat(false), 2000);
+                      }}
+                      className="px-3 py-2 rounded-xl bg-[#EDC271] hover:bg-[#F5D693] text-[#260C42] font-extrabold text-xs inline-flex items-center gap-1.5 cursor-pointer"
+                    >
+                      {copiedWechat ? <Check className="w-4 h-4" /> : <Copy className="w-4 h-4" />}
+                      <span>{copiedWechat ? t.contact.copied : t.contact.copyId}</span>
+                    </button>
                   </div>
                 </div>
-                <button
-                  type="button"
-                  onClick={() => {
-                    navigator.clipboard?.writeText(company.wechatId);
-                    setCopiedWechat(true);
-                    setTimeout(() => setCopiedWechat(false), 2000);
-                  }}
-                  className="px-3 py-2 rounded-xl bg-[#EDC271] hover:bg-[#F5D693] text-[#260C42] font-extrabold text-xs inline-flex items-center gap-1.5 shrink-0 cursor-pointer"
+                <div
+                  aria-hidden={mobileQr !== "wechat"}
+                  className={`grid transition-all duration-300 ease-in-out ${
+                    mobileQr === "wechat" ? "grid-rows-[1fr] opacity-100 mt-3" : "grid-rows-[0fr] opacity-0"
+                  }`}
                 >
-                  {copiedWechat ? <Check className="w-4 h-4" /> : <Copy className="w-4 h-4" />}
-                  <span>{copiedWechat ? t.contact.copied : t.contact.copyId}</span>
-                </button>
+                  <div className="overflow-hidden flex justify-center">
+                    <img
+                      src="/wechat qrcode.webp"
+                      alt={`WeChat QR Code — ${company.wechatId}`}
+                      className="w-40 h-40 rounded-xl bg-white p-1.5 object-contain"
+                    />
+                  </div>
+                </div>
               </div>
 
-              <div className="p-3.5 rounded-2xl bg-[#3F166B] text-white flex items-center justify-between gap-3">
-                <div className="flex items-center gap-3 min-w-0">
-                  <div className="w-11 h-11 rounded-xl bg-white p-1.5 flex items-center justify-center shrink-0">
-                    <RedNoteIcon className="w-7 h-7 text-[#FF2442]" />
+              <div className="p-3.5 rounded-2xl bg-[#3F166B] text-white">
+                <div className="flex items-center justify-between gap-2.5">
+                  <div className="flex items-center gap-3 min-w-0">
+                    <div className="w-11 h-11 rounded-xl bg-white p-1.5 flex items-center justify-center shrink-0">
+                      <RedNoteIcon className="w-7 h-7 text-[#FF2442]" />
+                    </div>
+                    <div className="min-w-0">
+                      <span className="text-[10px] text-[#EDC271] font-bold uppercase tracking-wider block">
+                        {t.contact.rednote}
+                      </span>
+                      <span className="font-mono text-[#EDC271] text-xs font-extrabold truncate block">
+                        {company.rednoteId}
+                      </span>
+                    </div>
                   </div>
-                  <div className="min-w-0">
-                    <span className="text-[10px] text-[#EDC271] font-bold uppercase tracking-wider block">
-                      {t.contact.rednote}
-                    </span>
-                    <span className="font-mono text-[#EDC271] text-xs font-extrabold truncate block">
-                      {company.rednoteId}
-                    </span>
+                  <div className="flex items-center gap-1.5 shrink-0">
+                    <button
+                      type="button"
+                      onClick={() => setMobileQr(mobileQr === "rednote" ? null : "rednote")}
+                      aria-expanded={mobileQr === "rednote"}
+                      aria-label={`${t.contact.rednote} QR`}
+                      className={`p-2 rounded-xl border transition-colors cursor-pointer ${
+                        mobileQr === "rednote"
+                          ? "bg-white text-[#3F166B] border-white"
+                          : "bg-white/10 hover:bg-white/20 text-[#EDC271] border-white/15"
+                      }`}
+                    >
+                      <QrCode className="w-4 h-4" />
+                    </button>
+                    <button
+                      type="button"
+                      onClick={() => {
+                        navigator.clipboard?.writeText(company.rednoteId);
+                        setCopiedRednote(true);
+                        setTimeout(() => setCopiedRednote(false), 2000);
+                      }}
+                      className="px-3 py-2 rounded-xl bg-[#EDC271] hover:bg-[#F5D693] text-[#260C42] font-extrabold text-xs inline-flex items-center gap-1.5 cursor-pointer"
+                    >
+                      {copiedRednote ? <Check className="w-4 h-4" /> : <Copy className="w-4 h-4" />}
+                      <span>{copiedRednote ? t.contact.copied : t.contact.copyId}</span>
+                    </button>
                   </div>
                 </div>
-                <button
-                  type="button"
-                  onClick={() => {
-                    navigator.clipboard?.writeText(company.rednoteId);
-                    setCopiedRednote(true);
-                    setTimeout(() => setCopiedRednote(false), 2000);
-                  }}
-                  className="px-3 py-2 rounded-xl bg-[#EDC271] hover:bg-[#F5D693] text-[#260C42] font-extrabold text-xs inline-flex items-center gap-1.5 shrink-0 cursor-pointer"
+                <div
+                  aria-hidden={mobileQr !== "rednote"}
+                  className={`grid transition-all duration-300 ease-in-out ${
+                    mobileQr === "rednote" ? "grid-rows-[1fr] opacity-100 mt-3" : "grid-rows-[0fr] opacity-0"
+                  }`}
                 >
-                  {copiedRednote ? <Check className="w-4 h-4" /> : <Copy className="w-4 h-4" />}
-                  <span>{copiedRednote ? t.contact.copied : t.contact.copyId}</span>
-                </button>
+                  <div className="overflow-hidden flex justify-center">
+                    <img
+                      src="/rednote qrcode.webp"
+                      alt={`RedNote QR Code — ${company.rednoteId}`}
+                      className="w-40 h-40 rounded-xl bg-white p-1.5 object-contain"
+                    />
+                  </div>
+                </div>
               </div>
 
               <div className="flex items-center justify-center gap-3 pt-0.5">

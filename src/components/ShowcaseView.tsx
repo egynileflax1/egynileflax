@@ -603,9 +603,6 @@ export default function ShowcaseView() {
                       <a href={`mailto:${company.primaryEmail}`} className="hover:text-[#3F166B]">
                         {company.primaryEmail}
                       </a>
-                      <a href={`mailto:${company.secondaryEmail}`} className="hover:text-[#3F166B]">
-                        {company.secondaryEmail}
-                      </a>
                     </div>
                   </div>
                 </div>
@@ -676,8 +673,12 @@ export default function ShowcaseView() {
                 <div className="overflow-hidden">
                   <div className="p-4 rounded-2xl bg-white border border-stone-300 shadow-xs flex items-center justify-between gap-4">
                     <div className="flex items-center gap-3">
-                      <div className="w-12 h-12 rounded-xl bg-stone-100 border border-stone-200 flex items-center justify-center shrink-0">
-                        <WeChatIcon className="w-7 h-7 text-[#07C160]" />
+                      <div className="w-20 h-20 rounded-xl bg-white border border-stone-200 p-1 flex items-center justify-center shrink-0">
+                        <img
+                          src="/wechat qrcode.webp"
+                          alt={`WeChat QR Code — ${company.wechatId}`}
+                          className="w-full h-full object-contain rounded-lg"
+                        />
                       </div>
                       <div className="text-xs">
                         <div className="font-bold text-stone-900">
@@ -764,7 +765,7 @@ export default function ShowcaseView() {
                       : "grid-rows-[1fr] opacity-100"
                   }`}
                 >
-                  <div className="overflow-hidden">
+                  <div className={formSubmitted ? "overflow-hidden" : "overflow-visible"}>
                     <h3 className="text-lg sm:text-xl font-extrabold text-stone-900 mb-5">{t.contact.formTitle}</h3>
 
                     {submitError && (

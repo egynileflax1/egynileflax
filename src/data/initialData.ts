@@ -34,7 +34,6 @@ export interface CompanyInfo {
   councilMembership: string;
   annualCapacityTons: string;
   primaryEmail: string;
-  secondaryEmail: string;
   egyptPhone1: string;
   egyptPhone2: string;
   whatsappNumber: string;
@@ -53,11 +52,10 @@ export const COMPANY: CompanyInfo = {
   councilMembership: "Member of Textile Export Council of Egypt (TEC)",
   annualCapacityTons: "14,500+ MT",
   primaryEmail: "flax@egynileflax.com",
-  secondaryEmail: "export@egynileflax.com",
-  egyptPhone1: "+20 128 008 0180",
-  egyptPhone2: "+20 111 277 5527",
-  whatsappNumber: "201000000000",
-  wechatId: "EgyNileFlax_Export",
+  egyptPhone1: "+20 10 17316801",
+  egyptPhone2: "+20 10 50505673",
+  whatsappNumber: "201017316801",
+  wechatId: "hazem_1111",
   facebookId: "egynileflax",
   instagramId: "egynileflax",
   linkedinId: "egy-nile-flax",

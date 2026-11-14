@@ -9,7 +9,6 @@ import {
   Mail,
   MapPin,
   ShieldCheck,
-  QrCode,
   MessageSquare,
   X,
   Copy,
@@ -297,8 +296,12 @@ export default function Footer() {
               <X className="w-5 h-5" />
             </button>
           </div>
-          <div className="w-44 h-44 sm:w-48 sm:h-48 mx-auto rounded-2xl bg-stone-100 border-2 border-stone-300 flex flex-col items-center justify-center p-4">
-            <QrCode className="w-24 h-24 sm:w-28 sm:h-28 text-[#3F166B]" />
+          <div className="mx-auto rounded-2xl bg-stone-50 border border-stone-200 p-3 inline-flex flex-col items-center">
+            <img
+              src="/wechat qrcode.webp"
+              alt={`WeChat QR Code — ${company.wechatId}`}
+              className="w-44 h-44 sm:w-48 sm:h-48 rounded-xl object-contain bg-white"
+            />
             <span className="text-[11px] font-mono font-bold text-stone-700 mt-2">ID: {company.wechatId}</span>
           </div>
           <button

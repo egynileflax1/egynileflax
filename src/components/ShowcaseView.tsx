@@ -478,7 +478,7 @@ export default function ShowcaseView() {
 
           {/* Product grid */}
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-5 sm:gap-6">
-            {products.map((product) => {
+            {products.slice(0, 8).map((product) => {
               const title = product.name[lang] || product.name.en;
               const sub = product.subtitle[lang] || product.subtitle.en;
               const desc = product.description[lang] || product.description.en;

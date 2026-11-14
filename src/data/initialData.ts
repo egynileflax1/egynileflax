@@ -41,6 +41,7 @@ export interface CompanyInfo {
   wechatId: string;
   facebookId: string;
   instagramId: string;
+  linkedinId: string;
   factoryAddress: string;
 }
 
@@ -59,6 +60,7 @@ export const COMPANY: CompanyInfo = {
   wechatId: "EgyNileFlax_Export",
   facebookId: "egynileflax",
   instagramId: "egynileflax",
+  linkedinId: "egy-nile-flax",
   factoryAddress: "Tanta, Gharbia, Egypt",
 };
 

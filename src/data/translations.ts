@@ -93,6 +93,7 @@ export interface UITranslations {
     wechat: string;
     facebook: string;
     instagram: string;
+    linkedin: string;
     formTitle: string;
     nameLabel: string;
     companyLabel: string;
@@ -106,6 +107,7 @@ export interface UITranslations {
     submitError: string;
     sentTitle: string;
     sentDesc: string;
+    sendAnother: string;
     sendViaWhatsapp: string;
     sendViaEmail: string;
     copyId: string;
@@ -257,6 +259,7 @@ export const TRANSLATIONS: Record<LanguageCode, UITranslations> = {
       wechat: "WeChat",
       facebook: "Facebook",
       instagram: "Instagram",
+      linkedin: "LinkedIn",
       formTitle: "Send a Message",
       nameLabel: "Your Name",
       companyLabel: "Company / Mill (Optional)",
@@ -270,6 +273,7 @@ export const TRANSLATIONS: Record<LanguageCode, UITranslations> = {
       submitError: "Could not send automatically. Please use WhatsApp or Email.",
       sentTitle: "Message sent!",
       sentDesc: "Thank you — our factory team has received your inquiry and will reply shortly.",
+      sendAnother: "Send Another Message",
       sendViaWhatsapp: "Send via WhatsApp",
       sendViaEmail: "Send via Email App",
       copyId: "Copy ID",
@@ -419,6 +423,7 @@ export const TRANSLATIONS: Record<LanguageCode, UITranslations> = {
       wechat: "وي تشات",
       facebook: "فيسبوك",
       instagram: "إنستغرام",
+      linkedin: "لينكدإن",
       formTitle: "أرسل رسالة",
       nameLabel: "الاسم",
       companyLabel: "اسم الشركة / المصنع (اختياري)",
@@ -432,6 +437,7 @@ export const TRANSLATIONS: Record<LanguageCode, UITranslations> = {
       submitError: "تعذر الإرسال التلقائي. يرجى التواصل عبر واتساب أو البريد الإلكتروني.",
       sentTitle: "تم إرسال رسالتك بنجاح!",
       sentDesc: "شكراً لتواصلك معنا — استلم فريق المصنع رسالتك وسيتواصل معك قريباً.",
+      sendAnother: "إرسال رسالة أخرى",
       sendViaWhatsapp: "إرسال عبر واتساب",
       sendViaEmail: "إرسال عبر البريد الإلكتروني",
       copyId: "نسخ المعرّف",
@@ -581,6 +587,7 @@ export const TRANSLATIONS: Record<LanguageCode, UITranslations> = {
       wechat: "微信",
       facebook: "Facebook",
       instagram: "Instagram",
+      linkedin: "LinkedIn",
       formTitle: "发送留言",
       nameLabel: "您的姓名",
       companyLabel: "公司 / 纱厂名称（选填）",
@@ -594,6 +601,7 @@ export const TRANSLATIONS: Record<LanguageCode, UITranslations> = {
       submitError: "无法自动发送，请通过 WhatsApp 或电子邮件联系我们。",
       sentTitle: "留言已发送！",
       sentDesc: "感谢您的联系——我们的工厂团队已收到您的询盘，将尽快回复。",
+      sendAnother: "再发送一条留言",
       sendViaWhatsapp: "通过 WhatsApp 发送",
       sendViaEmail: "通过邮箱客户端发送",
       copyId: "复制 ID",

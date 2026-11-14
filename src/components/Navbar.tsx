@@ -4,7 +4,7 @@ import React, { useRef, useState } from "react";
 import { useFlax } from "@/context/FlaxContext";
 import { LanguageCode } from "@/data/initialData";
 import EgyNileLogo from "@/components/EgyNileLogo";
-import { WhatsAppIcon, WeChatIcon, FacebookIcon, InstagramIcon } from "@/components/BrandIcons";
+import { WhatsAppIcon, WeChatIcon, FacebookIcon, InstagramIcon, LinkedInIcon } from "@/components/BrandIcons";
 import {
   ShieldCheck,
   Globe,
@@ -367,6 +367,16 @@ export default function Navbar() {
                   className="w-11 h-11 rounded-xl bg-gradient-to-tr from-[#F77737] via-[#FD1D1D] to-[#833AB4] hover:opacity-90 active:scale-[0.96] text-white flex items-center justify-center shadow-sm transition-all"
                 >
                   <InstagramIcon className="w-5 h-5" />
+                </a>
+                <a
+                  href={`https://www.linkedin.com/company/${company.linkedinId}`}
+                  target="_blank"
+                  rel="noreferrer"
+                  aria-label={t.contact.linkedin}
+                  title={t.contact.linkedin}
+                  className="w-11 h-11 rounded-xl bg-[#0A66C2] hover:bg-[#004182] active:scale-[0.96] text-white flex items-center justify-center shadow-sm transition-all"
+                >
+                  <LinkedInIcon className="w-5 h-5" />
                 </a>
               </div>
 

@@ -8,7 +8,7 @@ import { ProductItem } from "@/data/initialData";
 import FlaxScrollPlant from "@/components/FlaxScrollPlant";
 import { LOADER_DONE_EVENT } from "@/components/PageLoader";
 import { contactSchema, ContactFieldErrorKey } from "@/lib/contactSchema";
-import { WhatsAppIcon, WeChatIcon, FacebookIcon, InstagramIcon } from "@/components/BrandIcons";
+import { WhatsAppIcon, WeChatIcon, FacebookIcon, InstagramIcon, LinkedInIcon } from "@/components/BrandIcons";
 import {
   ShieldCheck,
   ArrowRight,
@@ -136,10 +136,42 @@ export default function ShowcaseView() {
   }, []);
 
   const [activeProductModal, setActiveProductModal] = useState<ProductItem | null>(null);
+  const [modalVisible, setModalVisible] = useState(false);
+  const modalCloseTimerRef = useRef<number | undefined>(undefined);
+
+  const openProductModal = (product: ProductItem) => {
+    window.clearTimeout(modalCloseTimerRef.current);
+    setActiveProductModal(product);
+    requestAnimationFrame(() => {
+      requestAnimationFrame(() => setModalVisible(true));
+    });
+  };
+
+  const closeProductModal = () => {
+    setModalVisible(false);
+    window.clearTimeout(modalCloseTimerRef.current);
+    modalCloseTimerRef.current = window.setTimeout(() => {
+      setActiveProductModal(null);
+    }, 300);
+  };
+
+  useEffect(() => {
+    if (!activeProductModal) return;
+    const onKeyDown = (e: KeyboardEvent) => {
+      if (e.key === "Escape") closeProductModal();
+    };
+    window.addEventListener("keydown", onKeyDown);
+    return () => window.removeEventListener("keydown", onKeyDown);
+  }, [activeProductModal]);
+
+  useEffect(() => {
+    return () => window.clearTimeout(modalCloseTimerRef.current);
+  }, []);
   const [contactWechatOpen, setContactWechatOpen] = useState(false);
   const [copiedWechat, setCopiedWechat] = useState(false);
   const [productDropdownOpen, setProductDropdownOpen] = useState(false);
   const productDropdownRef = useRef<HTMLDivElement>(null);
+  const contactCardRef = useRef<HTMLDivElement>(null);
   const [contactForm, setContactForm] = useState({
     name: "",
     company: "",
@@ -183,7 +215,7 @@ export default function ShowcaseView() {
   const handleInquireProduct = (product: ProductItem) => {
     setContactForm((prev) => ({ ...prev, product: product.name[lang] || product.name.en }));
     setFormSubmitted(false);
-    setActiveProductModal(null);
+    closeProductModal();
     document.getElementById("contact")?.scrollIntoView({ behavior: "smooth" });
   };
 
@@ -225,6 +257,9 @@ export default function ShowcaseView() {
       }
 
       setFormSubmitted(true);
+      requestAnimationFrame(() => {
+        contactCardRef.current?.scrollIntoView({ behavior: "smooth", block: "center" });
+      });
       setContactForm({
         name: "",
         company: "",
@@ -470,7 +505,7 @@ export default function ShowcaseView() {
 
                   <div className="px-4 sm:px-5 pb-4 sm:pb-5 pt-2 flex items-center gap-2">
                     <button
-                      onClick={() => setActiveProductModal(product)}
+                      onClick={() => openProductModal(product)}
                       className="flex-1 py-2.5 px-3 rounded-xl border border-stone-300 hover:border-[#3F166B] text-stone-800 hover:text-[#3F166B] font-bold text-xs transition-all cursor-pointer whitespace-nowrap"
                     >
                       {t.products.viewSpecs}
@@ -619,6 +654,16 @@ export default function ShowcaseView() {
                 >
                   <InstagramIcon className="w-5 h-5" />
                 </a>
+                <a
+                  href={`https://www.linkedin.com/company/${company.linkedinId}`}
+                  target="_blank"
+                  rel="noreferrer"
+                  aria-label={t.contact.linkedin}
+                  title={t.contact.linkedin}
+                  className="w-11 h-11 rounded-xl bg-[#0A66C2] hover:bg-[#004182] text-white inline-flex items-center justify-center shadow-xs transition-all"
+                >
+                  <LinkedInIcon className="w-5 h-5" />
+                </a>
               </div>
 
               {/* WeChat details */}
@@ -671,35 +716,64 @@ export default function ShowcaseView() {
 
             {/* Right: Minimal Contact Form */}
             <div className="anim-reveal lg:col-span-7">
-              <div className="bg-white rounded-2xl sm:rounded-3xl p-5 sm:p-8 border border-stone-200 shadow-xs">
-                <h3 className="text-lg sm:text-xl font-extrabold text-stone-900 mb-5">{t.contact.formTitle}</h3>
-
-                {submitError && (
-                  <div className="mb-4 p-3.5 rounded-xl bg-red-50 border border-red-200 text-xs text-red-700 font-medium">
-                    {submitError}
-                  </div>
-                )}
-
-                {formSubmitted && (
-                  <div className="mb-6 p-4 rounded-2xl bg-emerald-50/70 border border-emerald-200 flex items-start justify-between gap-3">
-                    <div className="flex items-start gap-2.5">
-                      <Check className="w-4 h-4 text-emerald-700 shrink-0 mt-0.5" />
-                      <div>
-                        <strong className="block text-sm text-emerald-900">{t.contact.sentTitle}</strong>
-                        <p className="text-xs text-emerald-800/80 mt-0.5">{t.contact.sentDesc}</p>
+              <div
+                ref={contactCardRef}
+                className="bg-white rounded-2xl sm:rounded-3xl p-5 sm:p-8 border border-stone-200 shadow-xs transition-all duration-300 ease-in-out"
+              >
+                {/* Confirmation state */}
+                <div
+                  aria-hidden={!formSubmitted}
+                  className={`grid transition-all duration-300 ease-in-out ${
+                    formSubmitted
+                      ? "grid-rows-[1fr] opacity-100 scale-100"
+                      : "grid-rows-[0fr] opacity-0 scale-95 pointer-events-none"
+                  }`}
+                >
+                  <div className="overflow-hidden">
+                    <div className="py-8 sm:py-12 px-4 text-center space-y-4">
+                      <div className="w-14 h-14 mx-auto rounded-2xl bg-emerald-100 text-emerald-700 flex items-center justify-center">
+                        <Check className="w-7 h-7 stroke-[2.5]" />
+                      </div>
+                      <div className="space-y-1.5">
+                        <h3 className="text-xl sm:text-2xl font-extrabold text-stone-900">
+                          {t.contact.sentTitle}
+                        </h3>
+                        <p className="text-xs sm:text-sm text-stone-600 max-w-md mx-auto leading-relaxed">
+                          {t.contact.sentDesc}
+                        </p>
+                      </div>
+                      <div className="pt-2">
+                        <button
+                          type="button"
+                          onClick={() => setFormSubmitted(false)}
+                          className="inline-flex items-center justify-center px-5 py-2.5 rounded-xl border border-stone-300 hover:border-[#3F166B] text-stone-800 hover:text-[#3F166B] font-bold text-xs transition-colors cursor-pointer"
+                        >
+                          {t.contact.sendAnother}
+                        </button>
                       </div>
                     </div>
-                    <button
-                      type="button"
-                      onClick={() => setFormSubmitted(false)}
-                      className="text-emerald-700/60 hover:text-emerald-900 p-1 cursor-pointer"
-                    >
-                      <X className="w-4 h-4" />
-                    </button>
                   </div>
-                )}
+                </div>
 
-                <form onSubmit={handleContactSubmit} noValidate className="space-y-4">
+                {/* Form state */}
+                <div
+                  aria-hidden={formSubmitted}
+                  className={`grid transition-all duration-300 ease-in-out ${
+                    formSubmitted
+                      ? "grid-rows-[0fr] opacity-0 pointer-events-none"
+                      : "grid-rows-[1fr] opacity-100"
+                  }`}
+                >
+                  <div className="overflow-hidden">
+                    <h3 className="text-lg sm:text-xl font-extrabold text-stone-900 mb-5">{t.contact.formTitle}</h3>
+
+                    {submitError && (
+                      <div className="mb-4 p-3.5 rounded-xl bg-red-50 border border-red-200 text-xs text-red-700 font-medium">
+                        {submitError}
+                      </div>
+                    )}
+
+                    <form onSubmit={handleContactSubmit} noValidate className="space-y-4">
                   <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                     <div>
                       <label className="block text-xs font-bold text-stone-700 mb-1">
@@ -885,6 +959,8 @@ export default function ShowcaseView() {
                     {isSubmitting ? t.contact.sending : t.contact.submitBtn}
                   </button>
                 </form>
+                  </div>
+                </div>
               </div>
             </div>
           </div>
@@ -896,11 +972,20 @@ export default function ShowcaseView() {
       ========================================================= */}
       {activeProductModal && (
         <div
-          className="fixed inset-0 z-50 bg-black/75 backdrop-blur-xs flex items-end sm:items-center justify-center p-0 sm:p-4 animate-backdrop"
-          onClick={() => setActiveProductModal(null)}
+          aria-hidden={!modalVisible}
+          className={`fixed inset-0 z-50 flex items-end sm:items-center justify-center p-0 sm:p-4 transition-all duration-300 ease-out ${
+            modalVisible
+              ? "bg-black/75 backdrop-blur-xs opacity-100 pointer-events-auto"
+              : "bg-black/0 opacity-0 pointer-events-none"
+          }`}
+          onClick={closeProductModal}
         >
           <div
-            className="bg-white rounded-t-3xl sm:rounded-3xl max-w-2xl w-full max-h-[92dvh] flex flex-col overflow-hidden shadow-2xl border border-stone-200 animate-modal"
+            className={`bg-white rounded-t-3xl sm:rounded-3xl max-w-2xl w-full max-h-[92dvh] flex flex-col overflow-hidden shadow-2xl border border-stone-200 transition-all duration-300 ease-out ${
+              modalVisible
+                ? "opacity-100 translate-y-0 sm:scale-100"
+                : "opacity-0 translate-y-12 sm:translate-y-4 sm:scale-95"
+            }`}
             onClick={(e) => e.stopPropagation()}
           >
             <div className="relative h-44 sm:h-56 bg-stone-900 shrink-0">
@@ -911,7 +996,8 @@ export default function ShowcaseView() {
               />
               <div className="absolute inset-0 bg-gradient-to-t from-black/85 via-black/30 to-transparent" />
               <button
-                onClick={() => setActiveProductModal(null)}
+                onClick={closeProductModal}
+                aria-label={t.products.close}
                 className="absolute top-3.5 end-3.5 w-9 h-9 rounded-full bg-black/65 text-white flex items-center justify-center hover:bg-black cursor-pointer"
               >
                 <X className="w-5 h-5" />
@@ -982,7 +1068,7 @@ export default function ShowcaseView() {
 
               <div className="pt-4 border-t border-stone-200 flex flex-col-reverse sm:flex-row items-stretch sm:items-center justify-end gap-2.5 sm:gap-3">
                 <button
-                  onClick={() => setActiveProductModal(null)}
+                  onClick={closeProductModal}
                   className="px-4 py-3 sm:py-2.5 rounded-xl border border-stone-300 text-xs font-bold text-stone-700 hover:bg-stone-100 cursor-pointer"
                 >
                   {t.products.close}

@@ -3,7 +3,7 @@
 import React, { useState } from "react";
 import { useFlax } from "@/context/FlaxContext";
 import EgyNileLogo from "@/components/EgyNileLogo";
-import { WhatsAppIcon, WeChatIcon, FacebookIcon, InstagramIcon } from "@/components/BrandIcons";
+import { WhatsAppIcon, WeChatIcon, FacebookIcon, InstagramIcon, LinkedInIcon } from "@/components/BrandIcons";
 import {
   Phone,
   Mail,
@@ -147,6 +147,16 @@ export default function Footer() {
                 >
                   <InstagramIcon className="w-5 h-5" />
                 </a>
+                <a
+                  href={`https://www.linkedin.com/company/${company.linkedinId}`}
+                  target="_blank"
+                  rel="noreferrer"
+                  aria-label={t.contact.linkedin}
+                  title={t.contact.linkedin}
+                  className="w-10 h-10 rounded-xl bg-[#0A66C2] hover:bg-[#004182] text-white inline-flex items-center justify-center transition-colors shadow-xs"
+                >
+                  <LinkedInIcon className="w-5 h-5" />
+                </a>
               </div>
             </div>
           </div>
@@ -227,6 +237,16 @@ export default function Footer() {
                   className="w-9 h-9 rounded-full bg-gradient-to-tr from-[#F77737] via-[#FD1D1D] to-[#833AB4] hover:opacity-90 text-white inline-flex items-center justify-center transition-opacity"
                 >
                   <InstagramIcon className="w-4 h-4" />
+                </a>
+                <a
+                  href={`https://www.linkedin.com/company/${company.linkedinId}`}
+                  target="_blank"
+                  rel="noreferrer"
+                  aria-label={t.contact.linkedin}
+                  title={t.contact.linkedin}
+                  className="w-9 h-9 rounded-full bg-[#0A66C2] hover:bg-[#004182] text-white inline-flex items-center justify-center transition-colors"
+                >
+                  <LinkedInIcon className="w-4 h-4" />
                 </a>
                 <a
                   href={`mailto:${company.primaryEmail}`}

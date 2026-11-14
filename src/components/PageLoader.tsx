@@ -3,6 +3,14 @@
 import React, { useEffect, useState } from "react";
 import EgyNileLogo from "@/components/EgyNileLogo";
 
+declare global {
+  interface Window {
+    __egyNileLoaderDone?: boolean;
+  }
+}
+
+export const LOADER_DONE_EVENT = "egynile:loader-done";
+
 interface PageLoaderProps {
   persistent?: boolean;
 }
@@ -14,9 +22,16 @@ export default function PageLoader({ persistent = false }: PageLoaderProps) {
   useEffect(() => {
     if (persistent) return;
 
+    const notifyDone = () => {
+      if (window.__egyNileLoaderDone) return;
+      window.__egyNileLoaderDone = true;
+      window.dispatchEvent(new CustomEvent(LOADER_DONE_EVENT));
+    };
+
     const prefersReducedMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
     if (prefersReducedMotion) {
       setHidden(true);
+      notifyDone();
       return;
     }
 
@@ -28,6 +43,7 @@ export default function PageLoader({ persistent = false }: PageLoaderProps) {
 
     const startFadeOut = () => {
       setFading(true);
+      notifyDone();
       removeTimer = window.setTimeout(() => {
         setHidden(true);
       }, 420);

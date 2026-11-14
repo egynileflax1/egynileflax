@@ -40,6 +40,7 @@ export interface CompanyInfo {
   whatsappNumber: string;
   wechatId: string;
   facebookId: string;
+  instagramId: string;
   factoryAddress: string;
 }
 
@@ -56,7 +57,8 @@ export const COMPANY: CompanyInfo = {
   egyptPhone2: "+20 111 277 5527",
   whatsappNumber: "201000000000",
   wechatId: "EgyNileFlax_Export",
-  facebookId: "EgyNileFlax",
+  facebookId: "egynileflax",
+  instagramId: "egynileflax",
   factoryAddress: "Tanta, Gharbia, Egypt",
 };
 

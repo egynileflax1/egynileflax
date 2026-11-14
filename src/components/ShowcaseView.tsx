@@ -6,8 +6,9 @@ import { ScrollTrigger } from "gsap/ScrollTrigger";
 import { useFlax } from "@/context/FlaxContext";
 import { ProductItem } from "@/data/initialData";
 import FlaxScrollPlant from "@/components/FlaxScrollPlant";
+import { LOADER_DONE_EVENT } from "@/components/PageLoader";
 import { contactSchema, ContactFieldErrorKey } from "@/lib/contactSchema";
-import { WhatsAppIcon, WeChatIcon, FacebookIcon } from "@/components/BrandIcons";
+import { WhatsAppIcon, WeChatIcon, FacebookIcon, InstagramIcon } from "@/components/BrandIcons";
 import {
   ShieldCheck,
   ArrowRight,
@@ -40,25 +41,32 @@ export default function ShowcaseView() {
 
     gsap.registerPlugin(ScrollTrigger);
 
-    const ctx = gsap.context(() => {
-      // Subtle above-the-fold Hero entrance
-      gsap.from(".hero-anim", {
-        y: 18,
-        opacity: 0,
-        duration: 0.65,
-        stagger: 0.08,
-        ease: "power2.out",
-        clearProps: "transform,opacity",
-      });
+    let heroTl: gsap.core.Timeline | undefined;
+    let fallbackTimer: number | undefined;
 
-      gsap.from(".hero-media", {
-        scale: 0.97,
-        opacity: 0,
-        duration: 0.75,
-        delay: 0.12,
-        ease: "power2.out",
-        clearProps: "transform,opacity",
-      });
+    const ctx = gsap.context(() => {
+      // Subtle above-the-fold Hero entrance (held until PageLoader finishes)
+      heroTl = gsap.timeline({ paused: true });
+      heroTl
+        .from(".hero-anim", {
+          y: 18,
+          opacity: 0,
+          duration: 0.65,
+          stagger: 0.08,
+          ease: "power2.out",
+          clearProps: "transform,opacity",
+        })
+        .from(
+          ".hero-media",
+          {
+            scale: 0.97,
+            opacity: 0,
+            duration: 0.75,
+            ease: "power2.out",
+            clearProps: "transform,opacity",
+          },
+          0.12
+        );
 
       // Gentle parallax on the flax hero photo while scrolling
       gsap.to(".hero-img", {
@@ -107,7 +115,24 @@ export default function ShowcaseView() {
       });
     }, rootRef);
 
-    return () => ctx.revert();
+    const playHero = () => {
+      heroTl?.play();
+      window.clearTimeout(fallbackTimer);
+      window.removeEventListener(LOADER_DONE_EVENT, playHero);
+    };
+
+    if (window.__egyNileLoaderDone) {
+      playHero();
+    } else {
+      window.addEventListener(LOADER_DONE_EVENT, playHero, { once: true });
+      fallbackTimer = window.setTimeout(playHero, 1400);
+    }
+
+    return () => {
+      window.clearTimeout(fallbackTimer);
+      window.removeEventListener(LOADER_DONE_EVENT, playHero);
+      ctx.revert();
+    };
   }, []);
 
   const [activeProductModal, setActiveProductModal] = useState<ProductItem | null>(null);
@@ -576,10 +601,19 @@ export default function ShowcaseView() {
                   href={`https://www.facebook.com/${company.facebookId}`}
                   target="_blank"
                   rel="noreferrer"
-                  className="sm:col-span-2 inline-flex items-center justify-center gap-2 px-4 py-3 rounded-xl bg-[#1877F2] hover:bg-[#166FE5] text-white font-bold text-xs shadow-xs transition-all"
+                  className="inline-flex items-center justify-center gap-2 px-4 py-3 rounded-xl bg-[#1877F2] hover:bg-[#166FE5] text-white font-bold text-xs shadow-xs transition-all"
                 >
                   <FacebookIcon className="w-4 h-4 shrink-0" />
                   <span className="truncate">{t.contact.facebook} (/{company.facebookId})</span>
+                </a>
+                <a
+                  href={`https://www.instagram.com/${company.instagramId}`}
+                  target="_blank"
+                  rel="noreferrer"
+                  className="inline-flex items-center justify-center gap-2 px-4 py-3 rounded-xl bg-gradient-to-r from-[#833AB4] via-[#FD1D1D] to-[#F77737] hover:opacity-90 text-white font-bold text-xs shadow-xs transition-all"
+                >
+                  <InstagramIcon className="w-4 h-4 shrink-0" />
+                  <span className="truncate">{t.contact.instagram} (@{company.instagramId})</span>
                 </a>
               </div>
 

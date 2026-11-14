@@ -3,7 +3,7 @@
 import React, { useState } from "react";
 import { useFlax } from "@/context/FlaxContext";
 import EgyNileLogo from "@/components/EgyNileLogo";
-import { WhatsAppIcon, WeChatIcon, FacebookIcon } from "@/components/BrandIcons";
+import { WhatsAppIcon, WeChatIcon, FacebookIcon, InstagramIcon } from "@/components/BrandIcons";
 import {
   Phone,
   Mail,
@@ -134,6 +134,15 @@ export default function Footer() {
                   <FacebookIcon className="w-4 h-4 shrink-0" />
                   <span>{t.contact.facebook}</span>
                 </a>
+                <a
+                  href={`https://www.instagram.com/${company.instagramId}`}
+                  target="_blank"
+                  rel="noreferrer"
+                  className="inline-flex items-center gap-1.5 px-3 py-2 rounded-xl bg-gradient-to-r from-[#833AB4] via-[#FD1D1D] to-[#F77737] hover:opacity-90 text-white font-bold text-xs"
+                >
+                  <InstagramIcon className="w-4 h-4 shrink-0" />
+                  <span>{t.contact.instagram}</span>
+                </a>
               </div>
             </div>
           </div>
@@ -201,6 +210,15 @@ export default function Footer() {
                 >
                   <FacebookIcon className="w-3.5 h-3.5 shrink-0" />
                   <span>{t.contact.facebook}</span>
+                </a>
+                <a
+                  href={`https://www.instagram.com/${company.instagramId}`}
+                  target="_blank"
+                  rel="noreferrer"
+                  className="inline-flex items-center gap-1.5 px-3.5 py-2 rounded-full bg-gradient-to-r from-[#833AB4] via-[#FD1D1D] to-[#F77737] hover:opacity-90 text-white font-bold text-xs transition-opacity"
+                >
+                  <InstagramIcon className="w-3.5 h-3.5 shrink-0" />
+                  <span>{t.contact.instagram}</span>
                 </a>
                 <a
                   href={`mailto:${company.primaryEmail}`}

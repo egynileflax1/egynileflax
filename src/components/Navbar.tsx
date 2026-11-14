@@ -4,7 +4,7 @@ import React, { useRef, useState } from "react";
 import { useFlax } from "@/context/FlaxContext";
 import { LanguageCode } from "@/data/initialData";
 import EgyNileLogo from "@/components/EgyNileLogo";
-import { WhatsAppIcon, WeChatIcon, FacebookIcon } from "@/components/BrandIcons";
+import { WhatsAppIcon, WeChatIcon, FacebookIcon, InstagramIcon } from "@/components/BrandIcons";
 import {
   ShieldCheck,
   Globe,
@@ -347,20 +347,26 @@ export default function Navbar() {
                 </button>
               </div>
 
-              <a
-                href={`https://www.facebook.com/${company.facebookId}`}
-                target="_blank"
-                rel="noreferrer"
-                className="w-full py-3 px-4 rounded-2xl bg-[#1877F2] hover:bg-[#166FE5] active:scale-[0.99] text-white font-extrabold flex items-center justify-between shadow-sm transition-all"
-              >
-                <span className="inline-flex items-center gap-2">
+              <div className="grid grid-cols-2 gap-2.5">
+                <a
+                  href={`https://www.facebook.com/${company.facebookId}`}
+                  target="_blank"
+                  rel="noreferrer"
+                  className="py-3 px-3 rounded-xl bg-[#1877F2] hover:bg-[#166FE5] active:scale-[0.98] text-white font-bold flex items-center justify-center gap-1.5 shadow-sm transition-all"
+                >
                   <FacebookIcon className="w-4 h-4 shrink-0" />
                   <span>{t.contact.facebook}</span>
-                </span>
-                <span className="font-mono text-[11px] opacity-90" dir="ltr">
-                  /{company.facebookId}
-                </span>
-              </a>
+                </a>
+                <a
+                  href={`https://www.instagram.com/${company.instagramId}`}
+                  target="_blank"
+                  rel="noreferrer"
+                  className="py-3 px-3 rounded-xl bg-gradient-to-r from-[#833AB4] via-[#FD1D1D] to-[#F77737] hover:opacity-90 active:scale-[0.98] text-white font-bold flex items-center justify-center gap-1.5 shadow-sm transition-all"
+                >
+                  <InstagramIcon className="w-4 h-4 shrink-0" />
+                  <span>{t.contact.instagram}</span>
+                </a>
+              </div>
 
               <div className="grid grid-cols-2 gap-2.5">
                 <a

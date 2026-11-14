@@ -92,6 +92,7 @@ export interface UITranslations {
     email: string;
     wechat: string;
     facebook: string;
+    instagram: string;
     formTitle: string;
     nameLabel: string;
     companyLabel: string;
@@ -255,6 +256,7 @@ export const TRANSLATIONS: Record<LanguageCode, UITranslations> = {
       email: "Send an Email",
       wechat: "WeChat",
       facebook: "Facebook",
+      instagram: "Instagram",
       formTitle: "Send a Message",
       nameLabel: "Your Name",
       companyLabel: "Company / Mill (Optional)",
@@ -416,6 +418,7 @@ export const TRANSLATIONS: Record<LanguageCode, UITranslations> = {
       email: "أرسل بريداً إلكترونياً",
       wechat: "وي تشات",
       facebook: "فيسبوك",
+      instagram: "إنستغرام",
       formTitle: "أرسل رسالة",
       nameLabel: "الاسم",
       companyLabel: "اسم الشركة / المصنع (اختياري)",
@@ -577,6 +580,7 @@ export const TRANSLATIONS: Record<LanguageCode, UITranslations> = {
       email: "发送邮件",
       wechat: "微信",
       facebook: "Facebook",
+      instagram: "Instagram",
       formTitle: "发送留言",
       nameLabel: "您的姓名",
       companyLabel: "公司 / 纱厂名称（选填）",

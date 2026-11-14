@@ -91,6 +91,7 @@ export interface UITranslations {
     whatsapp: string;
     email: string;
     wechat: string;
+    facebook: string;
     formTitle: string;
     nameLabel: string;
     companyLabel: string;
@@ -253,6 +254,7 @@ export const TRANSLATIONS: Record<LanguageCode, UITranslations> = {
       whatsapp: "Chat on WhatsApp",
       email: "Send an Email",
       wechat: "WeChat",
+      facebook: "Facebook",
       formTitle: "Send a Message",
       nameLabel: "Your Name",
       companyLabel: "Company / Mill (Optional)",
@@ -413,6 +415,7 @@ export const TRANSLATIONS: Record<LanguageCode, UITranslations> = {
       whatsapp: "تحدث معنا عبر واتساب",
       email: "أرسل بريداً إلكترونياً",
       wechat: "وي تشات",
+      facebook: "فيسبوك",
       formTitle: "أرسل رسالة",
       nameLabel: "الاسم",
       companyLabel: "اسم الشركة / المصنع (اختياري)",
@@ -573,6 +576,7 @@ export const TRANSLATIONS: Record<LanguageCode, UITranslations> = {
       whatsapp: "通过 WhatsApp 沟通",
       email: "发送邮件",
       wechat: "微信",
+      facebook: "Facebook",
       formTitle: "发送留言",
       nameLabel: "您的姓名",
       companyLabel: "公司 / 纱厂名称（选填）",

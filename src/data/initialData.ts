@@ -39,6 +39,7 @@ export interface CompanyInfo {
   egyptPhone2: string;
   whatsappNumber: string;
   wechatId: string;
+  facebookId: string;
   factoryAddress: string;
 }
 
@@ -53,8 +54,9 @@ export const COMPANY: CompanyInfo = {
   secondaryEmail: "export@egynileflax.com",
   egyptPhone1: "+20 128 008 0180",
   egyptPhone2: "+20 111 277 5527",
-  whatsappNumber: "201280080180",
+  whatsappNumber: "201000000000",
   wechatId: "EgyNileFlax_Export",
+  facebookId: "EgyNileFlax",
   factoryAddress: "Tanta, Gharbia, Egypt",
 };
 

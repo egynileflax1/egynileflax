@@ -3,6 +3,7 @@
 import React, { useState } from "react";
 import { useFlax } from "@/context/FlaxContext";
 import EgyNileLogo from "@/components/EgyNileLogo";
+import { WhatsAppIcon, WeChatIcon, FacebookIcon } from "@/components/BrandIcons";
 import {
   Phone,
   Mail,
@@ -45,7 +46,7 @@ export default function Footer() {
                   </span>
                 </div>
               </div>
-              <p className="text-xs text-stone-600 leading-relaxed">{t.footer.tagline}</p>
+              <p className="hidden sm:block text-xs text-stone-600 leading-relaxed">{t.footer.tagline}</p>
               <div className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-white border border-stone-200 text-[11px] sm:text-xs text-[#3F166B] font-semibold">
                 <ShieldCheck className="w-4 h-4 shrink-0" />
                 <span>
@@ -55,7 +56,7 @@ export default function Footer() {
             </div>
 
             {/* Navigation */}
-            <div className="lg:col-span-2 space-y-3 text-xs">
+            <div className="hidden sm:block lg:col-span-2 space-y-3 text-xs">
               <h4 className="font-bold text-stone-900 uppercase tracking-wider">{t.footer.navigation}</h4>
               <ul className="space-y-2 text-stone-600">
                 {(
@@ -76,7 +77,7 @@ export default function Footer() {
             </div>
 
             {/* Product lines */}
-            <div className="lg:col-span-3 space-y-3 text-xs">
+            <div className="hidden sm:block lg:col-span-3 space-y-3 text-xs">
               <h4 className="font-bold text-stone-900 uppercase tracking-wider">{t.footer.productLines}</h4>
               <ul className="space-y-2 text-stone-600">
                 <li>{t.products.catScutched}</li>
@@ -112,7 +113,7 @@ export default function Footer() {
                   onClick={() => setWechatModalOpen(true)}
                   className="inline-flex items-center gap-1.5 px-3 py-2 rounded-xl bg-white hover:bg-stone-50 text-[#3F166B] border border-stone-300 font-bold text-xs cursor-pointer"
                 >
-                  <QrCode className="w-4 h-4 shrink-0" />
+                  <WeChatIcon className="w-4 h-4 shrink-0" />
                   <span>{t.contact.wechat}</span>
                 </button>
                 <a
@@ -121,8 +122,17 @@ export default function Footer() {
                   rel="noreferrer"
                   className="inline-flex items-center gap-1.5 px-3 py-2 rounded-xl bg-emerald-700 hover:bg-emerald-800 text-white font-bold text-xs"
                 >
-                  <MessageSquare className="w-4 h-4 shrink-0" />
+                  <WhatsAppIcon className="w-4 h-4 shrink-0" />
                   <span>WhatsApp</span>
+                </a>
+                <a
+                  href={`https://www.facebook.com/${company.facebookId}`}
+                  target="_blank"
+                  rel="noreferrer"
+                  className="inline-flex items-center gap-1.5 px-3 py-2 rounded-xl bg-[#1877F2] hover:bg-[#166FE5] text-white font-bold text-xs"
+                >
+                  <FacebookIcon className="w-4 h-4 shrink-0" />
+                  <span>{t.contact.facebook}</span>
                 </a>
               </div>
             </div>
@@ -173,16 +183,25 @@ export default function Footer() {
                   rel="noreferrer"
                   className="inline-flex items-center gap-1.5 px-3.5 py-2 rounded-full bg-emerald-600 hover:bg-emerald-700 text-white font-bold text-xs transition-colors"
                 >
-                  <MessageSquare className="w-3.5 h-3.5 shrink-0" />
+                  <WhatsAppIcon className="w-3.5 h-3.5 shrink-0" />
                   <span>{t.contact.whatsapp}</span>
                 </a>
                 <button
                   onClick={() => setWechatModalOpen(true)}
                   className="inline-flex items-center gap-1.5 px-3.5 py-2 rounded-full bg-[#3F166B] hover:bg-[#2F1052] text-[#EDC271] font-bold text-xs transition-colors cursor-pointer"
                 >
-                  <QrCode className="w-3.5 h-3.5 shrink-0" />
+                  <WeChatIcon className="w-3.5 h-3.5 shrink-0" />
                   <span>{t.contact.wechat}</span>
                 </button>
+                <a
+                  href={`https://www.facebook.com/${company.facebookId}`}
+                  target="_blank"
+                  rel="noreferrer"
+                  className="inline-flex items-center gap-1.5 px-3.5 py-2 rounded-full bg-[#1877F2] hover:bg-[#166FE5] text-white font-bold text-xs transition-colors"
+                >
+                  <FacebookIcon className="w-3.5 h-3.5 shrink-0" />
+                  <span>{t.contact.facebook}</span>
+                </a>
                 <a
                   href={`mailto:${company.primaryEmail}`}
                   className="inline-flex items-center gap-1.5 px-3 py-2 rounded-full bg-stone-100 hover:bg-stone-200 text-stone-800 font-semibold text-xs transition-colors"
@@ -220,7 +239,10 @@ export default function Footer() {
           }`}
         >
           <div className="flex items-center justify-between">
-            <span className="text-xs font-bold uppercase tracking-wider text-[#3F166B]">{t.contact.wechat}</span>
+            <span className="inline-flex items-center gap-1.5 text-xs font-bold uppercase tracking-wider text-[#3F166B]">
+              <WeChatIcon className="w-4 h-4 shrink-0" />
+              <span>{t.contact.wechat}</span>
+            </span>
             <button
               onClick={() => setWechatModalOpen(false)}
               className="p-1 rounded-lg hover:bg-stone-100 text-stone-500 cursor-pointer"

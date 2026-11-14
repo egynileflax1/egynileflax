@@ -4,6 +4,7 @@ import React, { useRef, useState } from "react";
 import { useFlax } from "@/context/FlaxContext";
 import { LanguageCode } from "@/data/initialData";
 import EgyNileLogo from "@/components/EgyNileLogo";
+import { WhatsAppIcon, WeChatIcon, FacebookIcon } from "@/components/BrandIcons";
 import {
   ShieldCheck,
   Globe,
@@ -13,7 +14,6 @@ import {
   X,
   ArrowUpRight,
   MessageSquare,
-  QrCode,
   Copy,
   Check,
 } from "lucide-react";
@@ -311,7 +311,7 @@ export default function Navbar() {
                 className="w-full py-3.5 px-4 rounded-2xl bg-emerald-600 hover:bg-emerald-500 active:scale-[0.99] text-white font-extrabold flex items-center justify-between shadow-sm transition-all"
               >
                 <span className="inline-flex items-center gap-2">
-                  <MessageSquare className="w-4 h-4" />
+                  <WhatsAppIcon className="w-4 h-4 shrink-0" />
                   <span>{t.contact.whatsapp}</span>
                 </span>
                 <span className="font-mono text-[11px] opacity-90" dir="ltr">
@@ -322,7 +322,7 @@ export default function Navbar() {
               <div className="p-3.5 rounded-2xl bg-[#3F166B] text-white flex items-center justify-between gap-3">
                 <div className="flex items-center gap-3 min-w-0">
                   <div className="w-11 h-11 rounded-xl bg-white p-1.5 flex items-center justify-center shrink-0">
-                    <QrCode className="w-8 h-8 text-[#3F166B]" />
+                    <WeChatIcon className="w-7 h-7 text-[#07C160]" />
                   </div>
                   <div className="min-w-0">
                     <span className="text-[10px] text-[#EDC271] font-bold uppercase tracking-wider block">
@@ -346,6 +346,21 @@ export default function Navbar() {
                   <span>{copiedWechat ? t.contact.copied : t.contact.copyId}</span>
                 </button>
               </div>
+
+              <a
+                href={`https://www.facebook.com/${company.facebookId}`}
+                target="_blank"
+                rel="noreferrer"
+                className="w-full py-3 px-4 rounded-2xl bg-[#1877F2] hover:bg-[#166FE5] active:scale-[0.99] text-white font-extrabold flex items-center justify-between shadow-sm transition-all"
+              >
+                <span className="inline-flex items-center gap-2">
+                  <FacebookIcon className="w-4 h-4 shrink-0" />
+                  <span>{t.contact.facebook}</span>
+                </span>
+                <span className="font-mono text-[11px] opacity-90" dir="ltr">
+                  /{company.facebookId}
+                </span>
+              </a>
 
               <div className="grid grid-cols-2 gap-2.5">
                 <a

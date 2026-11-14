@@ -7,6 +7,7 @@ import { useFlax } from "@/context/FlaxContext";
 import { ProductItem } from "@/data/initialData";
 import FlaxScrollPlant from "@/components/FlaxScrollPlant";
 import { contactSchema, ContactFieldErrorKey } from "@/lib/contactSchema";
+import { WhatsAppIcon, WeChatIcon, FacebookIcon } from "@/components/BrandIcons";
 import {
   ShieldCheck,
   ArrowRight,
@@ -16,7 +17,6 @@ import {
   MapPin,
   Phone,
   Mail,
-  MessageSquare,
   Layers,
   Cog,
   Sprout,
@@ -25,7 +25,6 @@ import {
   Scale,
   Droplets,
   Ruler,
-  QrCode,
   Copy,
   Check,
   ChevronDown,
@@ -242,7 +241,7 @@ export default function ShowcaseView() {
                 <span className="block mt-1 sm:mt-1.5 text-[#3F166B]">{t.hero.titleHighlight}</span>
               </h1>
 
-              <p className="hero-anim text-xs sm:text-base text-stone-600 max-w-2xl leading-relaxed">
+              <p className="hero-anim text-xs sm:text-base text-stone-600 max-w-2xl leading-relaxed line-clamp-2 sm:line-clamp-none">
                 {t.hero.subtitle}
               </p>
 
@@ -299,24 +298,24 @@ export default function ShowcaseView() {
       {/* =========================================================
           2. ABOUT
       ========================================================= */}
-      <section id="about" className="scroll-mt-24 py-12 sm:py-16 lg:py-20 border-b border-stone-200/80">
+      <section id="about" className="scroll-mt-24 py-10 sm:py-16 lg:py-20 border-b border-stone-200/80">
         <div className="w-full max-w-[1440px] mx-auto px-4 sm:px-6 lg:px-10 xl:px-14">
-          <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 lg:gap-12 items-center">
-            <div className="anim-reveal lg:col-span-6 space-y-5 sm:space-y-6">
+          <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 sm:gap-8 lg:gap-12 items-center">
+            <div className="anim-reveal lg:col-span-6 space-y-4 sm:space-y-6">
               <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-[#EDC271]/25 text-[#3F166B] border border-[#EDC271]/60 text-xs font-bold uppercase tracking-wider">
                 <Factory className="w-3.5 h-3.5 shrink-0" />
                 <span>{t.about.eyebrow}</span>
               </div>
 
-              <h2 className="text-2xl sm:text-3xl lg:text-4xl font-extrabold text-stone-900 tracking-tight leading-tight">
+              <h2 className="text-xl sm:text-3xl lg:text-4xl font-extrabold text-stone-900 tracking-tight leading-tight">
                 {t.about.title}
               </h2>
 
-              <p className="text-sm sm:text-base font-semibold text-[#3F166B] leading-relaxed">
+              <p className="text-xs sm:text-base font-semibold text-[#3F166B] leading-relaxed">
                 {t.about.lead}
               </p>
 
-              <p className="text-xs sm:text-sm text-stone-600 leading-relaxed">{t.about.p1}</p>
+              <p className="hidden sm:block text-xs sm:text-sm text-stone-600 leading-relaxed">{t.about.p1}</p>
 
               {/* Credentials */}
               <div className="p-4 rounded-2xl bg-white border border-stone-200 shadow-xs grid grid-cols-1 sm:grid-cols-2 gap-4">
@@ -342,7 +341,7 @@ export default function ShowcaseView() {
             </div>
 
             {/* 4 Pillars */}
-            <div className="lg:col-span-6 grid grid-cols-1 sm:grid-cols-2 gap-4 sm:gap-5">
+            <div className="lg:col-span-6 grid grid-cols-2 gap-3 sm:gap-5">
               {[
                 { icon: Layers, tone: "gold", title: t.about.pillar1Title, desc: t.about.pillar1Desc },
                 { icon: Award, tone: "purple", title: t.about.pillar2Title, desc: t.about.pillar2Desc },
@@ -351,17 +350,17 @@ export default function ShowcaseView() {
               ].map(({ icon: Icon, tone, title, desc }, i) => (
                 <div
                   key={i}
-                  className="anim-card bg-white p-5 sm:p-6 rounded-2xl border border-stone-200 shadow-xs hover:shadow-md transition-shadow space-y-2.5 sm:space-y-3"
+                  className="anim-card bg-white p-3.5 sm:p-6 rounded-2xl border border-stone-200 shadow-xs hover:shadow-md transition-shadow space-y-2 sm:space-y-3"
                 >
                   <div
-                    className={`w-10 h-10 rounded-xl flex items-center justify-center ${
+                    className={`w-9 h-9 sm:w-10 sm:h-10 rounded-xl flex items-center justify-center ${
                       tone === "gold" ? "bg-[#EDC271]/25 text-[#3F166B]" : "bg-[#3F166B]/10 text-[#3F166B]"
                     }`}
                   >
-                    <Icon className="w-5 h-5" />
+                    <Icon className="w-4 h-4 sm:w-5 sm:h-5" />
                   </div>
-                  <h3 className="text-base font-bold text-stone-900">{title}</h3>
-                  <p className="text-xs text-stone-600 leading-relaxed">{desc}</p>
+                  <h3 className="text-xs sm:text-base font-bold text-stone-900 leading-snug">{title}</h3>
+                  <p className="text-[11px] sm:text-xs text-stone-600 leading-relaxed line-clamp-2 sm:line-clamp-none">{desc}</p>
                 </div>
               ))}
             </div>
@@ -415,10 +414,10 @@ export default function ShowcaseView() {
                       </div>
                     </div>
 
-                    <div className="p-4 sm:p-5 space-y-4">
-                      <p className="text-xs text-stone-600 line-clamp-3 leading-relaxed">{desc}</p>
+                    <div className="p-3.5 sm:p-5 space-y-3 sm:space-y-4">
+                      <p className="hidden sm:line-clamp-3 text-xs text-stone-600 leading-relaxed">{desc}</p>
 
-                      <div className="bg-stone-50 rounded-xl p-3 border border-stone-200/70 space-y-1.5 text-xs">
+                      <div className="bg-stone-50 rounded-xl p-2.5 sm:p-3 border border-stone-200/70 space-y-1.5 text-xs">
                         {[
                           [t.products.stapleLength, product.specs.stapleLength],
                           [t.products.shiveContent, product.specs.shiveContent],
@@ -431,7 +430,7 @@ export default function ShowcaseView() {
                         ))}
                       </div>
 
-                      <div className="flex flex-wrap gap-1.5">
+                      <div className="hidden sm:flex flex-wrap gap-1.5">
                         {product.grades.map((grade) => (
                           <span
                             key={grade}
@@ -468,30 +467,30 @@ export default function ShowcaseView() {
       {/* =========================================================
           4. PRODUCTION & QUALITY PROCESS
       ========================================================= */}
-      <section id="process" className="scroll-mt-24 py-12 sm:py-16 lg:py-20 bg-white border-b border-stone-200/80">
-        <div className="w-full max-w-[1440px] mx-auto px-4 sm:px-6 lg:px-10 xl:px-14 space-y-8 sm:space-y-12">
-          <div className="anim-reveal text-center max-w-3xl mx-auto space-y-3">
+      <section id="process" className="scroll-mt-24 py-10 sm:py-16 lg:py-20 bg-white border-b border-stone-200/80">
+        <div className="w-full max-w-[1440px] mx-auto px-4 sm:px-6 lg:px-10 xl:px-14 space-y-6 sm:space-y-12">
+          <div className="anim-reveal text-center max-w-3xl mx-auto space-y-2.5 sm:space-y-3">
             <span className="inline-block text-xs font-bold uppercase tracking-widest text-[#3F166B] bg-[#EDC271]/25 border border-[#EDC271]/60 px-3 py-1 rounded-full">
               {t.process.eyebrow}
             </span>
-            <h2 className="text-2xl sm:text-3xl lg:text-4xl font-extrabold text-stone-900">{t.process.title}</h2>
-            <p className="text-xs sm:text-base text-stone-600">{t.process.subtitle}</p>
+            <h2 className="text-xl sm:text-3xl lg:text-4xl font-extrabold text-stone-900">{t.process.title}</h2>
+            <p className="hidden sm:block text-xs sm:text-base text-stone-600">{t.process.subtitle}</p>
           </div>
 
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6">
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3 sm:gap-6">
             {t.process.steps.map((step) => (
               <div
                 key={step.num}
-                className="anim-card bg-[#FAF8F5] border border-stone-200/90 rounded-2xl p-5 sm:p-6 space-y-3 hover:border-[#3F166B]/40 transition-colors"
+                className="anim-card bg-[#FAF8F5] border border-stone-200/90 rounded-2xl p-4 sm:p-6 space-y-2 sm:space-y-3 hover:border-[#3F166B]/40 transition-colors"
               >
                 <div className="flex items-center justify-between gap-2">
-                  <span className="text-2xl font-black text-[#3F166B] font-mono">{step.num}</span>
+                  <span className="text-xl sm:text-2xl font-black text-[#3F166B] font-mono">{step.num}</span>
                   <span className="text-[11px] font-semibold px-2.5 py-1 rounded-full bg-[#EDC271]/25 text-[#3F166B] border border-[#EDC271]/60">
                     {step.metric}
                   </span>
                 </div>
-                <h3 className="text-base sm:text-lg font-bold text-stone-900">{step.title}</h3>
-                <p className="text-xs text-stone-600 leading-relaxed">{step.desc}</p>
+                <h3 className="text-sm sm:text-lg font-bold text-stone-900">{step.title}</h3>
+                <p className="text-xs text-stone-600 leading-relaxed line-clamp-2 sm:line-clamp-none">{step.desc}</p>
               </div>
             ))}
           </div>
@@ -510,8 +509,8 @@ export default function ShowcaseView() {
                 <span className="inline-block text-xs font-bold uppercase tracking-widest text-[#3F166B] bg-[#EDC271]/30 border border-[#EDC271]/60 px-3 py-1 rounded-full">
                   {t.contact.eyebrow}
                 </span>
-                <h2 className="text-2xl sm:text-3xl font-extrabold text-stone-900">{t.contact.title}</h2>
-                <p className="text-xs sm:text-sm text-stone-600 leading-relaxed">{t.contact.subtitle}</p>
+                <h2 className="text-xl sm:text-3xl font-extrabold text-stone-900">{t.contact.title}</h2>
+                <p className="hidden sm:block text-xs sm:text-sm text-stone-600 leading-relaxed">{t.contact.subtitle}</p>
               </div>
 
               <div className="bg-white rounded-2xl p-5 border border-stone-200 space-y-4 shadow-xs">
@@ -561,8 +560,8 @@ export default function ShowcaseView() {
                   rel="noreferrer"
                   className="inline-flex items-center justify-center gap-2 px-4 py-3 rounded-xl bg-emerald-700 hover:bg-emerald-800 text-white font-bold text-xs shadow-xs transition-all"
                 >
-                  <MessageSquare className="w-4 h-4 shrink-0" />
-                  <span>{t.contact.whatsapp}</span>
+                  <WhatsAppIcon className="w-4 h-4 shrink-0" />
+                  <span className="truncate">{t.contact.whatsapp} (+{company.whatsappNumber})</span>
                 </a>
                 <button
                   type="button"
@@ -570,9 +569,18 @@ export default function ShowcaseView() {
                   aria-expanded={contactWechatOpen}
                   className="inline-flex items-center justify-center gap-2 px-4 py-3 rounded-xl bg-white hover:bg-stone-100 text-[#3F166B] border border-stone-300 font-bold text-xs shadow-xs transition-all cursor-pointer min-w-0"
                 >
-                  <QrCode className="w-4 h-4 shrink-0" />
+                  <WeChatIcon className="w-4 h-4 shrink-0" />
                   <span className="truncate">{t.contact.wechat} ({company.wechatId})</span>
                 </button>
+                <a
+                  href={`https://www.facebook.com/${company.facebookId}`}
+                  target="_blank"
+                  rel="noreferrer"
+                  className="sm:col-span-2 inline-flex items-center justify-center gap-2 px-4 py-3 rounded-xl bg-[#1877F2] hover:bg-[#166FE5] text-white font-bold text-xs shadow-xs transition-all"
+                >
+                  <FacebookIcon className="w-4 h-4 shrink-0" />
+                  <span className="truncate">{t.contact.facebook} (/{company.facebookId})</span>
+                </a>
               </div>
 
               {/* WeChat details */}
@@ -586,7 +594,7 @@ export default function ShowcaseView() {
                   <div className="p-4 rounded-2xl bg-white border border-stone-300 shadow-xs flex items-center justify-between gap-4">
                     <div className="flex items-center gap-3">
                       <div className="w-12 h-12 rounded-xl bg-stone-100 border border-stone-200 flex items-center justify-center shrink-0">
-                        <QrCode className="w-8 h-8 text-[#3F166B]" />
+                        <WeChatIcon className="w-7 h-7 text-[#07C160]" />
                       </div>
                       <div className="text-xs">
                         <div className="font-bold text-stone-900">

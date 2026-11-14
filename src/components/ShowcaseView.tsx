@@ -316,13 +316,13 @@ export default function ShowcaseView() {
       <section className="hero-section relative bg-[#FAF8F5] border-b border-stone-200/80 lg:min-h-[calc(100dvh-6.25rem)] flex items-center">
         <div className="w-full max-w-[1440px] mx-auto px-4 sm:px-6 lg:px-10 xl:px-14 py-6 sm:py-10 lg:py-12">
           <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 sm:gap-8 lg:gap-10 xl:gap-12 items-center">
-            <div className="lg:col-span-7 space-y-3.5 sm:space-y-5">
+            <div className="lg:col-span-7 space-y-4 sm:space-y-5">
               <div className="hero-anim inline-flex items-center gap-1.5 sm:gap-2 px-2.5 sm:px-3 py-1 rounded-full bg-[#EDC271]/25 border border-[#EDC271]/70 text-[#3F166B] text-[10px] sm:text-xs font-semibold tracking-wide max-w-full">
                 <ShieldCheck className="w-3.5 h-3.5 sm:w-4 sm:h-4 shrink-0" />
                 <span className="truncate">{t.hero.badge}</span>
               </div>
 
-              <h1 className="hero-anim text-2xl sm:text-4xl lg:text-[2.65rem] xl:text-5xl font-extrabold tracking-tight leading-[1.15] text-stone-900">
+              <h1 className="hero-anim text-2xl sm:text-4xl lg:text-[2.65rem] xl:text-5xl font-extrabold tracking-tight leading-[1.18] rtl:leading-[1.28] text-stone-900">
                 <span className="block">{t.hero.titleLine1}</span>
                 <span className="block mt-1 sm:mt-1.5 text-[#3F166B]">{t.hero.titleHighlight}</span>
               </h1>
@@ -334,40 +334,54 @@ export default function ShowcaseView() {
               <div className="hero-anim grid grid-cols-2 sm:flex sm:flex-row items-stretch sm:items-center gap-2.5 sm:gap-3 pt-1">
                 <a
                   href="#products"
-                  className="inline-flex items-center justify-center gap-1.5 sm:gap-2 px-3 sm:px-6 py-2.5 sm:py-3 rounded-xl bg-[#3F166B] hover:bg-[#2F1052] text-[#EDC271] font-bold text-xs sm:text-sm shadow-xs transition-all whitespace-nowrap"
+                  className="inline-flex items-center justify-center gap-1.5 sm:gap-2 px-3 sm:px-6 py-2.5 sm:py-3 rounded-xl bg-[#3F166B] hover:bg-[#2F1052] text-[#EDC271] font-bold text-xs sm:text-sm shadow-sm hover:-translate-y-0.5 active:translate-y-0 transition-all whitespace-nowrap"
                 >
                   <span className="truncate">{t.hero.ctaProducts}</span>
                   <ArrowRight className="w-3.5 h-3.5 sm:w-4 sm:h-4 shrink-0 rtl:rotate-180" />
                 </a>
                 <a
                   href="#contact"
-                  className="inline-flex items-center justify-center gap-1.5 sm:gap-2 px-3 sm:px-6 py-2.5 sm:py-3 rounded-xl bg-white hover:bg-stone-100 text-stone-800 border border-stone-300 font-semibold text-xs sm:text-sm transition-all whitespace-nowrap"
+                  className="inline-flex items-center justify-center gap-1.5 sm:gap-2 px-3 sm:px-6 py-2.5 sm:py-3 rounded-xl bg-white hover:bg-stone-100 text-stone-800 border border-stone-300 font-semibold text-xs sm:text-sm hover:-translate-y-0.5 active:translate-y-0 transition-all whitespace-nowrap"
                 >
                   <span className="truncate">{t.hero.ctaContact}</span>
                 </a>
               </div>
             </div>
 
-            <div className="lg:col-span-5">
-              <div className="hero-media relative aspect-[16/10] lg:aspect-[4/3] max-h-[200px] sm:max-h-[340px] lg:max-h-[360px] w-full rounded-2xl sm:rounded-3xl overflow-hidden border border-stone-200 shadow-sm bg-stone-100">
+            <div className="lg:col-span-5 relative">
+              <div
+                aria-hidden="true"
+                className="pointer-events-none absolute -inset-4 rounded-[2rem] bg-[#EDC271]/20 blur-2xl opacity-70"
+              />
+              <div className="hero-media relative aspect-[16/10] lg:aspect-square max-h-[210px] sm:max-h-[340px] lg:max-h-[430px] w-full rounded-2xl sm:rounded-3xl overflow-hidden border border-stone-200/90 ring-1 ring-[#3F166B]/10 shadow-md bg-stone-100">
                 <img
                   src="/IMG_9066.webp"
                   alt="Egy Nile Flax Factory"
+                  loading="eager"
                   fetchPriority="high"
                   decoding="async"
                   className="hero-img w-full h-[112%] -mt-[4%] object-cover will-change-transform"
                 />
-                <div className="pointer-events-none absolute inset-x-0 bottom-0 h-20 bg-gradient-to-t from-black/55 to-transparent" />
+                <div className="pointer-events-none absolute inset-x-0 bottom-0 h-24 bg-gradient-to-t from-black/60 via-black/20 to-transparent" />
                 <div className="absolute bottom-3 start-3 inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-black/55 backdrop-blur-md border border-white/15 text-white text-[11px] font-semibold">
                   <MapPin className="w-3.5 h-3.5 text-[#EDC271] shrink-0" />
                   <span>{t.brand.locationLine}</span>
+                </div>
+                <div className="hidden sm:block absolute bottom-3 end-3 w-20 h-20 lg:w-24 lg:h-24 rounded-xl overflow-hidden border-2 border-[#FAF8F5] shadow-lg bg-stone-200">
+                  <img
+                    src="/IMG_9314.JPG.webp"
+                    alt="Egyptian Flax Fibre Detail"
+                    loading="eager"
+                    decoding="async"
+                    className="w-full h-full object-cover"
+                  />
                 </div>
               </div>
             </div>
           </div>
 
           {/* Key figures */}
-          <div className="hero-anim mt-6 sm:mt-8 lg:mt-10 pt-5 sm:pt-6 grid grid-cols-2 sm:grid-cols-4 gap-3 sm:gap-8 border-t border-stone-200/80">
+          <div className="hero-anim mt-6 sm:mt-8 lg:mt-10 pt-5 sm:pt-6 grid grid-cols-2 sm:grid-cols-4 gap-3 sm:gap-0 sm:divide-x sm:divide-stone-200/80 rtl:sm:divide-x-reverse border-t border-stone-200/80">
             {[
               [t.hero.stat1Value, t.hero.stat1Label],
               [t.hero.stat2Value, t.hero.stat2Label],
@@ -376,9 +390,9 @@ export default function ShowcaseView() {
             ].map(([value, label], i) => (
               <div
                 key={i}
-                className="bg-white sm:bg-transparent p-3 sm:p-0 rounded-xl border border-stone-200/80 sm:border-0"
+                className="bg-white sm:bg-transparent p-3 sm:p-0 sm:px-6 first:sm:ps-0 last:sm:pe-0 rounded-xl border border-stone-200/80 sm:border-0"
               >
-                <div className="text-base sm:text-2xl font-extrabold text-[#3F166B] whitespace-nowrap">
+                <div className="text-base sm:text-2xl font-extrabold text-[#3F166B] tabular-nums whitespace-nowrap">
                   {value}
                 </div>
                 <div className="text-[11px] sm:text-xs text-stone-500 mt-0.5 leading-snug">{label}</div>

@@ -68,12 +68,24 @@ export async function POST(request: Request) {
       );
     }
 
-    const { leadId, to, toName, cc, replyTo, subject, message, includeSignature, layout } =
+    const { leadId, to, toName, cc, replyTo, subject, message, includeSignature, layout, provider } =
       parsed.data;
 
     const brevoApiKey = process.env.BREVO_API_KEY;
     const resendApiKey = process.env.RESEND_API_KEY;
 
+    if (provider === "brevo" && !brevoApiKey) {
+      return NextResponse.json(
+        { error: "BREVO_API_KEY is not configured on the server." },
+        { status: 400 }
+      );
+    }
+    if (provider === "resend" && !resendApiKey) {
+      return NextResponse.json(
+        { error: "RESEND_API_KEY is not configured on the server." },
+        { status: 400 }
+      );
+    }
     if (!brevoApiKey && !resendApiKey) {
       return NextResponse.json(
         { error: "No email provider (BREVO_API_KEY or RESEND_API_KEY) is configured." },
@@ -91,8 +103,9 @@ export async function POST(request: Request) {
 
     const ccEmails = parseCcList(cc);
     const replyToAddress = replyTo || COMPANY.primaryEmail;
+    const useBrevo = provider === "brevo" || (provider === "auto" && Boolean(brevoApiKey));
 
-    if (brevoApiKey) {
+    if (useBrevo && brevoApiKey) {
       const brevoSenderEmail = process.env.BREVO_SENDER_EMAIL || COMPANY.primaryEmail;
       const res = await fetch("https://api.brevo.com/v3/smtp/email", {
         method: "POST",

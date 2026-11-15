@@ -49,6 +49,7 @@ export const b2bMailSchema = z.object({
     .max(10000, "Message is too long."),
   includeSignature: z.boolean().optional().default(true),
   layout: z.enum(["personal", "branded"]).optional().default("branded"),
+  provider: z.enum(["auto", "brevo", "resend"]).optional().default("auto"),
 });
 
 export type B2BMailPayload = z.infer<typeof b2bMailSchema>;

@@ -1,7 +1,6 @@
 import type { Metadata, Viewport } from "next";
 import "./globals.css";
 import { FlaxProvider } from "@/context/FlaxContext";
-import PageLoader from "@/components/PageLoader";
 import { COMPANY } from "@/data/initialData";
 
 const SITE_URL = process.env.NEXT_PUBLIC_SITE_URL || "https://egynileflax.com";
@@ -101,7 +100,6 @@ export default function RootLayout({
           type="application/ld+json"
           dangerouslySetInnerHTML={{ __html: JSON.stringify(organizationJsonLd) }}
         />
-        <PageLoader />
         <FlaxProvider>{children}</FlaxProvider>
       </body>
     </html>

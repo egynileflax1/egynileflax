@@ -57,13 +57,13 @@ export default function Footer() {
 
   return (
     <>
-      <footer className="bg-[#F4F0EA] text-stone-700 border-t border-stone-200 pb-20 md:pb-16">
+      <footer className="bg-[#EEE9DF] text-stone-700 border-t border-stone-300 pb-20 md:pb-16">
         <div className="w-full max-w-[1440px] mx-auto px-4 sm:px-6 lg:px-10 xl:px-14 py-10 sm:py-14">
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-12 gap-8 lg:gap-10 pb-10 sm:pb-12 border-b border-stone-200">
             {/* Brand */}
             <div className="sm:col-span-2 lg:col-span-4 space-y-4">
               <div className="flex items-center gap-3">
-                <EgyNileLogo className="w-11 h-11 sm:w-12 sm:h-12 shrink-0 drop-shadow-xs" />
+                <EgyNileLogo className="w-11 h-11 sm:w-12 sm:h-12 shrink-0" />
                 <div>
                   <span className="text-lg font-extrabold text-stone-900 block">{company.brandName}™</span>
                   <span className="text-[11px] text-[#3F166B] font-semibold">
@@ -72,7 +72,7 @@ export default function Footer() {
                 </div>
               </div>
               <p className="hidden sm:block text-xs text-stone-600 leading-relaxed">{t.footer.tagline}</p>
-              <div className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-white border border-stone-200 text-[11px] sm:text-xs text-[#3F166B] font-semibold">
+              <div className="inline-flex items-center gap-1.5 py-1.5 text-[11px] sm:text-xs text-[#3F166B] font-semibold">
                 <ShieldCheck className="w-4 h-4 shrink-0" />
                 <span>
                   {t.brand.isoCert} • {t.brand.councilMembership}
@@ -203,8 +203,8 @@ export default function Footer() {
       {/* Floating contact dock (tablet & desktop) */}
       <div className="hidden md:flex fixed bottom-4 end-5 z-40 items-center">
         <div
-          className={`relative flex items-center rounded-full bg-white/95 backdrop-blur-md shadow-lg transition-all duration-300 ease-in-out ${
-            dockMinimized ? "p-0 border border-stone-300 hover:bg-stone-50" : "p-1.5 border border-stone-200"
+          className={`relative flex items-center bg-[#FAF8F5] border border-stone-300 shadow-md transition-all duration-300 ease-in-out ${
+            dockMinimized ? "p-0 hover:bg-stone-100" : "p-1.5"
           }`}
         >
           {/* Minimized trigger */}
@@ -216,7 +216,7 @@ export default function Footer() {
             <div className="overflow-hidden">
               <button
                 onClick={() => setDockMinimized(false)}
-                className="inline-flex items-center gap-1.5 px-3.5 py-2.5 rounded-full text-[#3F166B] font-bold text-xs whitespace-nowrap cursor-pointer"
+                className="inline-flex items-center gap-1.5 px-3.5 py-2.5 text-[#3F166B] font-semibold text-xs whitespace-nowrap cursor-pointer"
               >
                 <ChevronLeft className="w-3.5 h-3.5 text-stone-400 shrink-0 rtl:rotate-180" />
                 <MessageSquare className="w-4 h-4 text-[#3F166B] shrink-0" />
@@ -232,14 +232,14 @@ export default function Footer() {
             }`}
           >
             <div className="overflow-hidden">
-              <div className="inline-flex items-center gap-1.5 whitespace-nowrap">
+              <div className="inline-flex items-center gap-1 whitespace-nowrap">
                 <a
                   href={whatsappHref}
                   target="_blank"
                   rel="noreferrer"
                   aria-label={t.contact.whatsapp}
                   title={t.contact.whatsapp}
-                  className="w-9 h-9 rounded-full bg-emerald-600 hover:bg-emerald-700 text-white inline-flex items-center justify-center transition-colors"
+                  className="w-9 h-9 border border-stone-300 bg-white hover:bg-stone-100 text-[#3F166B] inline-flex items-center justify-center transition-colors"
                 >
                   <WhatsAppIcon className="w-4 h-4" />
                 </a>
@@ -247,7 +247,7 @@ export default function Footer() {
                   onClick={() => openQrModal("wechat")}
                   aria-label={t.contact.wechat}
                   title={t.contact.wechat}
-                  className="w-9 h-9 rounded-full bg-[#3F166B] hover:bg-[#2F1052] text-[#EDC271] inline-flex items-center justify-center transition-colors cursor-pointer"
+                  className="w-9 h-9 border border-stone-300 bg-white hover:bg-stone-100 text-[#3F166B] inline-flex items-center justify-center transition-colors cursor-pointer"
                 >
                   <WeChatIcon className="w-4 h-4" />
                 </button>
@@ -255,7 +255,7 @@ export default function Footer() {
                   onClick={() => openQrModal("rednote")}
                   aria-label={t.contact.rednote}
                   title={t.contact.rednote}
-                  className="w-9 h-9 rounded-full bg-[#FF2442] hover:bg-[#E01E3B] text-white inline-flex items-center justify-center transition-colors cursor-pointer"
+                  className="w-9 h-9 border border-stone-300 bg-white hover:bg-stone-100 text-[#3F166B] inline-flex items-center justify-center transition-colors cursor-pointer"
                 >
                   <RedNoteIcon className="w-4 h-4" />
                 </button>
@@ -265,7 +265,7 @@ export default function Footer() {
                   rel="noreferrer"
                   aria-label={t.contact.facebook}
                   title={t.contact.facebook}
-                  className="w-9 h-9 rounded-full bg-[#1877F2] hover:bg-[#166FE5] text-white inline-flex items-center justify-center transition-colors"
+                  className="w-9 h-9 border border-stone-300 bg-white hover:bg-stone-100 text-[#3F166B] inline-flex items-center justify-center transition-colors"
                 >
                   <FacebookIcon className="w-4 h-4" />
                 </a>
@@ -275,7 +275,7 @@ export default function Footer() {
                   rel="noreferrer"
                   aria-label={t.contact.instagram}
                   title={t.contact.instagram}
-                  className="w-9 h-9 rounded-full bg-gradient-to-tr from-[#F77737] via-[#FD1D1D] to-[#833AB4] hover:opacity-90 text-white inline-flex items-center justify-center transition-opacity"
+                  className="w-9 h-9 border border-stone-300 bg-white hover:bg-stone-100 text-[#3F166B] inline-flex items-center justify-center transition-colors"
                 >
                   <InstagramIcon className="w-4 h-4" />
                 </a>
@@ -285,7 +285,7 @@ export default function Footer() {
                   rel="noreferrer"
                   aria-label={t.contact.linkedin}
                   title={t.contact.linkedin}
-                  className="w-9 h-9 rounded-full bg-[#0A66C2] hover:bg-[#004182] text-white inline-flex items-center justify-center transition-colors"
+                  className="w-9 h-9 border border-stone-300 bg-white hover:bg-stone-100 text-[#3F166B] inline-flex items-center justify-center transition-colors"
                 >
                   <LinkedInIcon className="w-4 h-4" />
                 </a>
@@ -293,13 +293,13 @@ export default function Footer() {
                   href={`mailto:${company.primaryEmail}`}
                   aria-label={t.contact.emailLabel}
                   title={t.contact.emailLabel}
-                  className="w-9 h-9 rounded-full bg-stone-100 hover:bg-stone-200 text-[#3F166B] inline-flex items-center justify-center transition-colors"
+                  className="w-9 h-9 border border-stone-300 bg-white hover:bg-stone-100 text-[#3F166B] inline-flex items-center justify-center transition-colors"
                 >
                   <Mail className="w-4 h-4" />
                 </a>
                 <button
                   onClick={() => setDockMinimized(true)}
-                  className="p-1.5 rounded-full text-stone-400 hover:text-stone-800 hover:bg-stone-100 transition-colors cursor-pointer"
+                  className="p-1.5 text-stone-400 hover:text-stone-800 hover:bg-stone-100 transition-colors cursor-pointer"
                   title={t.contact.collapse}
                 >
                   <ChevronRight className="w-4 h-4 rtl:rotate-180" />
@@ -312,18 +312,21 @@ export default function Footer() {
 
       {/* WeChat & RedNote QR modal */}
       <div
+        role="dialog"
+        aria-modal="true"
+        aria-label={activeQr.title}
         aria-hidden={!qrModal}
         onClick={() => setQrModal(null)}
         className={`fixed inset-0 z-50 flex items-center justify-center p-4 transition-all duration-300 ease-in-out ${
           qrModal
-            ? "bg-black/75 backdrop-blur-xs opacity-100 pointer-events-auto"
+            ? "bg-stone-950/65 opacity-100 pointer-events-auto"
             : "bg-black/0 opacity-0 pointer-events-none"
         }`}
       >
         <div
           onClick={(e) => e.stopPropagation()}
-          className={`bg-white rounded-3xl max-w-sm w-full p-6 text-center space-y-4 shadow-2xl transition-all duration-300 ease-out ${
-            qrModal ? "opacity-100 translate-y-0 scale-100" : "opacity-0 translate-y-4 scale-95"
+          className={`bg-[#FAF8F5] border border-stone-300 max-w-sm w-full p-5 sm:p-6 text-center space-y-4 shadow-xl transition-all duration-300 ease-out ${
+            qrModal ? "opacity-100 translate-y-0" : "opacity-0 translate-y-4"
           }`}
         >
           <div className="flex items-center justify-between">
@@ -333,16 +336,16 @@ export default function Footer() {
             </span>
             <button
               onClick={() => setQrModal(null)}
-              className="p-1 rounded-lg hover:bg-stone-100 text-stone-500 cursor-pointer"
+              className="p-2 border border-stone-300 hover:bg-stone-100 text-stone-500 cursor-pointer"
             >
               <X className="w-5 h-5" />
             </button>
           </div>
-          <div className="mx-auto rounded-2xl bg-stone-50 border border-stone-200 p-3 inline-flex flex-col items-center">
+          <div className="mx-auto bg-white border border-stone-300 p-3 inline-flex flex-col items-center">
             <img
               src={activeQr.src}
               alt={`${activeQr.title} QR Code — ${activeQr.id}`}
-              className="w-44 h-44 sm:w-48 sm:h-48 rounded-xl object-contain bg-white"
+              className="w-44 h-44 sm:w-48 sm:h-48 object-contain bg-white"
             />
             <span className="text-[11px] font-mono font-bold text-stone-700 mt-2">ID: {activeQr.id}</span>
           </div>
@@ -352,7 +355,7 @@ export default function Footer() {
               setCopiedId(true);
               setTimeout(() => setCopiedId(false), 2000);
             }}
-            className="w-full py-2.5 rounded-xl bg-[#3F166B] hover:bg-[#2F1052] text-[#EDC271] font-bold text-xs inline-flex items-center justify-center gap-1.5 cursor-pointer"
+            className="w-full py-3 bg-[#3F166B] hover:bg-[#2F1052] text-white font-semibold text-xs inline-flex items-center justify-center gap-1.5 cursor-pointer"
           >
             {copiedId ? (
               <>

@@ -82,7 +82,7 @@ export default function Navbar() {
 
   return (
     <>
-      <header className="fixed top-0 inset-x-0 z-50 w-full border-t-2 border-[#3F166B]">
+      <header className="sticky top-0 inset-x-0 z-50 w-full">
         {/* Top credentials & language bar */}
         <div className="bg-[#F4F0EA] text-stone-600 text-[11px] sm:text-xs border-b border-stone-200/80">
           <div className="w-full max-w-[1440px] mx-auto px-4 sm:px-6 lg:px-10 xl:px-14 py-1.5 flex items-center justify-between gap-2">
@@ -131,19 +131,19 @@ export default function Navbar() {
         </div>
 
         {/* Main navigation */}
-        <div className="bg-white/90 backdrop-blur-md border-b border-stone-200/80">
+        <div className="bg-[#FAF8F5] border-b border-stone-300">
           <div className="w-full max-w-[1440px] mx-auto px-4 sm:px-6 lg:px-10 xl:px-14 h-14 sm:h-16 flex items-center justify-between gap-2 sm:gap-3">
             <button
               onClick={scrollToTop}
               className="flex items-center gap-2 sm:gap-3 text-start cursor-pointer min-w-0 shrink-0"
             >
-              <EgyNileLogo className="w-9 h-9 sm:w-11 sm:h-11 shrink-0 drop-shadow-xs" />
+              <EgyNileLogo className="w-9 h-9 sm:w-11 sm:h-11 shrink-0" />
               <div className="min-w-0">
                 <div className="flex items-center gap-1.5">
                   <span className="text-base sm:text-lg font-extrabold tracking-tight text-stone-900 truncate">
                     {company.brandName}
                   </span>
-                  <span className="text-[9px] sm:text-[10px] font-bold uppercase tracking-widest px-1.5 py-0.5 rounded bg-[#EDC271]/25 text-[#3F166B] border border-[#EDC271] shrink-0">
+                  <span className="text-[9px] sm:text-[10px] font-semibold uppercase tracking-widest text-[#3F166B] shrink-0">
                     {t.brand.country}
                   </span>
                 </div>
@@ -169,7 +169,7 @@ export default function Navbar() {
             {/* Desktop CTA */}
             <button
               onClick={() => navigateToSection("contact")}
-              className="hidden lg:inline-flex items-center gap-1.5 px-4 py-2 rounded-xl text-xs font-extrabold bg-[#3F166B] hover:bg-[#2F1052] text-[#EDC271] shadow-xs transition-all cursor-pointer whitespace-nowrap shrink-0"
+              className="hidden lg:inline-flex items-center gap-1.5 px-4 py-2 text-xs font-semibold bg-[#3F166B] hover:bg-[#2F1052] text-white transition-colors cursor-pointer whitespace-nowrap shrink-0"
             >
               <span>{t.hero.ctaContact}</span>
               <ArrowUpRight className="w-4 h-4 shrink-0 rtl:-scale-x-100" />
@@ -243,9 +243,6 @@ export default function Navbar() {
         </div>
       </header>
 
-      {/* Spacer for fixed header */}
-      <div className="h-[5.625rem] sm:h-[6.25rem]" aria-hidden="true" />
-
       {/* Backdrop for mobile drawer */}
       <div
         onClick={() => setMobileMenuOpen(false)}
@@ -259,13 +256,16 @@ export default function Navbar() {
       <div
         onClick={() => setMobileContactSheetOpen(false)}
         aria-hidden="true"
-        className={`md:hidden fixed inset-0 z-40 bg-black/55 backdrop-blur-[2px] transition-opacity duration-300 ease-in-out ${
+        className={`md:hidden fixed inset-0 z-40 bg-stone-950/65 transition-opacity duration-300 ease-in-out ${
           mobileContactSheetOpen ? "opacity-100 pointer-events-auto" : "opacity-0 pointer-events-none"
         }`}
       />
 
       {/* Mobile contact bottom sheet */}
       <div
+          role="dialog"
+          aria-modal="true"
+          aria-label={`${t.nav.contact} — ${company.brandName}`}
         aria-hidden={!mobileContactSheetOpen}
         style={isDraggingSheet ? { transform: `translateY(${sheetDragY}px)` } : undefined}
         className={`md:hidden fixed inset-x-0 bottom-0 z-50 ${
@@ -279,7 +279,7 @@ export default function Navbar() {
         }`}
       >
         <div
-          className="w-full bg-white rounded-t-3xl p-5 space-y-4 shadow-2xl border-t border-stone-200"
+          className="w-full max-h-[90dvh] overflow-y-auto bg-[#FAF8F5] p-5 space-y-4 border-t border-stone-300"
           onClick={(e) => e.stopPropagation()}
         >
             <div
@@ -290,15 +290,15 @@ export default function Navbar() {
               className="py-2.5 -mt-3 -mb-1 flex justify-center touch-none cursor-grab active:cursor-grabbing select-none"
               aria-label="Drag down to close"
             >
-              <div className="w-10 h-1 rounded-full bg-stone-300" />
+              <div className="w-10 h-px bg-stone-400" />
             </div>
             <div className="flex items-center justify-between border-b border-stone-200 pb-3">
-              <h3 className="text-base font-extrabold text-stone-900">
+              <h3 className="text-lg font-medium text-stone-900">
                 {t.nav.contact} — {company.brandName}
               </h3>
               <button
                 onClick={() => setMobileContactSheetOpen(false)}
-                className="p-1.5 rounded-full bg-stone-100 hover:bg-stone-200 text-stone-600 transition-colors cursor-pointer"
+                className="p-2 border border-stone-300 hover:bg-stone-100 text-stone-600 transition-colors cursor-pointer"
               >
                 <X className="w-4 h-4" />
               </button>
@@ -311,7 +311,7 @@ export default function Navbar() {
                 )}`}
                 target="_blank"
                 rel="noreferrer"
-                className="w-full py-3.5 px-4 rounded-2xl bg-emerald-600 hover:bg-emerald-500 active:scale-[0.99] text-white font-extrabold flex items-center justify-between shadow-sm transition-all"
+                className="w-full py-3.5 px-4 bg-emerald-700 hover:bg-emerald-800 text-white font-semibold flex items-center justify-between transition-colors"
               >
                 <span className="inline-flex items-center gap-2">
                   <WhatsAppIcon className="w-4 h-4 shrink-0" />
@@ -322,17 +322,17 @@ export default function Navbar() {
                 </span>
               </a>
 
-              <div className="p-3.5 rounded-2xl bg-[#3F166B] text-white">
+              <div className="p-3.5 border border-stone-300 bg-white text-stone-900">
                 <div className="flex items-center justify-between gap-2.5">
                   <div className="flex items-center gap-3 min-w-0">
-                    <div className="w-11 h-11 rounded-xl bg-white p-1.5 flex items-center justify-center shrink-0">
+                    <div className="w-11 h-11 border border-stone-200 bg-white p-1.5 flex items-center justify-center shrink-0">
                       <WeChatIcon className="w-7 h-7 text-[#07C160]" />
                     </div>
                     <div className="min-w-0">
-                      <span className="text-[10px] text-[#EDC271] font-bold uppercase tracking-wider block">
+                      <span className="text-[10px] text-stone-500 font-bold uppercase tracking-wider block">
                         {t.contact.wechat}
                       </span>
-                      <span className="font-mono text-[#EDC271] text-xs font-extrabold truncate block">
+                      <span className="font-mono text-[#3F166B] text-xs font-bold truncate block">
                         {company.wechatId}
                       </span>
                     </div>
@@ -343,10 +343,10 @@ export default function Navbar() {
                       onClick={() => setMobileQr(mobileQr === "wechat" ? null : "wechat")}
                       aria-expanded={mobileQr === "wechat"}
                       aria-label={`${t.contact.wechat} QR`}
-                      className={`p-2 rounded-xl border transition-colors cursor-pointer ${
+                      className={`p-2 border transition-colors cursor-pointer ${
                         mobileQr === "wechat"
-                          ? "bg-white text-[#3F166B] border-white"
-                          : "bg-white/10 hover:bg-white/20 text-[#EDC271] border-white/15"
+                        ? "bg-[#3F166B] text-white border-[#3F166B]"
+                        : "bg-white hover:bg-stone-100 text-[#3F166B] border-stone-300"
                       }`}
                     >
                       <QrCode className="w-4 h-4" />
@@ -358,7 +358,7 @@ export default function Navbar() {
                         setCopiedWechat(true);
                         setTimeout(() => setCopiedWechat(false), 2000);
                       }}
-                      className="px-3 py-2 rounded-xl bg-[#EDC271] hover:bg-[#F5D693] text-[#260C42] font-extrabold text-xs inline-flex items-center gap-1.5 cursor-pointer"
+                      className="px-3 py-2 bg-stone-100 hover:bg-stone-200 text-stone-800 font-semibold text-xs inline-flex items-center gap-1.5 cursor-pointer"
                     >
                       {copiedWechat ? <Check className="w-4 h-4" /> : <Copy className="w-4 h-4" />}
                       <span>{copiedWechat ? t.contact.copied : t.contact.copyId}</span>
@@ -375,23 +375,23 @@ export default function Navbar() {
                     <img
                       src="/wechat qrcode.webp"
                       alt={`WeChat QR Code — ${company.wechatId}`}
-                      className="w-40 h-40 rounded-xl bg-white p-1.5 object-contain"
+                      className="w-40 h-40 border border-stone-200 bg-white p-1.5 object-contain"
                     />
                   </div>
                 </div>
               </div>
 
-              <div className="p-3.5 rounded-2xl bg-[#3F166B] text-white">
+              <div className="p-3.5 border border-stone-300 bg-white text-stone-900">
                 <div className="flex items-center justify-between gap-2.5">
                   <div className="flex items-center gap-3 min-w-0">
-                    <div className="w-11 h-11 rounded-xl bg-white p-1.5 flex items-center justify-center shrink-0">
+                    <div className="w-11 h-11 border border-stone-200 bg-white p-1.5 flex items-center justify-center shrink-0">
                       <RedNoteIcon className="w-7 h-7 text-[#FF2442]" />
                     </div>
                     <div className="min-w-0">
-                      <span className="text-[10px] text-[#EDC271] font-bold uppercase tracking-wider block">
+                      <span className="text-[10px] text-stone-500 font-bold uppercase tracking-wider block">
                         {t.contact.rednote}
                       </span>
-                      <span className="font-mono text-[#EDC271] text-xs font-extrabold truncate block">
+                      <span className="font-mono text-[#3F166B] text-xs font-bold truncate block">
                         {company.rednoteId}
                       </span>
                     </div>
@@ -402,10 +402,10 @@ export default function Navbar() {
                       onClick={() => setMobileQr(mobileQr === "rednote" ? null : "rednote")}
                       aria-expanded={mobileQr === "rednote"}
                       aria-label={`${t.contact.rednote} QR`}
-                      className={`p-2 rounded-xl border transition-colors cursor-pointer ${
+                      className={`p-2 border transition-colors cursor-pointer ${
                         mobileQr === "rednote"
-                          ? "bg-white text-[#3F166B] border-white"
-                          : "bg-white/10 hover:bg-white/20 text-[#EDC271] border-white/15"
+                        ? "bg-[#3F166B] text-white border-[#3F166B]"
+                        : "bg-white hover:bg-stone-100 text-[#3F166B] border-stone-300"
                       }`}
                     >
                       <QrCode className="w-4 h-4" />
@@ -417,7 +417,7 @@ export default function Navbar() {
                         setCopiedRednote(true);
                         setTimeout(() => setCopiedRednote(false), 2000);
                       }}
-                      className="px-3 py-2 rounded-xl bg-[#EDC271] hover:bg-[#F5D693] text-[#260C42] font-extrabold text-xs inline-flex items-center gap-1.5 cursor-pointer"
+                      className="px-3 py-2 bg-stone-100 hover:bg-stone-200 text-stone-800 font-semibold text-xs inline-flex items-center gap-1.5 cursor-pointer"
                     >
                       {copiedRednote ? <Check className="w-4 h-4" /> : <Copy className="w-4 h-4" />}
                       <span>{copiedRednote ? t.contact.copied : t.contact.copyId}</span>
@@ -434,7 +434,7 @@ export default function Navbar() {
                     <img
                       src="/rednote qrcode.webp"
                       alt={`RedNote QR Code — ${company.rednoteId}`}
-                      className="w-40 h-40 rounded-xl bg-white p-1.5 object-contain"
+                      className="w-40 h-40 border border-stone-200 bg-white p-1.5 object-contain"
                     />
                   </div>
                 </div>
@@ -447,7 +447,7 @@ export default function Navbar() {
                   rel="noreferrer"
                   aria-label={t.contact.facebook}
                   title={t.contact.facebook}
-                  className="w-11 h-11 rounded-xl bg-[#1877F2] hover:bg-[#166FE5] active:scale-[0.96] text-white flex items-center justify-center shadow-sm transition-all"
+                  className="w-11 h-11 bg-[#1877F2] hover:bg-[#166FE5] text-white flex items-center justify-center transition-colors"
                 >
                   <FacebookIcon className="w-5 h-5" />
                 </a>
@@ -457,7 +457,7 @@ export default function Navbar() {
                   rel="noreferrer"
                   aria-label={t.contact.instagram}
                   title={t.contact.instagram}
-                  className="w-11 h-11 rounded-xl bg-gradient-to-tr from-[#F77737] via-[#FD1D1D] to-[#833AB4] hover:opacity-90 active:scale-[0.96] text-white flex items-center justify-center shadow-sm transition-all"
+                  className="w-11 h-11 bg-gradient-to-tr from-[#F77737] via-[#FD1D1D] to-[#833AB4] hover:opacity-90 text-white flex items-center justify-center transition-opacity"
                 >
                   <InstagramIcon className="w-5 h-5" />
                 </a>
@@ -467,7 +467,7 @@ export default function Navbar() {
                   rel="noreferrer"
                   aria-label={t.contact.linkedin}
                   title={t.contact.linkedin}
-                  className="w-11 h-11 rounded-xl bg-[#0A66C2] hover:bg-[#004182] active:scale-[0.96] text-white flex items-center justify-center shadow-sm transition-all"
+                  className="w-11 h-11 bg-[#0A66C2] hover:bg-[#004182] text-white flex items-center justify-center transition-colors"
                 >
                   <LinkedInIcon className="w-5 h-5" />
                 </a>
@@ -476,14 +476,14 @@ export default function Navbar() {
               <div className="grid grid-cols-2 gap-2.5">
                 <a
                   href={`mailto:${company.primaryEmail}`}
-                  className="py-3 px-3 rounded-xl bg-stone-100 hover:bg-stone-200/80 active:scale-[0.98] text-stone-800 font-bold flex items-center justify-center gap-1.5 border border-stone-200 transition-all"
+                  className="py-3 px-3 bg-white hover:bg-stone-100 text-stone-800 font-semibold flex items-center justify-center gap-1.5 border border-stone-300 transition-colors"
                 >
                   <Mail className="w-4 h-4 text-[#3F166B]" />
                   <span>{t.contact.emailLabel}</span>
                 </a>
                 <a
                   href={`tel:${company.egyptPhone1.replace(/\s+/g, "")}`}
-                  className="py-3 px-3 rounded-xl bg-stone-100 hover:bg-stone-200/80 active:scale-[0.98] text-stone-800 font-bold flex items-center justify-center gap-1.5 border border-stone-200 transition-all"
+                  className="py-3 px-3 bg-white hover:bg-stone-100 text-stone-800 font-semibold flex items-center justify-center gap-1.5 border border-stone-300 transition-colors"
                 >
                   <Phone className="w-4 h-4 text-[#3F166B]" />
                   <span dir="ltr">{company.egyptPhone1}</span>
@@ -501,7 +501,7 @@ export default function Navbar() {
         }}
         aria-expanded={mobileContactSheetOpen}
         aria-label={t.nav.contact}
-        className={`md:hidden fixed bottom-4 end-4 z-40 inline-flex items-center gap-1.5 px-3.5 py-2.5 rounded-full bg-white/95 backdrop-blur-md border border-stone-300 text-[#3F166B] font-bold text-xs shadow-lg hover:bg-stone-50 active:scale-95 transition-all duration-300 cursor-pointer ${
+        className={`md:hidden fixed bottom-4 end-4 z-40 inline-flex items-center gap-1.5 px-3.5 py-2.5 bg-[#FAF8F5] border border-stone-400 text-[#3F166B] font-semibold text-xs shadow-md hover:bg-white transition-colors duration-300 cursor-pointer ${
           mobileContactSheetOpen ? "opacity-0 scale-90 pointer-events-none" : "opacity-100 scale-100"
         }`}
       >

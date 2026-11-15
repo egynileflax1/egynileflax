@@ -1,16 +1,11 @@
 "use client";
 
 import React, { useEffect, useRef, useState } from "react";
-import gsap from "gsap";
-import { ScrollTrigger } from "gsap/ScrollTrigger";
 import { useFlax } from "@/context/FlaxContext";
 import { ProductItem } from "@/data/initialData";
-import FlaxScrollPlant from "@/components/FlaxScrollPlant";
-import { LOADER_DONE_EVENT } from "@/components/PageLoader";
 import { contactSchema, ContactFieldErrorKey } from "@/lib/contactSchema";
 import { WhatsAppIcon, WeChatIcon, RedNoteIcon, FacebookIcon, InstagramIcon, LinkedInIcon } from "@/components/BrandIcons";
 import {
-  ShieldCheck,
   ArrowRight,
   Factory,
   Award,
@@ -33,107 +28,6 @@ import {
 
 export default function ShowcaseView() {
   const { lang, t, products, company } = useFlax();
-  const rootRef = useRef<HTMLDivElement>(null);
-
-  useEffect(() => {
-    if (typeof window === "undefined") return;
-    if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) return;
-
-    gsap.registerPlugin(ScrollTrigger);
-
-    let heroTl: gsap.core.Timeline | undefined;
-    let fallbackTimer: number | undefined;
-
-    const ctx = gsap.context(() => {
-      // Subtle above-the-fold Hero entrance (held until PageLoader finishes)
-      heroTl = gsap.timeline({ paused: true });
-      heroTl
-        .from(".hero-anim", {
-          y: 18,
-          opacity: 0,
-          duration: 0.65,
-          stagger: 0.08,
-          ease: "power2.out",
-          clearProps: "transform,opacity",
-        })
-        .from(
-          ".hero-media",
-          {
-            scale: 0.97,
-            opacity: 0,
-            duration: 0.75,
-            ease: "power2.out",
-            clearProps: "transform,opacity",
-          },
-          0.12
-        );
-
-      // Gentle parallax on the flax hero photo while scrolling
-      gsap.to(".hero-img", {
-        yPercent: -6,
-        ease: "none",
-        scrollTrigger: {
-          trigger: ".hero-section",
-          start: "top top",
-          end: "bottom top",
-          scrub: true,
-        },
-      });
-
-      // Section headers
-      gsap.utils.toArray<HTMLElement>(".anim-reveal").forEach((el) => {
-        gsap.from(el, {
-          y: 16,
-          opacity: 0,
-          duration: 0.45,
-          ease: "power2.out",
-          clearProps: "transform,opacity",
-          scrollTrigger: {
-            trigger: el,
-            start: "top 94%",
-            once: true,
-          },
-        });
-      });
-
-      // Staggered card grids (pillars, products, process steps)
-      gsap.set(".anim-card", { y: 18, opacity: 0 });
-      ScrollTrigger.batch(".anim-card", {
-        start: "top 96%",
-        once: true,
-        onEnter: (batch) => {
-          gsap.to(batch, {
-            y: 0,
-            opacity: 1,
-            duration: 0.45,
-            stagger: 0.05,
-            ease: "power2.out",
-            overwrite: true,
-            clearProps: "transform,opacity",
-          });
-        },
-      });
-    }, rootRef);
-
-    const playHero = () => {
-      heroTl?.play();
-      window.clearTimeout(fallbackTimer);
-      window.removeEventListener(LOADER_DONE_EVENT, playHero);
-    };
-
-    if (window.__egyNileLoaderDone) {
-      playHero();
-    } else {
-      window.addEventListener(LOADER_DONE_EVENT, playHero, { once: true });
-      fallbackTimer = window.setTimeout(playHero, 1400);
-    }
-
-    return () => {
-      window.clearTimeout(fallbackTimer);
-      window.removeEventListener(LOADER_DONE_EVENT, playHero);
-      ctx.revert();
-    };
-  }, []);
 
   const [activeProductModal, setActiveProductModal] = useState<ProductItem | null>(null);
   const [modalVisible, setModalVisible] = useState(false);
@@ -312,80 +206,62 @@ export default function ShowcaseView() {
   };
 
   return (
-    <div ref={rootRef} className="relative bg-[#FAF8F5] text-stone-900 w-full overflow-x-hidden">
-      <FlaxScrollPlant containerRef={rootRef} />
+    <div className="relative bg-[#FAF8F5] text-stone-900 w-full overflow-x-hidden">
       {/* =========================================================
           1. HERO (Minimal Light Canvas)
       ========================================================= */}
-      <section className="hero-section relative bg-[#FAF8F5] border-b border-stone-200/80 lg:min-h-[calc(100dvh-6.25rem)] flex items-center">
-        <div className="w-full max-w-[1440px] mx-auto px-4 sm:px-6 lg:px-10 xl:px-14 py-6 sm:py-10 lg:py-12">
-          <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 sm:gap-8 lg:gap-10 xl:gap-12 items-center">
-            <div className="lg:col-span-7 space-y-4 sm:space-y-5">
-              <div className="hero-anim inline-flex items-center gap-1.5 sm:gap-2 px-2.5 sm:px-3 py-1 rounded-full bg-[#EDC271]/25 border border-[#EDC271]/70 text-[#3F166B] text-[10px] sm:text-xs font-semibold tracking-wide max-w-full">
-                <ShieldCheck className="w-3.5 h-3.5 sm:w-4 sm:h-4 shrink-0" />
-                <span className="truncate">{t.hero.badge}</span>
+      <section className="hero-section relative bg-[#FAF8F5] border-b border-stone-300">
+        <div className="w-full max-w-[1440px] mx-auto px-4 sm:px-6 lg:px-10 xl:px-14 py-8 sm:py-10 lg:py-14">
+          <div className="grid grid-cols-1 xl:grid-cols-12 gap-8 sm:gap-10 xl:gap-12 items-center">
+            <div className="min-w-0 xl:col-span-7 space-y-5 sm:space-y-6">
+              <div className="flex items-center gap-2 text-[#3F166B] text-[10px] sm:text-xs font-bold uppercase tracking-[0.14em]">
+                <span className="h-px w-8 bg-[#3F166B]" />
+                <span>{t.brand.locationLine}</span>
               </div>
 
-              <h1 className="hero-anim text-2xl sm:text-4xl lg:text-[2.65rem] xl:text-5xl font-extrabold tracking-tight leading-[1.18] rtl:leading-[1.28] text-stone-900">
+              <h1 className="min-w-0 text-[clamp(2.125rem,3.7vw,3.75rem)] font-semibold tracking-[-0.035em] leading-[1.06] rtl:leading-[1.2] text-stone-900">
                 <span className="block">{t.hero.titleLine1}</span>
-                <span className="block mt-1 sm:mt-1.5 text-[#3F166B]">{t.hero.titleHighlight}</span>
+                <span className="block mt-2 text-[#3F166B]">{t.hero.titleHighlight}</span>
               </h1>
 
-              <p className="hero-anim text-xs sm:text-base text-stone-600 max-w-2xl leading-relaxed line-clamp-2 sm:line-clamp-none">
+              <p className="text-sm sm:text-base text-stone-600 max-w-xl leading-7">
                 {t.hero.subtitle}
               </p>
 
-              <div className="hero-anim grid grid-cols-2 sm:flex sm:flex-row items-stretch sm:items-center gap-2.5 sm:gap-3 pt-1">
+              <div className="grid grid-cols-1 min-[420px]:grid-cols-2 sm:flex sm:flex-row items-stretch sm:items-center gap-2.5 sm:gap-3 pt-1">
                 <a
                   href="#products"
-                  className="inline-flex items-center justify-center gap-1.5 sm:gap-2 px-3 sm:px-6 py-2.5 sm:py-3 rounded-xl bg-[#3F166B] hover:bg-[#2F1052] text-[#EDC271] font-bold text-xs sm:text-sm shadow-sm hover:-translate-y-0.5 active:translate-y-0 transition-all whitespace-nowrap"
+                  className="inline-flex min-w-0 items-center justify-center gap-2 px-3 sm:px-6 py-3 border border-[#3F166B] bg-[#3F166B] hover:bg-[#2F1052] text-white font-semibold text-xs sm:text-sm text-center transition-colors"
                 >
-                  <span className="truncate">{t.hero.ctaProducts}</span>
+                  <span>{t.hero.ctaProducts}</span>
                   <ArrowRight className="w-3.5 h-3.5 sm:w-4 sm:h-4 shrink-0 rtl:rotate-180" />
                 </a>
                 <a
                   href="#contact"
-                  className="inline-flex items-center justify-center gap-1.5 sm:gap-2 px-3 sm:px-6 py-2.5 sm:py-3 rounded-xl bg-white hover:bg-stone-100 text-stone-800 border border-stone-300 font-semibold text-xs sm:text-sm hover:-translate-y-0.5 active:translate-y-0 transition-all whitespace-nowrap"
+                  className="inline-flex min-w-0 items-center justify-center gap-2 px-3 sm:px-6 py-3 text-stone-800 border border-stone-400 hover:bg-stone-100 font-semibold text-xs sm:text-sm text-center transition-colors"
                 >
-                  <span className="truncate">{t.hero.ctaContact}</span>
+                  <span>{t.hero.ctaContact}</span>
                 </a>
               </div>
             </div>
 
-            <div className="lg:col-span-5 relative">
-              <div
-                aria-hidden="true"
-                className="pointer-events-none absolute -inset-4 rounded-[2rem] bg-[#EDC271]/20 blur-2xl opacity-70"
-              />
-              <div className="hero-media relative aspect-[16/10] lg:aspect-square max-h-[210px] sm:max-h-[340px] lg:max-h-[430px] w-full rounded-2xl sm:rounded-3xl overflow-hidden border border-stone-200/90 ring-1 ring-[#3F166B]/10 shadow-md bg-stone-100">
+            <div className="min-w-0 xl:col-span-5 relative">
+              <div className="relative aspect-[4/3] sm:aspect-[16/10] xl:aspect-[5/4] max-h-[240px] min-[480px]:max-h-[320px] md:max-h-[420px] xl:max-h-[580px] w-full overflow-hidden bg-stone-200">
                 <img
                   src="/IMG_9066.webp"
-                  alt="Egy Nile Flax Factory"
+                  alt="Harvested flax straw ready for processing"
                   loading="eager"
                   fetchPriority="high"
                   decoding="async"
-                  className="hero-img w-full h-[112%] -mt-[4%] object-cover will-change-transform"
+                  className="w-full h-full object-cover"
                 />
-                <div className="pointer-events-none absolute inset-x-0 bottom-0 h-24 bg-gradient-to-t from-black/60 via-black/20 to-transparent" />
-                <div className="absolute bottom-3 start-3 inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-black/55 backdrop-blur-md border border-white/15 text-white text-[11px] font-semibold">
-                  <MapPin className="w-3.5 h-3.5 text-[#EDC271] shrink-0" />
-                  <span>{t.brand.locationLine}</span>
-                </div>
-                <div className="hidden sm:block absolute bottom-3 end-3 w-20 h-20 lg:w-24 lg:h-24 rounded-xl overflow-hidden border-2 border-[#FAF8F5] shadow-lg bg-stone-200">
-                  <img
-                    src="/IMG_9314.JPG.webp"
-                    alt="Egyptian Flax Fibre Detail"
-                    loading="eager"
-                    decoding="async"
-                    className="w-full h-full object-cover"
-                  />
-                </div>
               </div>
+              <p className="mt-2 text-[11px] text-stone-500">{t.brand.isoCert} <span className="mx-1">·</span> {t.brand.address}</p>
             </div>
           </div>
 
           {/* Key figures */}
-          <div className="hero-anim mt-6 sm:mt-8 lg:mt-10 pt-5 sm:pt-6 grid grid-cols-2 sm:grid-cols-4 gap-3 sm:gap-0 sm:divide-x sm:divide-stone-200/80 rtl:sm:divide-x-reverse border-t border-stone-200/80">
+          <div className="mt-6 sm:mt-8 lg:mt-10 pt-5 sm:pt-6 grid grid-cols-2 sm:grid-cols-4 gap-3 sm:gap-0 sm:divide-x sm:divide-stone-200/80 rtl:sm:divide-x-reverse border-t border-stone-200/80">
             {[
               [t.hero.stat1Value, t.hero.stat1Label],
               [t.hero.stat2Value, t.hero.stat2Label],
@@ -394,9 +270,9 @@ export default function ShowcaseView() {
             ].map(([value, label], i) => (
               <div
                 key={i}
-                className="bg-white sm:bg-transparent p-3 sm:p-0 sm:px-6 first:sm:ps-0 last:sm:pe-0 rounded-xl border border-stone-200/80 sm:border-0"
+                className="bg-transparent py-3 sm:py-0 sm:px-6 first:sm:ps-0 last:sm:pe-0 border-t border-stone-300 sm:border-t-0"
               >
-                <div className="text-base sm:text-2xl font-extrabold text-[#3F166B] tabular-nums whitespace-nowrap">
+                <div className="text-base sm:text-2xl font-semibold text-[#3F166B] tabular-nums whitespace-nowrap [font-family:Georgia,serif]">
                   {value}
                 </div>
                 <div className="text-[11px] sm:text-xs text-stone-500 mt-0.5 leading-snug">{label}</div>
@@ -413,12 +289,12 @@ export default function ShowcaseView() {
         <div className="w-full max-w-[1440px] mx-auto px-4 sm:px-6 lg:px-10 xl:px-14">
           <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 sm:gap-8 lg:gap-12 items-center">
             <div className="anim-reveal lg:col-span-6 space-y-4 sm:space-y-6">
-              <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-[#EDC271]/25 text-[#3F166B] border border-[#EDC271]/60 text-xs font-bold uppercase tracking-wider">
+              <div className="inline-flex items-center gap-2 text-[#3F166B] text-[11px] font-bold uppercase tracking-[0.16em]">
                 <Factory className="w-3.5 h-3.5 shrink-0" />
                 <span>{t.about.eyebrow}</span>
               </div>
 
-              <h2 className="text-xl sm:text-3xl lg:text-4xl font-extrabold text-stone-900 tracking-tight leading-tight">
+              <h2 className="text-xl sm:text-3xl lg:text-4xl font-medium text-stone-900 tracking-tight leading-tight">
                 {t.about.title}
               </h2>
 
@@ -429,7 +305,7 @@ export default function ShowcaseView() {
               <p className="hidden sm:block text-xs sm:text-sm text-stone-600 leading-relaxed">{t.about.p1}</p>
 
               {/* Credentials */}
-              <div className="p-4 rounded-2xl bg-white border border-stone-200 shadow-xs grid grid-cols-1 sm:grid-cols-2 gap-4">
+              <div className="p-4 bg-white border-y border-stone-300 grid grid-cols-1 sm:grid-cols-2 gap-4">
                 <div className="flex items-center gap-3">
                   <div className="w-11 h-11 rounded-xl bg-[#3F166B] text-[#EDC271] flex items-center justify-center font-bold text-xs shrink-0">
                     ISO
@@ -452,7 +328,7 @@ export default function ShowcaseView() {
             </div>
 
             {/* 4 Pillars */}
-            <div className="lg:col-span-6 grid grid-cols-2 gap-3 sm:gap-5">
+            <div className="lg:col-span-6 grid grid-cols-1 sm:grid-cols-2 gap-x-6">
               {[
                 { icon: Layers, tone: "gold", title: t.about.pillar1Title, desc: t.about.pillar1Desc },
                 { icon: Award, tone: "purple", title: t.about.pillar2Title, desc: t.about.pillar2Desc },
@@ -461,10 +337,10 @@ export default function ShowcaseView() {
               ].map(({ icon: Icon, tone, title, desc }, i) => (
                 <div
                   key={i}
-                  className="anim-card bg-white p-3.5 sm:p-6 rounded-2xl border border-stone-200 shadow-xs hover:shadow-md transition-shadow space-y-2 sm:space-y-3"
+                  className="anim-card bg-transparent py-5 sm:py-6 border-t border-stone-300 space-y-2 sm:space-y-3"
                 >
                   <div
-                    className={`w-9 h-9 sm:w-10 sm:h-10 rounded-xl flex items-center justify-center ${
+                    className={`w-9 h-9 sm:w-10 sm:h-10 flex items-center justify-center ${
                       tone === "gold" ? "bg-[#EDC271]/25 text-[#3F166B]" : "bg-[#3F166B]/10 text-[#3F166B]"
                     }`}
                   >
@@ -482,13 +358,13 @@ export default function ShowcaseView() {
       {/* =========================================================
           3. PRODUCTS
       ========================================================= */}
-      <section id="products" className="scroll-mt-24 py-12 sm:py-16 lg:py-20 bg-[#F3EFE6] border-b border-stone-200/80">
+      <section id="products" className="scroll-mt-24 py-12 sm:py-16 lg:py-20 bg-[#F3EFE6] border-y border-stone-300">
         <div className="w-full max-w-[1440px] mx-auto px-4 sm:px-6 lg:px-10 xl:px-14 space-y-8 sm:space-y-10">
           <div className="anim-reveal space-y-2.5 sm:space-y-3 max-w-2xl">
-            <span className="inline-block text-xs font-bold uppercase tracking-widest text-[#3F166B] bg-[#EDC271]/25 border border-[#EDC271]/60 px-3 py-1 rounded-full">
+            <span className="inline-block text-[11px] font-bold uppercase tracking-[0.16em] text-[#3F166B]">
               {t.products.eyebrow}
             </span>
-            <h2 className="text-2xl sm:text-3xl lg:text-4xl font-extrabold text-stone-900">
+            <h2 className="text-2xl sm:text-3xl lg:text-4xl font-medium text-stone-900">
               {t.products.title}
             </h2>
             <p className="text-xs sm:text-base text-stone-600">{t.products.subtitle}</p>
@@ -504,14 +380,14 @@ export default function ShowcaseView() {
               return (
                 <div
                   key={product.id}
-                  className="anim-card bg-white rounded-2xl border border-stone-200/90 overflow-hidden shadow-xs hover:shadow-xl transition-shadow flex flex-col justify-between group"
+                  className="anim-card bg-white border border-stone-300 overflow-hidden transition-colors hover:border-[#3F166B]/60 flex flex-col justify-between group"
                 >
                   <div>
                     <div className="relative h-48 bg-stone-200 overflow-hidden">
                       <img
                         src={product.imageUrl}
                         alt={title}
-                        className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
+                        className="w-full h-full object-cover"
                       />
                       <div className="absolute inset-0 bg-gradient-to-t from-black/75 via-black/20 to-transparent" />
                       {product.badge && (
@@ -528,7 +404,7 @@ export default function ShowcaseView() {
                     <div className="p-3.5 sm:p-5 space-y-3 sm:space-y-4">
                       <p className="hidden sm:line-clamp-3 text-xs text-stone-600 leading-relaxed">{desc}</p>
 
-                      <div className="bg-stone-50 rounded-xl p-2.5 sm:p-3 border border-stone-200/70 space-y-1.5 text-xs">
+                      <div className="bg-stone-50 p-2.5 sm:p-3 border-y border-stone-200 space-y-1.5 text-xs">
                         {[
                           [t.products.stapleLength, product.specs.stapleLength],
                           [t.products.shiveContent, product.specs.shiveContent],
@@ -581,22 +457,22 @@ export default function ShowcaseView() {
       <section id="process" className="scroll-mt-24 py-10 sm:py-16 lg:py-20 bg-white border-b border-stone-200/80">
         <div className="w-full max-w-[1440px] mx-auto px-4 sm:px-6 lg:px-10 xl:px-14 space-y-6 sm:space-y-12">
           <div className="anim-reveal text-center max-w-3xl mx-auto space-y-2.5 sm:space-y-3">
-            <span className="inline-block text-xs font-bold uppercase tracking-widest text-[#3F166B] bg-[#EDC271]/25 border border-[#EDC271]/60 px-3 py-1 rounded-full">
+            <span className="inline-block text-[11px] font-bold uppercase tracking-[0.16em] text-[#3F166B]">
               {t.process.eyebrow}
             </span>
-            <h2 className="text-xl sm:text-3xl lg:text-4xl font-extrabold text-stone-900">{t.process.title}</h2>
+            <h2 className="text-xl sm:text-3xl lg:text-4xl font-medium text-stone-900">{t.process.title}</h2>
             <p className="hidden sm:block text-xs sm:text-base text-stone-600">{t.process.subtitle}</p>
           </div>
 
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3 sm:gap-6">
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-x-8">
             {t.process.steps.map((step) => (
               <div
                 key={step.num}
-                className="anim-card bg-[#FAF8F5] border border-stone-200/90 rounded-2xl p-4 sm:p-6 space-y-2 sm:space-y-3 hover:border-[#3F166B]/40 transition-colors"
+                className="anim-card bg-transparent border-t border-stone-300 py-5 sm:py-6 space-y-2 sm:space-y-3 hover:border-[#3F166B]/60 transition-colors"
               >
                 <div className="flex items-center justify-between gap-2">
-                  <span className="text-xl sm:text-2xl font-black text-[#3F166B] font-mono">{step.num}</span>
-                  <span className="text-[11px] font-semibold px-2.5 py-1 rounded-full bg-[#EDC271]/25 text-[#3F166B] border border-[#EDC271]/60">
+                  <span className="text-lg sm:text-xl font-medium text-[#3F166B] [font-family:Georgia,serif]">{step.num}</span>
+                  <span className="text-[11px] text-stone-500">
                     {step.metric}
                   </span>
                 </div>
@@ -617,14 +493,14 @@ export default function ShowcaseView() {
             {/* Left: Factory info & direct channels */}
             <div className="anim-reveal lg:col-span-5 space-y-5">
               <div className="space-y-3">
-                <span className="inline-block text-xs font-bold uppercase tracking-widest text-[#3F166B] bg-[#EDC271]/30 border border-[#EDC271]/60 px-3 py-1 rounded-full">
+                <span className="inline-block text-[11px] font-bold uppercase tracking-[0.16em] text-[#3F166B]">
                   {t.contact.eyebrow}
                 </span>
-                <h2 className="text-xl sm:text-3xl font-extrabold text-stone-900">{t.contact.title}</h2>
+                <h2 className="text-xl sm:text-3xl font-medium text-stone-900">{t.contact.title}</h2>
                 <p className="hidden sm:block text-xs sm:text-sm text-stone-600 leading-relaxed">{t.contact.subtitle}</p>
               </div>
 
-              <div className="bg-white rounded-2xl p-5 border border-stone-200 space-y-4 shadow-xs">
+              <div className="bg-transparent py-5 border-y border-stone-300 space-y-4">
                 <div className="flex items-start gap-3">
                   <MapPin className="w-5 h-5 text-[#3F166B] shrink-0 mt-0.5" />
                   <div>
@@ -780,7 +656,7 @@ export default function ShowcaseView() {
             <div className="anim-reveal lg:col-span-7">
               <div
                 ref={contactCardRef}
-                className="bg-white rounded-2xl sm:rounded-3xl p-5 sm:p-8 border border-stone-200 shadow-xs transition-all duration-300 ease-in-out"
+                className="bg-white p-5 sm:p-8 border border-stone-300 transition-colors duration-300"
               >
                 {/* Confirmation state */}
                 <div
@@ -1055,19 +931,22 @@ export default function ShowcaseView() {
       ========================================================= */}
       {activeProductModal && (
         <div
+          role="dialog"
+          aria-modal="true"
+          aria-label={activeProductModal.name[lang] || activeProductModal.name.en}
           aria-hidden={!modalVisible}
           className={`fixed inset-0 z-50 flex items-end sm:items-center justify-center p-0 sm:p-4 transition-all duration-300 ease-out ${
             modalVisible
-              ? "bg-black/75 backdrop-blur-xs opacity-100 pointer-events-auto"
+              ? "bg-stone-950/65 opacity-100 pointer-events-auto"
               : "bg-black/0 opacity-0 pointer-events-none"
           }`}
           onClick={closeProductModal}
         >
           <div
-            className={`bg-white rounded-t-3xl sm:rounded-3xl max-w-2xl w-full max-h-[92dvh] flex flex-col overflow-hidden shadow-2xl border border-stone-200 transition-all duration-300 ease-out ${
+            className={`bg-[#FAF8F5] max-w-3xl w-full max-h-[92dvh] flex flex-col overflow-hidden shadow-xl border border-stone-300 transition-all duration-300 ease-out ${
               modalVisible
-                ? "opacity-100 translate-y-0 sm:scale-100"
-                : "opacity-0 translate-y-12 sm:translate-y-4 sm:scale-95"
+                ? "opacity-100 translate-y-0"
+                : "opacity-0 translate-y-6"
             }`}
             onClick={(e) => e.stopPropagation()}
           >
@@ -1081,7 +960,7 @@ export default function ShowcaseView() {
               <button
                 onClick={closeProductModal}
                 aria-label={t.products.close}
-                className="absolute top-3.5 end-3.5 w-9 h-9 rounded-full bg-black/65 text-white flex items-center justify-center hover:bg-black cursor-pointer"
+                className="absolute top-3 end-3 w-10 h-10 bg-stone-950/75 text-white flex items-center justify-center hover:bg-stone-950 cursor-pointer"
               >
                 <X className="w-5 h-5" />
               </button>
@@ -1089,7 +968,7 @@ export default function ShowcaseView() {
                 <span className="text-[11px] sm:text-xs font-bold text-[#EDC271] uppercase tracking-wider block truncate">
                   {activeProductModal.subtitle[lang] || activeProductModal.subtitle.en}
                 </span>
-                <h3 className="text-lg sm:text-2xl font-extrabold text-white mt-0.5 leading-snug">
+                <h3 className="text-xl sm:text-3xl font-medium text-white mt-1 leading-snug">
                   {activeProductModal.name[lang] || activeProductModal.name.en}
                 </h3>
               </div>
@@ -1101,10 +980,10 @@ export default function ShowcaseView() {
               </p>
 
               <div>
-                <h4 className="text-xs font-extrabold uppercase tracking-wider text-stone-500 mb-3">
+                <h4 className="text-xs font-bold uppercase tracking-wider text-stone-500 mb-2">
                   {t.products.specsTitle}
                 </h4>
-                <div className="grid grid-cols-1 sm:grid-cols-2 gap-2.5 sm:gap-3 text-xs">
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-x-6 text-xs">
                   {[
                     { icon: Ruler, label: t.products.stapleLength, value: activeProductModal.specs.stapleLength },
                     { icon: Droplets, label: t.products.moisture, value: activeProductModal.specs.moisture },
@@ -1113,7 +992,7 @@ export default function ShowcaseView() {
                   ].map(({ icon: Icon, label, value }) => (
                     <div
                       key={label}
-                      className="p-3 rounded-xl bg-stone-50 border border-stone-200 flex items-start gap-2.5"
+                      className="py-3 border-t border-stone-300 flex items-start gap-2.5"
                     >
                       <Icon className="w-4 h-4 text-[#3F166B] shrink-0 mt-0.5" />
                       <div>
@@ -1130,7 +1009,7 @@ export default function ShowcaseView() {
                   <h5 className="text-xs font-bold text-stone-700 mb-2">{t.products.availableGrades}</h5>
                   <div className="flex flex-wrap gap-1.5">
                     {activeProductModal.grades.map((g) => (
-                      <span key={g} className="px-2.5 py-1 rounded-lg bg-[#EDC271]/25 text-[#3F166B] border border-[#EDC271]/60 text-xs font-bold">
+                    <span key={g} className="px-2 py-1 bg-[#EDC271]/25 text-[#3F166B] border border-[#EDC271]/60 text-xs font-bold">
                         {g}
                       </span>
                     ))}
@@ -1149,16 +1028,16 @@ export default function ShowcaseView() {
                 </div>
               </div>
 
-              <div className="pt-4 border-t border-stone-200 flex flex-col-reverse sm:flex-row items-stretch sm:items-center justify-end gap-2.5 sm:gap-3">
+              <div className="pt-4 border-t border-stone-300 flex flex-col-reverse sm:flex-row items-stretch sm:items-center justify-end gap-2.5 sm:gap-3">
                 <button
                   onClick={closeProductModal}
-                  className="px-4 py-3 sm:py-2.5 rounded-xl border border-stone-300 text-xs font-bold text-stone-700 hover:bg-stone-100 cursor-pointer"
+                  className="px-4 py-3 sm:py-2.5 border border-stone-400 text-xs font-semibold text-stone-700 hover:bg-stone-100 cursor-pointer"
                 >
                   {t.products.close}
                 </button>
                 <button
                   onClick={() => handleInquireProduct(activeProductModal)}
-                  className="px-6 py-3 sm:py-2.5 rounded-xl bg-[#3F166B] hover:bg-[#2F1052] text-[#EDC271] text-xs font-extrabold text-center cursor-pointer"
+                  className="px-6 py-3 sm:py-2.5 bg-[#3F166B] hover:bg-[#2F1052] text-white text-xs font-semibold text-center cursor-pointer"
                 >
                   {t.products.inquireProduct}
                 </button>

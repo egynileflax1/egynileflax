@@ -33,6 +33,13 @@ body {
     "Helvetica Neue", Arial, sans-serif;
 }
 
+h1,
+h2,
+h3 {
+  font-family: Georgia, "Times New Roman", serif;
+  letter-spacing: -0.025em;
+}
+
 /* Hide scrollbars on horizontal swipeable mobile tab strips while keeping scroll functionality */
 .no-scrollbar::-webkit-scrollbar {
   display: none;

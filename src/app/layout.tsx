@@ -1,4 +1,5 @@
 import type { Metadata, Viewport } from "next";
+import Script from "next/script";
 import "./globals.css";
 import { FlaxProvider } from "@/context/FlaxContext";
 import PageLoader from "@/components/PageLoader";
@@ -101,6 +102,15 @@ export default function RootLayout({
           type="application/ld+json"
           dangerouslySetInnerHTML={{ __html: JSON.stringify(organizationJsonLd) }}
         />
+        <Script
+          src="https://www.googletagmanager.com/gtm.js?id=GTM-NR56H5ML"
+          strategy="afterInteractive"
+        />
+        <Script id="gtm-init" strategy="afterInteractive">
+          {`window.dataLayer = window.dataLayer || [];
+function gtag(){dataLayer.push(arguments);}
+gtag('js', new Date());`}
+        </Script>
         <PageLoader />
         <FlaxProvider>{children}</FlaxProvider>
       </body>

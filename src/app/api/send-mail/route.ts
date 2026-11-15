@@ -68,7 +68,7 @@ export async function POST(request: Request) {
       );
     }
 
-    const { leadId, to, toName, cc, replyTo, subject, message, includeSignature } =
+    const { leadId, to, toName, cc, replyTo, subject, message, includeSignature, layout } =
       parsed.data;
 
     const brevoApiKey = process.env.BREVO_API_KEY;
@@ -86,6 +86,7 @@ export async function POST(request: Request) {
       subject,
       message,
       includeSignature,
+      layout,
     });
 
     const ccEmails = parseCcList(cc);

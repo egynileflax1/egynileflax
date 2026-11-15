@@ -13,6 +13,7 @@ export interface BuildB2BEmailInput {
   subject: string;
   message: string;
   includeSignature?: boolean;
+  layout?: "personal" | "branded";
 }
 
 export function buildB2BEmailContent({
@@ -20,6 +21,7 @@ export function buildB2BEmailContent({
   subject,
   message,
   includeSignature = true,
+  layout = "branded",
 }: BuildB2BEmailInput): { html: string; text: string } {
   const siteUrl = process.env.NEXT_PUBLIC_SITE_URL || "https://egynileflax.com";
   const cleanMessage = message.trim();
@@ -60,6 +62,24 @@ export function buildB2BEmailContent({
         </div>
       </div>`
     : "";
+
+  if (layout === "personal") {
+    const personalHtml = `<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width,initial-scale=1" />
+    <title>${escapeHtml(subject)}</title>
+  </head>
+  <body style="margin:0;padding:16px;background-color:#ffffff;font-family:system-ui,-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,Arial,sans-serif;color:#1c1917;">
+    <div style="max-width:620px;margin:0;">
+      ${paragraphsHtml}
+      ${signatureHtml}
+    </div>
+  </body>
+</html>`;
+    return { html: personalHtml, text };
+  }
 
   const html = `<!DOCTYPE html>
 <html lang="en">

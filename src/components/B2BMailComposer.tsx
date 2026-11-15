@@ -93,6 +93,7 @@ export default function B2BMailComposer() {
   const [subject, setSubject] = useState("");
   const [message, setMessage] = useState("");
   const [includeSignature, setIncludeSignature] = useState(true);
+  const [layout, setLayout] = useState<"personal" | "branded">("branded");
   const [showMobilePreview, setShowMobilePreview] = useState(false);
 
   const [isSending, setIsSending] = useState(false);
@@ -135,8 +136,9 @@ export default function B2BMailComposer() {
         subject: subject || "Egy Nile Flax — B2B Inquiry",
         message: message || "Your message preview will appear here...",
         includeSignature,
+        layout,
       }),
-    [toName, subject, message, includeSignature]
+    [toName, subject, message, includeSignature, layout]
   );
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -155,6 +157,7 @@ export default function B2BMailComposer() {
       subject,
       message,
       includeSignature,
+      layout,
     });
 
     if (!parsed.success) {
@@ -410,18 +413,45 @@ export default function B2BMailComposer() {
               />
             </div>
 
-            {/* Signature Toggle */}
-            <label className="inline-flex items-center gap-2.5 cursor-pointer select-none">
-              <input
-                type="checkbox"
-                checked={includeSignature}
-                onChange={(e) => setIncludeSignature(e.target.checked)}
-                className="w-4 h-4 rounded border-stone-300 accent-[#3F166B]"
-              />
-              <span className="text-xs font-semibold text-stone-700">
-                Include Egy Nile Flax Factory Signature (Tanta, ISO 9001:2015, Phone/WhatsApp)
-              </span>
-            </label>
+            {/* Layout & Signature */}
+            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 pt-1">
+              <div className="inline-flex p-1 rounded-lg bg-stone-100 border border-stone-200 self-start">
+                <button
+                  type="button"
+                  onClick={() => setLayout("personal")}
+                  className={`px-2.5 py-1 rounded-md text-[11px] font-bold transition-colors cursor-pointer ${
+                    layout === "personal"
+                      ? "bg-white text-[#3F166B] shadow-2xs"
+                      : "text-stone-600 hover:text-stone-900"
+                  }`}
+                >
+                  Primary Inbox (Clean)
+                </button>
+                <button
+                  type="button"
+                  onClick={() => setLayout("branded")}
+                  className={`px-2.5 py-1 rounded-md text-[11px] font-bold transition-colors cursor-pointer ${
+                    layout === "branded"
+                      ? "bg-white text-[#3F166B] shadow-2xs"
+                      : "text-stone-600 hover:text-stone-900"
+                  }`}
+                >
+                  Branded Card
+                </button>
+              </div>
+
+              <label className="inline-flex items-center gap-2 cursor-pointer select-none">
+                <input
+                  type="checkbox"
+                  checked={includeSignature}
+                  onChange={(e) => setIncludeSignature(e.target.checked)}
+                  className="w-4 h-4 rounded border-stone-300 accent-[#3F166B]"
+                />
+                <span className="text-xs font-semibold text-stone-700">
+                  Include Factory Signature
+                </span>
+              </label>
+            </div>
 
             {/* Feedback Banners */}
             {errorMsg && (

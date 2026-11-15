@@ -20,8 +20,11 @@ import {
   AlertCircle,
   ExternalLink,
   RefreshCw,
+  Users,
+  Factory,
 } from "lucide-react";
 import { CrmEmailLog, CrmLead, LEAD_STATUSES, LeadStatus } from "@/lib/db";
+import SuppliersTab from "@/components/SuppliersTab";
 
 const STATUS_META: Record<
   LeadStatus,
@@ -57,6 +60,9 @@ function isFollowUpDue(lead: CrmLead): boolean {
 }
 
 export default function AdminCrmDashboard() {
+  const [activeTab, setActiveTab] = useState<"leads" | "suppliers">("leads");
+  const [showAddSupplierModal, setShowAddSupplierModal] = useState(false);
+
   const [checkingAuth, setCheckingAuth] = useState(true);
   const [authenticated, setAuthenticated] = useState(false);
   const [dbConfigured, setDbConfigured] = useState(true);
@@ -448,53 +454,86 @@ export default function AdminCrmDashboard() {
     <div className="min-h-dvh bg-[#FAF8F5] text-stone-900">
       {/* Header */}
       <header className="border-b border-stone-200 bg-white/90 backdrop-blur-md sticky top-0 z-20">
-        <div className="max-w-[1440px] mx-auto px-4 sm:px-6 lg:px-10 h-16 flex items-center justify-between gap-3">
+        <div className="max-w-[1440px] mx-auto px-3 sm:px-6 lg:px-10 h-14 sm:h-16 flex items-center justify-between gap-2 sm:gap-3">
           <div className="min-w-0">
             <h1 className="text-sm sm:text-base font-extrabold text-[#3F166B] truncate">
-              Egy Nile Flax — Admin CRM
+              <span className="sm:hidden">Admin CRM</span>
+              <span className="hidden sm:inline">Egy Nile Flax — Admin CRM</span>
             </h1>
             <p className="text-[11px] text-stone-500 hidden sm:block">
               Export Leads, Follow-Ups &amp; B2B Email History
             </p>
           </div>
 
-          <div className="flex items-center gap-2">
+          <div className="flex items-center gap-1.5 sm:gap-2 shrink-0">
             <Link
               href="/mail"
-              className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg border border-stone-200 bg-white hover:bg-stone-100 text-xs font-semibold text-stone-700"
+              title="B2B Mail Sender"
+              className="inline-flex items-center justify-center gap-1.5 h-9 px-2.5 sm:px-3 rounded-lg border border-stone-200 bg-white hover:bg-stone-100 text-xs font-semibold text-stone-700 whitespace-nowrap"
             >
-              <Mail className="w-3.5 h-3.5 text-[#3F166B]" />
+              <Mail className="w-3.5 h-3.5 text-[#3F166B] shrink-0" />
               <span className="hidden sm:inline">B2B Mail</span>
             </Link>
             <button
               type="button"
-              onClick={() => setShowAddModal(true)}
-              className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-[#3F166B] hover:bg-[#2F1052] text-[#EDC271] text-xs font-bold cursor-pointer"
+              onClick={() =>
+                activeTab === "leads" ? setShowAddModal(true) : setShowAddSupplierModal(true)
+              }
+              className="inline-flex items-center justify-center gap-1.5 h-9 px-2.5 sm:px-3 rounded-lg bg-[#3F166B] hover:bg-[#2F1052] text-[#EDC271] text-xs font-bold whitespace-nowrap cursor-pointer"
             >
-              <Plus className="w-3.5 h-3.5" />
-              <span>Add Lead</span>
+              <Plus className="w-3.5 h-3.5 shrink-0" />
+              <span>{activeTab === "leads" ? "Add Lead" : "Add Supplier"}</span>
             </button>
             <button
               type="button"
               onClick={exportCsv}
-              className="hidden sm:inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg border border-stone-200 bg-white hover:bg-stone-100 text-xs font-semibold text-stone-700 cursor-pointer"
+              title="Export CSV"
+              className="inline-flex items-center justify-center gap-1.5 h-9 px-2.5 sm:px-3 rounded-lg border border-stone-200 bg-white hover:bg-stone-100 text-xs font-semibold text-stone-700 whitespace-nowrap cursor-pointer"
             >
-              <Download className="w-3.5 h-3.5" />
-              <span>CSV</span>
+              <Download className="w-3.5 h-3.5 shrink-0" />
+              <span className="hidden sm:inline">CSV</span>
             </button>
             <button
               type="button"
               onClick={handleLogout}
               title="Sign Out"
-              className="inline-flex items-center gap-1 px-2.5 py-1.5 rounded-lg border border-stone-200 bg-white hover:bg-stone-100 text-xs font-semibold text-stone-600 cursor-pointer"
+              className="inline-flex items-center justify-center h-9 px-2.5 rounded-lg border border-stone-200 bg-white hover:bg-stone-100 text-xs font-semibold text-stone-600 cursor-pointer"
             >
-              <LogOut className="w-3.5 h-3.5" />
+              <LogOut className="w-3.5 h-3.5 shrink-0" />
             </button>
           </div>
         </div>
       </header>
 
       <main className="max-w-[1440px] mx-auto px-4 sm:px-6 lg:px-10 py-6 space-y-6">
+        {/* CRM Mode Tabs */}
+        <div className="inline-flex p-1 rounded-xl bg-white border border-stone-200 shadow-2xs">
+          <button
+            type="button"
+            onClick={() => setActiveTab("leads")}
+            className={`inline-flex items-center gap-2 px-3.5 py-2 rounded-lg text-xs font-bold transition-colors cursor-pointer ${
+              activeTab === "leads"
+                ? "bg-[#3F166B] text-[#EDC271]"
+                : "text-stone-600 hover:text-stone-900"
+            }`}
+          >
+            <Users className="w-3.5 h-3.5" />
+            <span>Buyers / Leads</span>
+          </button>
+          <button
+            type="button"
+            onClick={() => setActiveTab("suppliers")}
+            className={`inline-flex items-center gap-2 px-3.5 py-2 rounded-lg text-xs font-bold transition-colors cursor-pointer ${
+              activeTab === "suppliers"
+                ? "bg-[#3F166B] text-[#EDC271]"
+                : "text-stone-600 hover:text-stone-900"
+            }`}
+          >
+            <Factory className="w-3.5 h-3.5" />
+            <span>Suppliers &amp; Mills</span>
+          </button>
+        </div>
+
         {!dbConfigured && (
           <div className="p-4 rounded-2xl bg-amber-50 border border-amber-200 text-amber-900 text-xs space-y-1">
             <div className="font-bold">Database not connected yet (DATABASE_URL missing)</div>
@@ -504,17 +543,29 @@ export default function AdminCrmDashboard() {
           </div>
         )}
 
-        {/* KPI Cards */}
-        <div className="grid grid-cols-2 sm:grid-cols-5 gap-3">
+        {activeTab === "suppliers" ? (
+          <SuppliersTab
+            showAddModal={showAddSupplierModal}
+            setShowAddModal={setShowAddSupplierModal}
+          />
+        ) : (
+          <>
+            {/* KPI Cards */}
+        <div className="grid grid-cols-2 sm:grid-cols-5 gap-2.5 sm:gap-3">
           {[
             ["Total Leads", stats.total, "text-[#3F166B]"],
             ["New Inquiries", stats.newCount, "text-amber-700"],
             ["Sample / Quoted", stats.quotedCount, "text-[#3F166B]"],
             ["Won Deals", stats.wonCount, "text-emerald-700"],
             ["Follow-ups Due", stats.dueCount, "text-rose-700"],
-          ].map(([label, val, cls]) => (
-            <div key={String(label)} className="bg-white rounded-xl border border-stone-200 p-3.5">
-              <div className={`text-xl font-extrabold tabular-nums ${cls}`}>{val}</div>
+          ].map(([label, val, cls], idx) => (
+            <div
+              key={String(label)}
+              className={`bg-white rounded-xl border border-stone-200 p-3 sm:p-3.5 ${
+                idx === 4 ? "col-span-2 sm:col-span-1" : ""
+              }`}
+            >
+              <div className={`text-lg sm:text-xl font-extrabold tabular-nums ${cls}`}>{val}</div>
               <div className="text-[11px] text-stone-500 mt-0.5">{label}</div>
             </div>
           ))}
@@ -522,7 +573,7 @@ export default function AdminCrmDashboard() {
 
         {/* Filters */}
         <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
-          <div className="flex items-center gap-1.5 overflow-x-auto pb-1 sm:pb-0">
+          <div className="no-scrollbar flex items-center gap-1.5 overflow-x-auto pb-1 sm:pb-0">
             {(
               [
                 ["all", "All"],
@@ -558,7 +609,7 @@ export default function AdminCrmDashboard() {
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
                 placeholder="Search buyer, company, country..."
-                className="w-full ps-8 pe-3 py-2 rounded-xl border border-stone-200 bg-white text-xs focus:outline-none focus:border-[#3F166B]"
+                className="w-full ps-8 pe-3 py-2 rounded-xl border border-stone-200 bg-white text-base sm:text-xs focus:outline-none focus:border-[#3F166B]"
               />
             </div>
             <button
@@ -578,8 +629,60 @@ export default function AdminCrmDashboard() {
           </div>
         )}
 
-        {/* Leads Table */}
-        <div className="bg-white rounded-2xl border border-stone-200 shadow-xs overflow-hidden">
+        {/* Mobile Lead Cards (< md) */}
+        <div className="md:hidden space-y-2.5">
+          {filteredLeads.length === 0 ? (
+            <div className="bg-white rounded-2xl border border-stone-200 p-8 text-center text-xs text-stone-500">
+              {loadingLeads ? "Loading leads..." : "No leads match this filter yet."}
+            </div>
+          ) : (
+            filteredLeads.map((lead) => {
+              const meta = STATUS_META[lead.status] || STATUS_META.new;
+              const due = isFollowUpDue(lead);
+              return (
+                <button
+                  key={lead.id}
+                  type="button"
+                  onClick={() => openLeadDrawer(lead)}
+                  className="w-full text-left bg-white rounded-2xl border border-stone-200 p-4 space-y-2.5 active:scale-[0.99] transition-transform"
+                >
+                  <div className="flex items-start justify-between gap-2">
+                    <div className="min-w-0">
+                      <div className="font-bold text-sm text-stone-900 truncate">{lead.name}</div>
+                      <div className="text-[11px] text-stone-500 truncate">
+                        {lead.company ? `${lead.company} • ` : ""}
+                        {lead.email}
+                      </div>
+                    </div>
+                    <span
+                      className={`shrink-0 inline-flex px-2.5 py-0.5 rounded-full text-[11px] font-semibold border ${meta.badgeClass}`}
+                    >
+                      {meta.label}
+                    </span>
+                  </div>
+
+                  <div className="flex flex-wrap items-center gap-x-3 gap-y-1 text-[11px] text-stone-600">
+                    <span className="font-semibold text-stone-800">
+                      {lead.product || "General Inquiry"}
+                      {lead.quantity ? ` (${lead.quantity})` : ""}
+                    </span>
+                    {lead.country && <span>• {lead.country}</span>}
+                  </div>
+
+                  <div className="flex items-center justify-between text-[11px] text-stone-500 pt-1 border-t border-stone-100">
+                    <span>Created {formatDate(lead.created_at)}</span>
+                    <span className={due ? "font-bold text-rose-700" : ""}>
+                      Follow-up: {formatDate(lead.next_follow_up_at)}
+                    </span>
+                  </div>
+                </button>
+              );
+            })
+          )}
+        </div>
+
+        {/* Desktop Leads Table (>= md) */}
+        <div className="hidden md:block bg-white rounded-2xl border border-stone-200 shadow-xs overflow-hidden">
           <div className="overflow-x-auto">
             <table className="w-full text-left border-collapse text-xs">
               <thead>
@@ -644,12 +747,14 @@ export default function AdminCrmDashboard() {
             </table>
           </div>
         </div>
+          </>
+        )}
       </main>
 
       {/* Slide-Over Lead Detail Drawer */}
       {activeLead && (
         <div className="fixed inset-0 z-40 bg-black/40 backdrop-blur-xs flex justify-end">
-          <div className="w-full max-w-2xl bg-[#FAF8F5] h-full overflow-y-auto shadow-2xl border-l border-stone-200 p-5 sm:p-6 space-y-5">
+          <div className="w-full max-w-full sm:max-w-2xl bg-[#FAF8F5] h-full overflow-y-auto shadow-2xl sm:border-l border-stone-200 p-4 sm:p-6 pb-10 space-y-4 sm:space-y-5">
             <div className="flex items-start justify-between gap-3">
               <div>
                 <h2 className="text-lg font-extrabold text-[#3F166B]">{activeLead.name}</h2>
@@ -713,7 +818,7 @@ export default function AdminCrmDashboard() {
                   <select
                     value={editStatus}
                     onChange={(e) => setEditStatus(e.target.value as LeadStatus)}
-                    className="w-full px-3 py-2 rounded-lg border border-stone-300 text-xs bg-white"
+                    className="w-full px-3 py-2 rounded-lg border border-stone-300 text-base sm:text-xs bg-white"
                   >
                     {LEAD_STATUSES.map((st) => (
                       <option key={st} value={st}>
@@ -731,7 +836,7 @@ export default function AdminCrmDashboard() {
                     value={editIncoterm}
                     onChange={(e) => setEditIncoterm(e.target.value)}
                     placeholder="e.g. FOB Alexandria"
-                    className="w-full px-3 py-2 rounded-lg border border-stone-300 text-xs"
+                    className="w-full px-3 py-2 rounded-lg border border-stone-300 text-base sm:text-xs"
                   />
                 </div>
                 <div>
@@ -743,7 +848,7 @@ export default function AdminCrmDashboard() {
                     type="date"
                     value={editFollowUp}
                     onChange={(e) => setEditFollowUp(e.target.value)}
-                    className="w-full px-3 py-2 rounded-lg border border-stone-300 text-xs"
+                    className="w-full px-3 py-2 rounded-lg border border-stone-300 text-base sm:text-xs"
                   />
                 </div>
               </div>
@@ -757,7 +862,7 @@ export default function AdminCrmDashboard() {
                   value={editNotes}
                   onChange={(e) => setEditNotes(e.target.value)}
                   placeholder="Quoted price, sample tracking #, buyer specs..."
-                  className="w-full px-3 py-2 rounded-lg border border-stone-300 text-xs"
+                  className="w-full px-3 py-2 rounded-lg border border-stone-300 text-base sm:text-xs"
                 />
               </div>
 
@@ -798,14 +903,14 @@ export default function AdminCrmDashboard() {
                 value={replySubject}
                 onChange={(e) => setReplySubject(e.target.value)}
                 placeholder="Email Subject"
-                className="w-full px-3 py-2 rounded-lg border border-stone-300 text-xs"
+                className="w-full px-3 py-2 rounded-lg border border-stone-300 text-base sm:text-xs"
               />
               <textarea
                 rows={5}
                 required
                 value={replyMessage}
                 onChange={(e) => setReplyMessage(e.target.value)}
-                className="w-full px-3 py-2 rounded-lg border border-stone-300 text-xs leading-relaxed"
+                className="w-full px-3 py-2 rounded-lg border border-stone-300 text-base sm:text-xs leading-relaxed"
               />
 
               {replyFeedback && (
@@ -869,10 +974,10 @@ export default function AdminCrmDashboard() {
 
       {/* Add Lead Modal */}
       {showAddModal && (
-        <div className="fixed inset-0 z-50 bg-black/45 backdrop-blur-xs flex items-center justify-center p-4">
+        <div className="fixed inset-0 z-50 bg-black/45 backdrop-blur-xs flex items-center justify-center p-3 sm:p-4">
           <form
             onSubmit={handleCreateLead}
-            className="w-full max-w-lg bg-white rounded-2xl border border-stone-200 shadow-xl p-5 sm:p-6 space-y-4"
+            className="w-full max-w-lg max-h-[90dvh] overflow-y-auto bg-white rounded-2xl border border-stone-200 shadow-xl p-4 sm:p-6 space-y-4"
           >
             <div className="flex items-center justify-between">
               <h2 className="text-base font-extrabold text-[#3F166B]">Add B2B Lead</h2>
@@ -885,7 +990,7 @@ export default function AdminCrmDashboard() {
               </button>
             </div>
 
-            <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 text-xs">
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 text-base sm:text-xs">
               <input
                 type="text"
                 required
@@ -955,7 +1060,7 @@ export default function AdminCrmDashboard() {
               placeholder="Notes..."
               value={newLead.notes}
               onChange={(e) => setNewLead((p) => ({ ...p, notes: e.target.value }))}
-              className="w-full px-3 py-2 rounded-lg border border-stone-300 text-xs"
+              className="w-full px-3 py-2 rounded-lg border border-stone-300 text-base sm:text-xs"
             />
 
             {addError && (

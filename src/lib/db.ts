@@ -31,6 +31,24 @@ export interface CrmLead {
   updated_at: string;
 }
 
+export const SUPPLIER_TYPES = ["factory", "farmer", "trader"] as const;
+export type SupplierType = (typeof SUPPLIER_TYPES)[number];
+
+export interface CrmSupplier {
+  id: number;
+  name: string;
+  type: SupplierType;
+  contact_person: string;
+  phone: string;
+  location: string;
+  products: string;
+  workers_shifts: string;
+  daily_output: string;
+  price_notes: string;
+  created_at: string;
+  updated_at: string;
+}
+
 export interface CrmEmailLog {
   id: number;
   lead_id: number | null;
@@ -101,6 +119,28 @@ export async function ensureCrmSchema(): Promise<boolean> {
       await sql`
         CREATE INDEX IF NOT EXISTS idx_crm_email_logs_lead_id
         ON crm_email_logs (lead_id, sent_at DESC)
+      `;
+
+      await sql`
+        CREATE TABLE IF NOT EXISTS crm_suppliers (
+          id SERIAL PRIMARY KEY,
+          name TEXT NOT NULL,
+          type TEXT NOT NULL DEFAULT 'factory',
+          contact_person TEXT NOT NULL DEFAULT '',
+          phone TEXT NOT NULL DEFAULT '',
+          location TEXT NOT NULL DEFAULT '',
+          products TEXT NOT NULL DEFAULT '',
+          workers_shifts TEXT NOT NULL DEFAULT '',
+          daily_output TEXT NOT NULL DEFAULT '',
+          price_notes TEXT NOT NULL DEFAULT '',
+          created_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),
+          updated_at TIMESTAMPTZ NOT NULL DEFAULT NOW()
+        )
+      `;
+
+      await sql`
+        CREATE INDEX IF NOT EXISTS idx_crm_suppliers_type_updated
+        ON crm_suppliers (type, updated_at DESC)
       `;
     })().catch((err) => {
       schemaReadyPromise = null;

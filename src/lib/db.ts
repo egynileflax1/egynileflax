@@ -1,0 +1,113 @@
+import { neon, NeonQueryFunction } from "@neondatabase/serverless";
+
+export const LEAD_STATUSES = [
+  "new",
+  "contacted",
+  "sample_sent",
+  "quoted",
+  "won",
+  "lost",
+] as const;
+
+export type LeadStatus = (typeof LEAD_STATUSES)[number];
+
+export interface CrmLead {
+  id: number;
+  name: string;
+  company: string;
+  email: string;
+  phone: string;
+  country: string;
+  product: string;
+  quantity: string;
+  incoterm: string;
+  message: string;
+  lang: string;
+  source: string;
+  status: LeadStatus;
+  notes: string;
+  next_follow_up_at: string | null;
+  created_at: string;
+  updated_at: string;
+}
+
+export interface CrmEmailLog {
+  id: number;
+  lead_id: number | null;
+  to_email: string;
+  subject: string;
+  body: string;
+  provider: string;
+  sent_at: string;
+}
+
+let cachedSql: NeonQueryFunction<false, false> | null = null;
+let schemaReadyPromise: Promise<void> | null = null;
+
+export function getSql(): NeonQueryFunction<false, false> | null {
+  const url = process.env.DATABASE_URL;
+  if (!url) return null;
+  if (!cachedSql) {
+    cachedSql = neon(url);
+  }
+  return cachedSql;
+}
+
+export async function ensureCrmSchema(): Promise<boolean> {
+  const sql = getSql();
+  if (!sql) return false;
+
+  if (!schemaReadyPromise) {
+    schemaReadyPromise = (async () => {
+      await sql`
+        CREATE TABLE IF NOT EXISTS crm_leads (
+          id SERIAL PRIMARY KEY,
+          name TEXT NOT NULL,
+          company TEXT NOT NULL DEFAULT '',
+          email TEXT NOT NULL,
+          phone TEXT NOT NULL DEFAULT '',
+          country TEXT NOT NULL DEFAULT '',
+          product TEXT NOT NULL DEFAULT '',
+          quantity TEXT NOT NULL DEFAULT '',
+          incoterm TEXT NOT NULL DEFAULT '',
+          message TEXT NOT NULL DEFAULT '',
+          lang TEXT NOT NULL DEFAULT 'en',
+          source TEXT NOT NULL DEFAULT 'website_form',
+          status TEXT NOT NULL DEFAULT 'new',
+          notes TEXT NOT NULL DEFAULT '',
+          next_follow_up_at TIMESTAMPTZ NULL,
+          created_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),
+          updated_at TIMESTAMPTZ NOT NULL DEFAULT NOW()
+        )
+      `;
+
+      await sql`
+        CREATE TABLE IF NOT EXISTS crm_email_logs (
+          id SERIAL PRIMARY KEY,
+          lead_id INTEGER REFERENCES crm_leads(id) ON DELETE SET NULL,
+          to_email TEXT NOT NULL,
+          subject TEXT NOT NULL,
+          body TEXT NOT NULL,
+          provider TEXT NOT NULL,
+          sent_at TIMESTAMPTZ NOT NULL DEFAULT NOW()
+        )
+      `;
+
+      await sql`
+        CREATE INDEX IF NOT EXISTS idx_crm_leads_status_updated
+        ON crm_leads (status, updated_at DESC)
+      `;
+
+      await sql`
+        CREATE INDEX IF NOT EXISTS idx_crm_email_logs_lead_id
+        ON crm_email_logs (lead_id, sent_at DESC)
+      `;
+    })().catch((err) => {
+      schemaReadyPromise = null;
+      throw err;
+    });
+  }
+
+  await schemaReadyPromise;
+  return true;
+}

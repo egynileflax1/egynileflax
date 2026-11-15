@@ -6,7 +6,6 @@ import {
   Send,
   Lock,
   Eye,
-  EyeOff,
   CheckCircle2,
   AlertCircle,
   ArrowLeft,
@@ -16,8 +15,6 @@ import {
 import { COMPANY } from "@/data/initialData";
 import { b2bMailSchema } from "@/lib/b2bMailSchema";
 import { buildB2BEmailContent } from "@/lib/b2bMailTemplate";
-
-const PASSCODE_STORAGE_KEY = "egynileflax_b2b_passcode";
 
 interface MailTemplate {
   id: string;
@@ -86,8 +83,9 @@ Best regards,`,
 ];
 
 export default function B2BMailComposer() {
-  const [password, setPassword] = useState("");
-  const [showPassword, setShowPassword] = useState(false);
+  const [checkingAuth, setCheckingAuth] = useState(true);
+  const [authenticated, setAuthenticated] = useState(false);
+  const [leadId, setLeadId] = useState<number | null>(null);
   const [to, setTo] = useState("");
   const [toName, setToName] = useState("");
   const [cc, setCc] = useState("");
@@ -103,25 +101,25 @@ export default function B2BMailComposer() {
 
   useEffect(() => {
     try {
-      const saved = window.sessionStorage.getItem(PASSCODE_STORAGE_KEY);
-      if (saved) setPassword(saved);
+      const params = new URLSearchParams(window.location.search);
+      const qTo = params.get("to");
+      const qName = params.get("name");
+      const qLeadId = Number(params.get("leadId"));
+      if (qTo) setTo(qTo);
+      if (qName) setToName(qName);
+      if (Number.isInteger(qLeadId) && qLeadId > 0) setLeadId(qLeadId);
     } catch {
-      // Ignore storage access errors
+      // Ignore URL parse errors
     }
-  }, []);
 
-  const handlePasswordChange = (value: string) => {
-    setPassword(value);
-    try {
-      if (value) {
-        window.sessionStorage.setItem(PASSCODE_STORAGE_KEY, value);
-      } else {
-        window.sessionStorage.removeItem(PASSCODE_STORAGE_KEY);
-      }
-    } catch {
-      // Ignore storage access errors
-    }
-  };
+    fetch("/api/admin/auth")
+      .then((r) => r.json())
+      .then((data: { authenticated?: boolean }) => {
+        setAuthenticated(Boolean(data.authenticated));
+      })
+      .catch(() => setAuthenticated(false))
+      .finally(() => setCheckingAuth(false));
+  }, []);
 
   const applyTemplate = (tpl: MailTemplate) => {
     setSubject(tpl.subject);
@@ -149,7 +147,7 @@ export default function B2BMailComposer() {
     setSentInfo(null);
 
     const parsed = b2bMailSchema.safeParse({
-      password,
+      leadId,
       to,
       toName,
       cc,
@@ -196,6 +194,65 @@ export default function B2BMailComposer() {
     }
   };
 
+  if (checkingAuth) {
+    return (
+      <div className="min-h-dvh bg-[#FAF8F5] flex items-center justify-center text-sm text-stone-500">
+        Loading B2B Mail Sender...
+      </div>
+    );
+  }
+
+  if (!authenticated) {
+    return (
+      <div className="min-h-dvh bg-[#FAF8F5] flex items-center justify-center p-4">
+        <div className="w-full max-w-md bg-white rounded-2xl border border-stone-200 shadow-sm p-6 sm:p-8 space-y-5">
+          <div className="flex items-center gap-3">
+            <div className="w-10 h-10 rounded-xl bg-[#3F166B] text-[#EDC271] flex items-center justify-center">
+              <Lock className="w-5 h-5" />
+            </div>
+            <div>
+              <h1 className="text-lg font-extrabold text-[#3F166B]">B2B Mail Sender</h1>
+              <p className="text-xs text-stone-500">
+                Sign in with an authorized Egy Nile Flax Google account
+              </p>
+            </div>
+          </div>
+
+          <a
+            href="/api/admin/google?next=/mail"
+            className="w-full py-2.5 px-4 rounded-xl border border-stone-300 bg-white hover:bg-stone-50 text-stone-800 font-bold text-sm flex items-center justify-center gap-2.5 transition-colors shadow-2xs"
+          >
+            <svg className="w-4 h-4 shrink-0" viewBox="0 0 24 24" aria-hidden="true">
+              <path
+                fill="#4285F4"
+                d="M23.745 12.27c0-.7-.06-1.4-.19-2.07H12v4.51h6.6c-.29 1.52-1.14 2.82-2.4 3.68v3.05h3.88c2.27-2.09 3.665-5.17 3.665-9.17Z"
+              />
+              <path
+                fill="#34A853"
+                d="M12 24c3.24 0 5.95-1.08 7.93-2.91l-3.88-3.05c-1.08.72-2.45 1.16-4.05 1.16-3.12 0-5.77-2.11-6.72-4.96H1.29v3.14C3.26 21.3 7.31 24 12 24Z"
+              />
+              <path
+                fill="#FBBC05"
+                d="M5.28 14.24c-.24-.72-.38-1.49-.38-2.24s.14-1.52.38-2.24V6.62H1.29C.47 8.24 0 10.06 0 12s.47 3.76 1.29 5.38l3.99-3.14Z"
+              />
+              <path
+                fill="#EA4335"
+                d="M12 4.75c1.77 0 3.35.61 4.6 1.8l3.42-3.42C17.95 1.19 15.24 0 12 0 7.31 0 3.26 2.7 1.29 6.62l3.99 3.14c.95-2.85 3.6-4.96 6.72-4.96Z"
+              />
+            </svg>
+            <span>Sign in with Google</span>
+          </a>
+
+          <div className="text-center">
+            <Link href="/admin" className="text-xs font-semibold text-[#3F166B] hover:underline">
+              Or sign in via Admin CRM
+            </Link>
+          </div>
+        </div>
+      </div>
+    );
+  }
+
   return (
     <div className="min-h-dvh bg-[#FAF8F5] text-stone-900">
       {/* Top Bar */}
@@ -215,13 +272,21 @@ export default function B2BMailComposer() {
             </div>
           </div>
 
-          <Link
-            href="/"
-            className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg border border-stone-200 bg-white hover:bg-stone-100 text-xs font-semibold text-stone-700 transition-colors shrink-0"
-          >
-            <ArrowLeft className="w-3.5 h-3.5" />
-            <span>Back to Site</span>
-          </Link>
+          <div className="flex items-center gap-2 shrink-0">
+            <Link
+              href="/admin"
+              className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg border border-stone-200 bg-white hover:bg-stone-100 text-xs font-semibold text-[#3F166B] transition-colors"
+            >
+              <span>Admin CRM</span>
+            </Link>
+            <Link
+              href="/"
+              className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg border border-stone-200 bg-white hover:bg-stone-100 text-xs font-semibold text-stone-700 transition-colors"
+            >
+              <ArrowLeft className="w-3.5 h-3.5" />
+              <span>Back to Site</span>
+            </Link>
+          </div>
         </div>
       </header>
 
@@ -232,39 +297,6 @@ export default function B2BMailComposer() {
             onSubmit={handleSubmit}
             className="lg:col-span-7 bg-white rounded-2xl border border-stone-200 shadow-xs p-5 sm:p-6 space-y-5"
           >
-            {/* Access Passcode */}
-            <div className="p-4 rounded-xl bg-[#FAF8F5] border border-stone-200/90 space-y-2">
-              <label
-                htmlFor="b2b-passcode"
-                className="flex items-center gap-1.5 text-xs font-bold text-[#3F166B]"
-              >
-                <Lock className="w-3.5 h-3.5" />
-                <span>Sender Access Passcode *</span>
-              </label>
-              <div className="relative">
-                <input
-                  id="b2b-passcode"
-                  type={showPassword ? "text" : "password"}
-                  value={password}
-                  onChange={(e) => handlePasswordChange(e.target.value)}
-                  placeholder="Enter B2B_MAIL_PASSWORD"
-                  autoComplete="current-password"
-                  className="w-full px-3.5 py-2.5 pe-10 rounded-xl border border-stone-300 bg-white text-base sm:text-xs focus:outline-none focus:border-[#3F166B]"
-                />
-                <button
-                  type="button"
-                  onClick={() => setShowPassword((prev) => !prev)}
-                  aria-label={showPassword ? "Hide passcode" : "Show passcode"}
-                  className="absolute inset-y-0 end-0 px-3 text-stone-400 hover:text-stone-700"
-                >
-                  {showPassword ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
-                </button>
-              </div>
-              <p className="text-[11px] text-stone-500">
-                Protects your domain from unauthorized sending. Saved for this browser tab only.
-              </p>
-            </div>
-
             {/* Quick Templates */}
             <div className="space-y-2">
               <div className="flex items-center gap-1.5 text-xs font-bold text-stone-700">

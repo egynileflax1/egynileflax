@@ -1,6 +1,7 @@
 import { NextResponse } from "next/server";
 import { contactSchema } from "@/lib/contactSchema";
 import { COMPANY } from "@/data/initialData";
+import { ensureCrmSchema, getSql } from "@/lib/db";
 
 const escapeHtml = (value: string): string =>
   value
@@ -161,6 +162,23 @@ export async function POST(request: Request) {
           }
         })
       );
+    }
+
+    // Save lead to CRM if DATABASE_URL is configured (non-blocking for email/Discord)
+    try {
+      const sql = getSql();
+      if (sql && (await ensureCrmSchema())) {
+        await sql`
+          INSERT INTO crm_leads (
+            name, company, email, phone, country, product, quantity, message, lang, source, status
+          )
+          VALUES (
+            ${name}, ${company}, ${email}, ${phone}, ${destination}, ${product}, ${quantity}, ${message}, ${lang}, 'website_form', 'new'
+          )
+        `;
+      }
+    } catch (dbErr) {
+      console.error("CRM lead capture error:", dbErr);
     }
 
     const results = await Promise.allSettled(deliveries);

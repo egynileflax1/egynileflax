@@ -1,23 +1,57 @@
-import crypto from "node:crypto";
 import { NextResponse } from "next/server";
 import { COMPANY } from "@/data/initialData";
+import { isAdminAuthenticated } from "@/lib/adminAuth";
 import { b2bMailSchema, parseCcList } from "@/lib/b2bMailSchema";
 import { buildB2BEmailContent } from "@/lib/b2bMailTemplate";
+import { ensureCrmSchema, getSql } from "@/lib/db";
 
-function verifyPasscode(provided: string, expected: string): boolean {
-  const a = Buffer.from(provided, "utf8");
-  const b = Buffer.from(expected, "utf8");
-  if (a.length !== b.length) return false;
-  return crypto.timingSafeEqual(a, b);
+async function logCrmEmail(params: {
+  leadId?: number | null;
+  to: string;
+  subject: string;
+  message: string;
+  provider: string;
+}) {
+  try {
+    const sql = getSql();
+    if (!sql || !(await ensureCrmSchema())) return;
+
+    let resolvedLeadId = params.leadId ?? null;
+    if (!resolvedLeadId) {
+      const matched = await sql`
+        SELECT id FROM crm_leads
+        WHERE LOWER(email) = LOWER(${params.to})
+        ORDER BY updated_at DESC
+        LIMIT 1
+      `;
+      if (matched.length) resolvedLeadId = matched[0].id as number;
+    }
+
+    await sql`
+      INSERT INTO crm_email_logs (lead_id, to_email, subject, body, provider)
+      VALUES (${resolvedLeadId}, ${params.to}, ${params.subject}, ${params.message}, ${params.provider})
+    `;
+
+    if (resolvedLeadId) {
+      await sql`
+        UPDATE crm_leads
+        SET
+          status = CASE WHEN status = 'new' THEN 'contacted' ELSE status END,
+          updated_at = NOW()
+        WHERE id = ${resolvedLeadId}
+      `;
+    }
+  } catch (err) {
+    console.error("CRM email log error:", err);
+  }
 }
 
 export async function POST(request: Request) {
   try {
-    const expectedPassword = process.env.B2B_MAIL_PASSWORD;
-    if (!expectedPassword) {
+    if (!(await isAdminAuthenticated())) {
       return NextResponse.json(
-        { error: "B2B_MAIL_PASSWORD is not configured on the server." },
-        { status: 503 }
+        { error: "Please sign in with Google to send B2B emails." },
+        { status: 401 }
       );
     }
 
@@ -34,11 +68,8 @@ export async function POST(request: Request) {
       );
     }
 
-    const { password, to, toName, cc, replyTo, subject, message, includeSignature } = parsed.data;
-
-    if (!verifyPasscode(password, expectedPassword)) {
-      return NextResponse.json({ error: "Invalid access passcode." }, { status: 401 });
-    }
+    const { leadId, to, toName, cc, replyTo, subject, message, includeSignature } =
+      parsed.data;
 
     const brevoApiKey = process.env.BREVO_API_KEY;
     const resendApiKey = process.env.RESEND_API_KEY;
@@ -84,6 +115,7 @@ export async function POST(request: Request) {
         throw new Error(`Brevo error ${res.status}: ${detail}`);
       }
 
+      await logCrmEmail({ leadId, to, subject, message, provider: "brevo" });
       return NextResponse.json({ ok: true, provider: "brevo" });
     }
 
@@ -112,6 +144,7 @@ export async function POST(request: Request) {
       throw new Error(`Resend error ${res.status}: ${detail}`);
     }
 
+    await logCrmEmail({ leadId, to, subject, message, provider: "resend" });
     return NextResponse.json({ ok: true, provider: "resend" });
   } catch (error) {
     console.error("B2B mail send error:", error);

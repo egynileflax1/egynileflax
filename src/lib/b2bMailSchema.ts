@@ -9,7 +9,7 @@ export const parseCcList = (raw: string): string[] =>
     .filter(Boolean);
 
 export const b2bMailSchema = z.object({
-  password: z.string().min(1, "Access passcode is required."),
+  leadId: z.number().int().positive().nullable().optional(),
   to: z
     .string()
     .trim()

@@ -11,9 +11,11 @@ import {
   ArrowLeft,
   Sparkles,
   Mail,
+  Paperclip,
+  X,
 } from "lucide-react";
 import { COMPANY } from "@/data/initialData";
-import { b2bMailSchema } from "@/lib/b2bMailSchema";
+import { b2bMailSchema, B2BAttachment } from "@/lib/b2bMailSchema";
 import { buildB2BEmailContent } from "@/lib/b2bMailTemplate";
 
 interface MailTemplate {
@@ -95,6 +97,7 @@ export default function B2BMailComposer() {
   const [includeSignature, setIncludeSignature] = useState(true);
   const [layout, setLayout] = useState<"personal" | "branded">("branded");
   const [provider, setProvider] = useState<"auto" | "brevo" | "resend">("auto");
+  const [attachments, setAttachments] = useState<B2BAttachment[]>([]);
   const [showMobilePreview, setShowMobilePreview] = useState(false);
 
   const [isSending, setIsSending] = useState(false);
@@ -160,6 +163,7 @@ export default function B2BMailComposer() {
       includeSignature,
       layout,
       provider,
+      attachments,
     });
 
     if (!parsed.success) {
@@ -192,6 +196,7 @@ export default function B2BMailComposer() {
       setCc("");
       setSubject("");
       setMessage("");
+      setAttachments([]);
     } catch {
       setErrorMsg("Network error while sending email. Please try again.");
     } finally {
@@ -478,6 +483,64 @@ export default function B2BMailComposer() {
                   Include Factory Signature
                 </span>
               </label>
+
+              <div className="w-full pt-2 border-t border-stone-100 flex flex-wrap items-center gap-2">
+                <label className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg border border-stone-200 bg-stone-50 hover:bg-stone-100 text-xs font-semibold text-stone-700 cursor-pointer">
+                  <Paperclip className="w-3.5 h-3.5 text-[#3F166B]" />
+                  <span>Attach PDF / File (max 3)</span>
+                  <input
+                    type="file"
+                    multiple
+                    accept=".pdf,.doc,.docx,.xls,.xlsx,.png,.jpg,.jpeg"
+                    className="hidden"
+                    onChange={async (e) => {
+                      const files = Array.from(e.target.files || []);
+                      e.target.value = "";
+                      if (!files.length) return;
+                      if (attachments.length + files.length > 3) {
+                        setErrorMsg("You can attach up to 3 files per email.");
+                        return;
+                      }
+                      const next: B2BAttachment[] = [];
+                      for (const file of files) {
+                        if (file.size > 4.5 * 1024 * 1024) {
+                          setErrorMsg(`"${file.name}" exceeds the 4.5 MB file size limit.`);
+                          return;
+                        }
+                        const content = await new Promise<string>((resolve, reject) => {
+                          const reader = new FileReader();
+                          reader.onload = () => {
+                            const res = String(reader.result || "");
+                            resolve(res.includes(",") ? res.split(",")[1] : res);
+                          };
+                          reader.onerror = () => reject(new Error("Read failed"));
+                          reader.readAsDataURL(file);
+                        });
+                        next.push({ name: file.name, content });
+                      }
+                      setErrorMsg(null);
+                      setAttachments((prev) => [...prev, ...next]);
+                    }}
+                  />
+                </label>
+
+                {attachments.map((att, idx) => (
+                  <span
+                    key={`${att.name}-${idx}`}
+                    className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-[#3F166B]/10 text-[#3F166B] text-[11px] font-semibold"
+                  >
+                    <span className="max-w-[160px] truncate">{att.name}</span>
+                    <button
+                      type="button"
+                      onClick={() => setAttachments((prev) => prev.filter((_, i) => i !== idx))}
+                      className="hover:text-red-600 cursor-pointer"
+                      aria-label={`Remove ${att.name}`}
+                    >
+                      <X className="w-3 h-3" />
+                    </button>
+                  </span>
+                ))}
+              </div>
             </div>
 
             {/* Feedback Banners */}

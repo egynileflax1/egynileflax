@@ -958,9 +958,26 @@ export default function AdminCrmDashboard() {
                     >
                       <div className="flex items-center justify-between gap-2">
                         <span className="font-bold text-stone-900">{em.subject}</span>
-                        <span className="text-[10px] uppercase font-semibold text-stone-500">
-                          {em.provider} • {formatDate(em.sent_at)}
-                        </span>
+                        <div className="flex items-center gap-1.5 shrink-0">
+                          {em.delivery_status && (
+                            <span
+                              className={`px-2 py-0.5 rounded-full text-[10px] font-bold uppercase ${
+                                em.delivery_status === "opened" || em.delivery_status === "clicked"
+                                  ? "bg-emerald-100 text-emerald-800"
+                                  : em.delivery_status === "delivered"
+                                    ? "bg-sky-100 text-sky-800"
+                                    : em.delivery_status === "bounced" || em.delivery_status === "complained"
+                                      ? "bg-red-100 text-red-700"
+                                      : "bg-stone-200 text-stone-700"
+                              }`}
+                            >
+                              {em.delivery_status}
+                            </span>
+                          )}
+                          <span className="text-[10px] uppercase font-semibold text-stone-500">
+                            {em.provider} • {formatDate(em.sent_at)}
+                          </span>
+                        </div>
                       </div>
                       <p className="text-stone-600 line-clamp-3 whitespace-pre-wrap">{em.body}</p>
                     </div>

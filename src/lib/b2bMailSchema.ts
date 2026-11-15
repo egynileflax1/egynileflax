@@ -8,6 +8,13 @@ export const parseCcList = (raw: string): string[] =>
     .map((entry) => entry.trim())
     .filter(Boolean);
 
+export const b2bAttachmentSchema = z.object({
+  name: z.string().trim().min(1).max(200),
+  content: z.string().min(1).max(7_000_000, "Attachment exceeds ~5 MB limit."),
+});
+
+export type B2BAttachment = z.infer<typeof b2bAttachmentSchema>;
+
 export const b2bMailSchema = z.object({
   leadId: z.number().int().positive().nullable().optional(),
   to: z
@@ -50,6 +57,7 @@ export const b2bMailSchema = z.object({
   includeSignature: z.boolean().optional().default(true),
   layout: z.enum(["personal", "branded"]).optional().default("branded"),
   provider: z.enum(["auto", "brevo", "resend"]).optional().default("auto"),
+  attachments: z.array(b2bAttachmentSchema).max(3, "Up to 3 attachments allowed.").optional().default([]),
 });
 
 export type B2BMailPayload = z.infer<typeof b2bMailSchema>;

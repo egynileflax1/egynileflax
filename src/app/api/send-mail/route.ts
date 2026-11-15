@@ -11,6 +11,7 @@ async function logCrmEmail(params: {
   subject: string;
   message: string;
   provider: string;
+  messageId?: string;
 }) {
   try {
     const sql = getSql();
@@ -28,8 +29,8 @@ async function logCrmEmail(params: {
     }
 
     await sql`
-      INSERT INTO crm_email_logs (lead_id, to_email, subject, body, provider)
-      VALUES (${resolvedLeadId}, ${params.to}, ${params.subject}, ${params.message}, ${params.provider})
+      INSERT INTO crm_email_logs (lead_id, to_email, subject, body, provider, message_id, delivery_status)
+      VALUES (${resolvedLeadId}, ${params.to}, ${params.subject}, ${params.message}, ${params.provider}, ${params.messageId || ""}, 'sent')
     `;
 
     if (resolvedLeadId) {
@@ -68,8 +69,19 @@ export async function POST(request: Request) {
       );
     }
 
-    const { leadId, to, toName, cc, replyTo, subject, message, includeSignature, layout, provider } =
-      parsed.data;
+    const {
+      leadId,
+      to,
+      toName,
+      cc,
+      replyTo,
+      subject,
+      message,
+      includeSignature,
+      layout,
+      provider,
+      attachments,
+    } = parsed.data;
 
     const brevoApiKey = process.env.BREVO_API_KEY;
     const resendApiKey = process.env.RESEND_API_KEY;
@@ -121,6 +133,14 @@ export async function POST(request: Request) {
           subject,
           textContent: text,
           htmlContent: html,
+          ...(attachments.length > 0
+            ? {
+                attachment: attachments.map((a) => ({
+                  name: a.name,
+                  content: a.content,
+                })),
+              }
+            : {}),
         }),
       });
 
@@ -129,7 +149,15 @@ export async function POST(request: Request) {
         throw new Error(`Brevo error ${res.status}: ${detail}`);
       }
 
-      await logCrmEmail({ leadId, to, subject, message, provider: "brevo" });
+      const brevoData = (await res.json().catch(() => ({}))) as { messageId?: string };
+      await logCrmEmail({
+        leadId,
+        to,
+        subject,
+        message,
+        provider: "brevo",
+        messageId: brevoData.messageId || "",
+      });
       return NextResponse.json({ ok: true, provider: "brevo" });
     }
 
@@ -150,6 +178,14 @@ export async function POST(request: Request) {
         subject,
         text,
         html,
+        ...(attachments.length > 0
+          ? {
+              attachments: attachments.map((a) => ({
+                filename: a.name,
+                content: a.content,
+              })),
+            }
+          : {}),
       }),
     });
 
@@ -158,7 +194,15 @@ export async function POST(request: Request) {
       throw new Error(`Resend error ${res.status}: ${detail}`);
     }
 
-    await logCrmEmail({ leadId, to, subject, message, provider: "resend" });
+    const resendData = (await res.json().catch(() => ({}))) as { id?: string };
+    await logCrmEmail({
+      leadId,
+      to,
+      subject,
+      message,
+      provider: "resend",
+      messageId: resendData.id || "",
+    });
     return NextResponse.json({ ok: true, provider: "resend" });
   } catch (error) {
     console.error("B2B mail send error:", error);

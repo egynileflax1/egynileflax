@@ -136,9 +136,7 @@ export async function POST(request: Request) {
           }
         })
       );
-    }
-
-    if (resendApiKey) {
+    } else if (resendApiKey) {
       const fromEmail = process.env.RESEND_FROM_EMAIL || "Egy Nile Flax <onboarding@resend.dev>";
 
       deliveries.push(

@@ -29,7 +29,15 @@ import {
   Copy,
   Check,
   ChevronDown,
+  Printer,
 } from "lucide-react";
+
+function pushDataLayer(event: string, params: Record<string, unknown> = {}) {
+  if (typeof window === "undefined") return;
+  const w = window as unknown as { dataLayer?: Array<Record<string, unknown>> };
+  w.dataLayer = w.dataLayer || [];
+  w.dataLayer.push({ event, ...params });
+}
 
 export default function ShowcaseView() {
   const { lang, t, products, company } = useFlax();
@@ -142,6 +150,11 @@ export default function ShowcaseView() {
   const openProductModal = (product: ProductItem) => {
     window.clearTimeout(modalCloseTimerRef.current);
     setActiveProductModal(product);
+    pushDataLayer("product_spec_view", {
+      product_id: product.id,
+      product_name: product.name.en,
+      lang,
+    });
     requestAnimationFrame(() => {
       requestAnimationFrame(() => setModalVisible(true));
     });
@@ -258,6 +271,13 @@ export default function ShowcaseView() {
       if (!res.ok) {
         throw new Error("Failed to send inquiry");
       }
+
+      pushDataLayer("contact_form_submit", {
+        lang,
+        product: parsed.data.product || "general",
+        has_quantity: Boolean(parsed.data.quantity),
+        has_destination: Boolean(parsed.data.destination),
+      });
 
       setFormSubmitted(true);
       requestAnimationFrame(() => {
@@ -476,6 +496,41 @@ export default function ShowcaseView() {
               ))}
             </div>
           </div>
+
+          {/* Mill Processing Video (commented out for now)
+          <div className="mt-8 sm:mt-12 rounded-2xl overflow-hidden border border-stone-200 bg-white shadow-sm grid grid-cols-1 lg:grid-cols-12 items-center">
+            <div className="lg:col-span-5 p-5 sm:p-8 space-y-3">
+              <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-[#3F166B]/10 text-[#3F166B] text-[11px] font-bold uppercase tracking-wider">
+                <Factory className="w-3.5 h-3.5" />
+                {lang === "ar" ? "خط الإنتاج — طنطا" : lang === "zh" ? "坦塔工厂实拍" : "Tanta Mill Operations"}
+              </span>
+              <h3 className="text-lg sm:text-xl font-extrabold text-stone-900">
+                {lang === "ar"
+                  ? "لقطات حية من مصنع وتجهيز ألياف الكتان"
+                  : lang === "zh"
+                    ? "埃及坦塔亚麻加工与打包现场"
+                    : "Inside Our Tanta Scutching & Baling Line"}
+              </h3>
+              <p className="text-xs sm:text-sm text-stone-600 leading-relaxed">
+                {lang === "ar"
+                  ? "متابعة مباشرة لمراحل الفرز والتجهيز وضغط البالات المخصصة للتصدير وفق معايير الجودة العالمية ISO 9001:2015."
+                  : lang === "zh"
+                    ? "实拍亚麻打成、清杂分级与出口打包全流程，严格遵循 ISO 9001:2015 质量体系。"
+                    : "Direct look at our fiber grading, scutching, and export baling operations in Gharbia Governorate under ISO 9001:2015 quality control."}
+              </p>
+            </div>
+            <div className="lg:col-span-7 bg-stone-950 aspect-video max-h-[360px] w-full">
+              <video
+                src="/IMG_0027.MP4"
+                poster="/IMG_9314.JPG.webp"
+                controls
+                playsInline
+                preload="metadata"
+                className="w-full h-full object-cover"
+              />
+            </div>
+          </div>
+          */}
         </div>
       </section>
 
@@ -1149,19 +1204,90 @@ export default function ShowcaseView() {
                 </div>
               </div>
 
-              <div className="pt-4 border-t border-stone-200 flex flex-col-reverse sm:flex-row items-stretch sm:items-center justify-end gap-2.5 sm:gap-3">
+              <div className="pt-4 border-t border-stone-200 flex flex-col-reverse sm:flex-row items-stretch sm:items-center justify-between gap-2.5 sm:gap-3">
                 <button
-                  onClick={closeProductModal}
-                  className="px-4 py-3 sm:py-2.5 rounded-xl border border-stone-300 text-xs font-bold text-stone-700 hover:bg-stone-100 cursor-pointer"
+                  type="button"
+                  onClick={() => {
+                    const p = activeProductModal;
+                    const title = p.name[lang] || p.name.en;
+                    const sub = p.subtitle[lang] || p.subtitle.en;
+                    const desc = p.description[lang] || p.description.en;
+                    const apps = (p.applications[lang] || p.applications.en)
+                      .map((a) => `<li>${a}</li>`)
+                      .join("");
+                    const grades = p.grades.map((g) => `<span class="badge">${g}</span>`).join(" ");
+                    const win = window.open("", "_blank", "width=840,height=920");
+                    if (!win) {
+                      window.print();
+                      return;
+                    }
+                    win.document.write(`<!doctype html>
+<html>
+<head>
+  <meta charset="utf-8" />
+  <title>${title} — Technical Spec Sheet | Egy Nile Flax</title>
+  <style>
+    body { font-family: Arial, Helvetica, sans-serif; color: #1c1917; margin: 36px; line-height: 1.5; }
+    .hdr { display: flex; justify-content: space-between; align-items: center; border-bottom: 3px solid #3F166B; padding-bottom: 14px; margin-bottom: 22px; }
+    .brand { font-size: 20px; font-weight: 800; color: #3F166B; }
+    .sub { font-size: 12px; color: #57534e; }
+    h1 { margin: 0 0 4px; font-size: 24px; color: #1c1917; }
+    .eyebrow { color: #3F166B; font-size: 12px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.08em; }
+    table { width: 100%; border-collapse: collapse; margin: 18px 0; }
+    th, td { border: 1px solid #d6d3d1; padding: 10px 12px; text-align: left; font-size: 13px; }
+    th { background: #FAF8F5; color: #3F166B; width: 34%; }
+    .badge { display: inline-block; background: #FAF8F5; border: 1px solid #EDC271; color: #3F166B; font-weight: 700; font-size: 12px; padding: 3px 9px; border-radius: 999px; margin: 2px 4px 2px 0; }
+    .ftr { margin-top: 28px; padding-top: 12px; border-top: 1px solid #e7e5e4; font-size: 12px; color: #57534e; }
+  </style>
+</head>
+<body>
+  <div class="hdr">
+    <div>
+      <div class="brand">EGY NILE FLAX</div>
+      <div class="sub">ISO 9001:2015 Certified Mill &bull; Tanta, Gharbia, Egypt</div>
+    </div>
+    <div class="sub">Technical Data Sheet</div>
+  </div>
+  <div class="eyebrow">${sub}</div>
+  <h1>${title}</h1>
+  <p>${desc}</p>
+  <table>
+    <tr><th>${t.products.stapleLength}</th><td>${p.specs.stapleLength}</td></tr>
+    <tr><th>${t.products.moisture}</th><td>${p.specs.moisture}</td></tr>
+    <tr><th>${t.products.shiveContent}</th><td>${p.specs.shiveContent}</td></tr>
+    <tr><th>${t.products.baleWeight}</th><td>${p.specs.baleWeight}</td></tr>
+  </table>
+  <p><strong>${t.products.availableGrades}:</strong><br/>${grades}</p>
+  <p><strong>${t.products.applications}:</strong></p>
+  <ul>${apps}</ul>
+  <div class="ftr">
+    Export Desk: ${company.primaryEmail} &bull; ${company.egyptPhone1} &bull; https://egynileflax.com
+  </div>
+  <script>window.onload = function () { window.print(); };</script>
+</body>
+</html>`);
+                    win.document.close();
+                    pushDataLayer("product_spec_print", { product_id: p.id, lang });
+                  }}
+                  className="inline-flex items-center justify-center gap-1.5 px-4 py-3 sm:py-2.5 rounded-xl border border-[#3F166B]/25 bg-[#FAF8F5] text-xs font-bold text-[#3F166B] hover:bg-[#3F166B]/5 cursor-pointer"
                 >
-                  {t.products.close}
+                  <Printer className="w-3.5 h-3.5" />
+                  <span>{lang === "ar" ? "طباعة / PDF المواصفات" : lang === "zh" ? "打印 / 导出 PDF 规格书" : "Print / Save PDF Spec"}</span>
                 </button>
-                <button
-                  onClick={() => handleInquireProduct(activeProductModal)}
-                  className="px-6 py-3 sm:py-2.5 rounded-xl bg-[#3F166B] hover:bg-[#2F1052] text-[#EDC271] text-xs font-extrabold text-center cursor-pointer"
-                >
-                  {t.products.inquireProduct}
-                </button>
+                <div className="flex flex-col-reverse sm:flex-row items-stretch sm:items-center gap-2.5 sm:gap-3">
+                  <button
+                    onClick={closeProductModal}
+                    className="px-4 py-3 sm:py-2.5 rounded-xl border border-stone-300 text-xs font-bold text-stone-700 hover:bg-stone-100 cursor-pointer"
+                  >
+                    {t.products.close}
+                  </button>
+                  <button
+                    onClick={() => handleInquireProduct(activeProductModal)}
+                    className="px-6 py-3 sm:py-2.5 rounded-xl bg-[#3F166B] hover:bg-[#2F1052] text-[#EDC271] text-xs font-extrabold text-center cursor-pointer"
+                  >
+                    {t.products.inquireProduct}
+                  </button>
+                </div>
               </div>
             </div>
           </div>

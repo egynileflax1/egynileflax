@@ -56,6 +56,9 @@ export interface CrmEmailLog {
   subject: string;
   body: string;
   provider: string;
+  message_id?: string;
+  delivery_status?: string;
+  last_event_at?: string | null;
   sent_at: string;
 }
 
@@ -107,9 +110,16 @@ export async function ensureCrmSchema(): Promise<boolean> {
           subject TEXT NOT NULL,
           body TEXT NOT NULL,
           provider TEXT NOT NULL,
+          message_id TEXT NOT NULL DEFAULT '',
+          delivery_status TEXT NOT NULL DEFAULT 'sent',
+          last_event_at TIMESTAMPTZ NULL,
           sent_at TIMESTAMPTZ NOT NULL DEFAULT NOW()
         )
       `;
+
+      await sql`ALTER TABLE crm_email_logs ADD COLUMN IF NOT EXISTS message_id TEXT NOT NULL DEFAULT ''`;
+      await sql`ALTER TABLE crm_email_logs ADD COLUMN IF NOT EXISTS delivery_status TEXT NOT NULL DEFAULT 'sent'`;
+      await sql`ALTER TABLE crm_email_logs ADD COLUMN IF NOT EXISTS last_event_at TIMESTAMPTZ NULL`;
 
       await sql`
         CREATE INDEX IF NOT EXISTS idx_crm_leads_status_updated

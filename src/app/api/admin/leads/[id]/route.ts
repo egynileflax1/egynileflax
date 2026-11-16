@@ -1,12 +1,19 @@
 import { NextResponse } from "next/server";
 import { z } from "zod";
-import { isAdminAuthenticated } from "@/lib/adminAuth";
+import { getAdminSessionUser } from "@/lib/adminAuth";
 import { ensureCrmSchema, getSql, LEAD_STATUSES } from "@/lib/db";
 
 const updateLeadSchema = z.object({
+  name: z.string().trim().min(1).max(120).optional(),
+  email: z.string().trim().email().optional(),
   status: z.enum(LEAD_STATUSES).optional(),
   notes: z.string().max(4000).optional(),
   incoterm: z.string().trim().max(60).optional(),
+  quoted_price: z.string().trim().max(120).optional(),
+  container_volume: z.string().trim().max(120).optional(),
+  sample_tracking: z.string().trim().max(200).optional(),
+  assigned_to: z.string().trim().max(150).optional(),
+  lang: z.string().trim().max(16).optional(),
   product: z.string().trim().max(250).optional(),
   quantity: z.string().trim().max(120).optional(),
   country: z.string().trim().max(120).optional(),
@@ -24,7 +31,8 @@ export async function GET(
   _request: Request,
   context: { params: Promise<{ id: string }> }
 ) {
-  if (!(await isAdminAuthenticated())) {
+  const adminUser = await getAdminSessionUser();
+  if (!adminUser) {
     return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
   }
 
@@ -55,7 +63,8 @@ export async function PATCH(
   request: Request,
   context: { params: Promise<{ id: string }> }
 ) {
-  if (!(await isAdminAuthenticated())) {
+  const adminUser = await getAdminSessionUser();
+  if (!adminUser) {
     return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
   }
 
@@ -93,15 +102,23 @@ export async function PATCH(
   const updated = await sql`
     UPDATE crm_leads
     SET
+      name = ${d.name ?? cur.name},
+      email = ${d.email ?? cur.email},
       status = ${d.status ?? cur.status},
       notes = ${d.notes ?? cur.notes},
       incoterm = ${d.incoterm ?? cur.incoterm},
+      quoted_price = ${d.quoted_price ?? cur.quoted_price ?? ""},
+      container_volume = ${d.container_volume ?? cur.container_volume ?? ""},
+      sample_tracking = ${d.sample_tracking ?? cur.sample_tracking ?? ""},
+      assigned_to = ${d.assigned_to ?? cur.assigned_to ?? ""},
+      lang = ${d.lang ?? cur.lang ?? "en"},
       product = ${d.product ?? cur.product},
       quantity = ${d.quantity ?? cur.quantity},
       country = ${d.country ?? cur.country},
       company = ${d.company ?? cur.company},
       phone = ${d.phone ?? cur.phone},
       next_follow_up_at = ${nextFollowUp},
+      updated_by = ${adminUser.email || cur.updated_by || ""},
       updated_at = NOW()
     WHERE id = ${id}
     RETURNING *
@@ -114,7 +131,8 @@ export async function DELETE(
   _request: Request,
   context: { params: Promise<{ id: string }> }
 ) {
-  if (!(await isAdminAuthenticated())) {
+  const adminUser = await getAdminSessionUser();
+  if (!adminUser) {
     return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
   }
 

@@ -21,6 +21,11 @@ export interface CrmLead {
   product: string;
   quantity: string;
   incoterm: string;
+  quoted_price?: string;
+  container_volume?: string;
+  sample_tracking?: string;
+  assigned_to?: string;
+  updated_by?: string;
   message: string;
   lang: string;
   source: string;
@@ -44,6 +49,9 @@ export interface CrmSupplier {
   products: string;
   workers_shifts: string;
   daily_output: string;
+  stock_tons?: string;
+  price_per_ton?: string;
+  quality_rating?: number;
   price_notes: string;
   created_at: string;
   updated_at: string;
@@ -58,6 +66,7 @@ export interface CrmEmailLog {
   provider: string;
   message_id?: string;
   delivery_status?: string;
+  sent_by?: string;
   last_event_at?: string | null;
   sent_at: string;
 }
@@ -91,6 +100,11 @@ export async function ensureCrmSchema(): Promise<boolean> {
           product TEXT NOT NULL DEFAULT '',
           quantity TEXT NOT NULL DEFAULT '',
           incoterm TEXT NOT NULL DEFAULT '',
+          quoted_price TEXT NOT NULL DEFAULT '',
+          container_volume TEXT NOT NULL DEFAULT '',
+          sample_tracking TEXT NOT NULL DEFAULT '',
+          assigned_to TEXT NOT NULL DEFAULT '',
+          updated_by TEXT NOT NULL DEFAULT '',
           message TEXT NOT NULL DEFAULT '',
           lang TEXT NOT NULL DEFAULT 'en',
           source TEXT NOT NULL DEFAULT 'website_form',
@@ -102,6 +116,12 @@ export async function ensureCrmSchema(): Promise<boolean> {
         )
       `;
 
+      await sql`ALTER TABLE crm_leads ADD COLUMN IF NOT EXISTS quoted_price TEXT NOT NULL DEFAULT ''`;
+      await sql`ALTER TABLE crm_leads ADD COLUMN IF NOT EXISTS container_volume TEXT NOT NULL DEFAULT ''`;
+      await sql`ALTER TABLE crm_leads ADD COLUMN IF NOT EXISTS sample_tracking TEXT NOT NULL DEFAULT ''`;
+      await sql`ALTER TABLE crm_leads ADD COLUMN IF NOT EXISTS assigned_to TEXT NOT NULL DEFAULT ''`;
+      await sql`ALTER TABLE crm_leads ADD COLUMN IF NOT EXISTS updated_by TEXT NOT NULL DEFAULT ''`;
+
       await sql`
         CREATE TABLE IF NOT EXISTS crm_email_logs (
           id SERIAL PRIMARY KEY,
@@ -112,6 +132,7 @@ export async function ensureCrmSchema(): Promise<boolean> {
           provider TEXT NOT NULL,
           message_id TEXT NOT NULL DEFAULT '',
           delivery_status TEXT NOT NULL DEFAULT 'sent',
+          sent_by TEXT NOT NULL DEFAULT '',
           last_event_at TIMESTAMPTZ NULL,
           sent_at TIMESTAMPTZ NOT NULL DEFAULT NOW()
         )
@@ -119,6 +140,7 @@ export async function ensureCrmSchema(): Promise<boolean> {
 
       await sql`ALTER TABLE crm_email_logs ADD COLUMN IF NOT EXISTS message_id TEXT NOT NULL DEFAULT ''`;
       await sql`ALTER TABLE crm_email_logs ADD COLUMN IF NOT EXISTS delivery_status TEXT NOT NULL DEFAULT 'sent'`;
+      await sql`ALTER TABLE crm_email_logs ADD COLUMN IF NOT EXISTS sent_by TEXT NOT NULL DEFAULT ''`;
       await sql`ALTER TABLE crm_email_logs ADD COLUMN IF NOT EXISTS last_event_at TIMESTAMPTZ NULL`;
 
       await sql`
@@ -142,11 +164,18 @@ export async function ensureCrmSchema(): Promise<boolean> {
           products TEXT NOT NULL DEFAULT '',
           workers_shifts TEXT NOT NULL DEFAULT '',
           daily_output TEXT NOT NULL DEFAULT '',
+          stock_tons TEXT NOT NULL DEFAULT '',
+          price_per_ton TEXT NOT NULL DEFAULT '',
+          quality_rating INTEGER NOT NULL DEFAULT 5,
           price_notes TEXT NOT NULL DEFAULT '',
           created_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),
           updated_at TIMESTAMPTZ NOT NULL DEFAULT NOW()
         )
       `;
+
+      await sql`ALTER TABLE crm_suppliers ADD COLUMN IF NOT EXISTS stock_tons TEXT NOT NULL DEFAULT ''`;
+      await sql`ALTER TABLE crm_suppliers ADD COLUMN IF NOT EXISTS price_per_ton TEXT NOT NULL DEFAULT ''`;
+      await sql`ALTER TABLE crm_suppliers ADD COLUMN IF NOT EXISTS quality_rating INTEGER NOT NULL DEFAULT 5`;
 
       await sql`
         CREATE INDEX IF NOT EXISTS idx_crm_suppliers_type_updated

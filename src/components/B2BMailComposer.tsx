@@ -12,81 +12,25 @@ import {
   Sparkles,
   Mail,
   Paperclip,
+  FileText,
+  Printer,
   X,
 } from "lucide-react";
 import { COMPANY } from "@/data/initialData";
 import { b2bMailSchema, B2BAttachment } from "@/lib/b2bMailSchema";
 import { buildB2BEmailContent } from "@/lib/b2bMailTemplate";
-
-interface MailTemplate {
-  id: string;
-  label: string;
-  subject: string;
-  message: string;
-}
-
-const B2B_TEMPLATES: MailTemplate[] = [
-  {
-    id: "blank",
-    label: "Blank Email",
-    subject: "",
-    message: "",
-  },
-  {
-    id: "intro",
-    label: "Factory Introduction",
-    subject: "Egyptian Flax Fibre Supply — Egy Nile Flax (ISO 9001:2015 Mill, Tanta)",
-    message: `Dear Partner,
-
-We are Egy Nile Flax Overseas Co., an ISO 9001:2015 certified flax fibre processor and exporter based in Tanta, Gharbia, Egypt, serving spinning mills and industrial buyers in 23+ countries since 2008.
-
-With an annual processing capacity of 14,500+ MT, we supply:
-• Scutched Long Flax & Short Flax (Arrous)
-• Hackled Long Flax, Slivers & Machine Tow
-• Cottonised Flax Fibre
-• Plumbing Flax & Natural Flax Twines
-
-If you are currently sourcing Egyptian flax for upcoming production runs, we would be glad to share our latest grade specifications, laboratory test reports (moisture & shive %), and FOB/CIF quotations.
-
-Best regards,`,
-  },
-  {
-    id: "quote",
-    label: "Quotation & Specs",
-    subject: "Quotation & Technical Specifications — Egy Nile Flax",
-    message: `Dear Partner,
-
-Thank you for your inquiry regarding our Egyptian flax fibre grades.
-
-Please find our preliminary quotation details below:
-• Product / Grade: [Specify Grade]
-• Staple Length / Shive %: [Specify Specs]
-• Moisture Regain: ≤ 11.5%
-• Packing: Hydraulic Pressed Bales (120–200 kg)
-• Price Basis: FOB Alexandria / Damietta or CIF [Destination Port]
-• Lead Time: [e.g. 14–21 days from order confirmation]
-
-Please let us know your target container volume (20ft / 40ft HC) and destination port so we can finalize a formal proforma invoice or arrange physical fibre samples for your lab testing.
-
-Best regards,`,
-  },
-  {
-    id: "sample",
-    label: "Sample Follow-up",
-    subject: "Flax Fibre Samples & Lab Evaluation — Egy Nile Flax",
-    message: `Dear Partner,
-
-Following up on your interest in Egy Nile Flax, we can dispatch courier samples of our scutched, hackled, or cottonised grades for your spinning mill's evaluation.
-
-Kindly confirm your preferred grades, shipping address, and contact phone number for courier dispatch.
-
-Best regards,`,
-  },
-];
+import {
+  generateQuotationPdfBase64,
+  LocalizedMailTemplate,
+  MULTILANG_B2B_TEMPLATES,
+  openPrintableQuotationWindow,
+  TemplateLang,
+} from "@/lib/crmHelpers";
 
 export default function B2BMailComposer() {
   const [checkingAuth, setCheckingAuth] = useState(true);
   const [authenticated, setAuthenticated] = useState(false);
+  const [adminEmail, setAdminEmail] = useState("");
   const [leadId, setLeadId] = useState<number | null>(null);
   const [to, setTo] = useState("");
   const [toName, setToName] = useState("");
@@ -99,6 +43,13 @@ export default function B2BMailComposer() {
   const [provider, setProvider] = useState<"auto" | "brevo" | "resend">("auto");
   const [attachments, setAttachments] = useState<B2BAttachment[]>([]);
   const [showMobilePreview, setShowMobilePreview] = useState(false);
+  const [templateLangFilter, setTemplateLangFilter] = useState<TemplateLang | "all">("all");
+
+  // Optional quote context passed from CRM drawer
+  const [quoteProduct, setQuoteProduct] = useState("");
+  const [quoteVolume, setQuoteVolume] = useState("");
+  const [quoteIncoterm, setQuoteIncoterm] = useState("FOB Alexandria");
+  const [quotePrice, setQuotePrice] = useState("");
 
   const [isSending, setIsSending] = useState(false);
   const [errorMsg, setErrorMsg] = useState<string | null>(null);
@@ -110,28 +61,79 @@ export default function B2BMailComposer() {
       const qTo = params.get("to");
       const qName = params.get("name");
       const qLeadId = Number(params.get("leadId"));
+      const qProduct = params.get("product");
+      const qVolume = params.get("volume");
+      const qIncoterm = params.get("incoterm");
+      const qPrice = params.get("price");
+      const qLang = params.get("lang");
       if (qTo) setTo(qTo);
       if (qName) setToName(qName);
       if (Number.isInteger(qLeadId) && qLeadId > 0) setLeadId(qLeadId);
+      if (qProduct) setQuoteProduct(qProduct);
+      if (qVolume) setQuoteVolume(qVolume);
+      if (qIncoterm) setQuoteIncoterm(qIncoterm);
+      if (qPrice) setQuotePrice(qPrice);
+      if (qLang === "zh" || qLang === "ar" || qLang === "en") {
+        setTemplateLangFilter(qLang);
+      }
     } catch {
       // Ignore URL parse errors
     }
 
     fetch("/api/admin/auth")
       .then((r) => r.json())
-      .then((data: { authenticated?: boolean }) => {
+      .then((data: { authenticated?: boolean; adminEmail?: string }) => {
         setAuthenticated(Boolean(data.authenticated));
+        setAdminEmail(data.adminEmail || "");
       })
       .catch(() => setAuthenticated(false))
       .finally(() => setCheckingAuth(false));
   }, []);
 
-  const applyTemplate = (tpl: MailTemplate) => {
+  const applyTemplate = (tpl: LocalizedMailTemplate) => {
     setSubject(tpl.subject);
     setMessage(tpl.message);
     setSentInfo(null);
     setErrorMsg(null);
   };
+
+  const handleAttachGeneratedPdfQuote = () => {
+    if (attachments.length >= 3) {
+      setErrorMsg("Maximum 3 attachments reached. Remove one before generating a PDF quote.");
+      return;
+    }
+    const { filename, base64 } = generateQuotationPdfBase64({
+      buyerName: toName || to || "Valued Buyer",
+      company: toName,
+      email: to,
+      product: quoteProduct || "Egyptian Scutched / Hackled Flax Fibre",
+      containerVolume: quoteVolume || "1x 40ft HC (~22-24 MT)",
+      incoterm: quoteIncoterm || "FOB Alexandria",
+      quotedPrice: quotePrice || "As per quotation message",
+    });
+    setAttachments((prev) => [...prev.filter((a) => a.name !== filename), { name: filename, content: base64 }]);
+    setErrorMsg(null);
+  };
+
+  const handleOpenPrintableQuote = () => {
+    openPrintableQuotationWindow({
+      buyerName: toName || to || "Valued Buyer",
+      company: toName,
+      email: to,
+      product: quoteProduct || "Egyptian Scutched / Hackled Flax Fibre",
+      containerVolume: quoteVolume || "1x 40ft HC (~22–24 MT)",
+      incoterm: quoteIncoterm || "FOB Alexandria",
+      quotedPrice: quotePrice || "As per quotation message",
+    });
+  };
+
+  const visibleTemplates = useMemo(
+    () =>
+      MULTILANG_B2B_TEMPLATES.filter(
+        (t) => templateLangFilter === "all" || t.lang === templateLangFilter
+      ),
+    [templateLangFilter]
+  );
 
   const preview = useMemo(
     () =>
@@ -229,7 +231,7 @@ export default function B2BMailComposer() {
           </div>
 
           <a
-            href="/api/admin/google?next=/mail"
+            href="/api/admin/google?next=/admin/mail"
             className="w-full py-2.5 px-4 rounded-xl border border-stone-300 bg-white hover:bg-stone-50 text-stone-800 font-bold text-sm flex items-center justify-center gap-2.5 transition-colors shadow-2xs"
           >
             <svg className="w-4 h-4 shrink-0" viewBox="0 0 24 24" aria-hidden="true">
@@ -277,7 +279,8 @@ export default function B2BMailComposer() {
                 Egy Nile Flax — B2B Mail Sender
               </h1>
               <p className="text-[11px] text-stone-500 truncate">
-                Send branded B2B emails from {COMPANY.primaryEmail}
+                Sending from {COMPANY.primaryEmail}
+                {adminEmail ? ` • Signed in as ${adminEmail}` : ""}
               </p>
             </div>
           </div>
@@ -287,14 +290,8 @@ export default function B2BMailComposer() {
               href="/admin"
               className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg border border-stone-200 bg-white hover:bg-stone-100 text-xs font-semibold text-[#3F166B] transition-colors"
             >
-              <span>Admin CRM</span>
-            </Link>
-            <Link
-              href="/"
-              className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg border border-stone-200 bg-white hover:bg-stone-100 text-xs font-semibold text-stone-700 transition-colors"
-            >
               <ArrowLeft className="w-3.5 h-3.5" />
-              <span>Back to Site</span>
+              <span>Admin CRM</span>
             </Link>
           </div>
         </div>
@@ -307,19 +304,54 @@ export default function B2BMailComposer() {
             onSubmit={handleSubmit}
             className="lg:col-span-7 bg-white rounded-2xl border border-stone-200 shadow-xs p-5 sm:p-6 space-y-5"
           >
-            {/* Quick Templates */}
-            <div className="space-y-2">
-              <div className="flex items-center gap-1.5 text-xs font-bold text-stone-700">
-                <Sparkles className="w-3.5 h-3.5 text-[#3F166B]" />
-                <span>Quick B2B Templates</span>
+            {/* Multi-Language Quick Templates */}
+            <div className="space-y-2.5">
+              <div className="flex flex-wrap items-center justify-between gap-2">
+                <div className="flex items-center gap-1.5 text-xs font-bold text-stone-700">
+                  <Sparkles className="w-3.5 h-3.5 text-[#3F166B]" />
+                  <span>Quick B2B Templates (EN / 中文 / AR)</span>
+                </div>
+                <div className="inline-flex p-0.5 rounded-lg bg-stone-100 border border-stone-200">
+                  {(
+                    [
+                      ["all", "All"],
+                      ["en", "EN"],
+                      ["zh", "中文"],
+                      ["ar", "AR"],
+                    ] as const
+                  ).map(([code, lbl]) => (
+                    <button
+                      key={code}
+                      type="button"
+                      onClick={() => setTemplateLangFilter(code)}
+                      className={`px-2 py-0.5 rounded-md text-[11px] font-bold cursor-pointer ${
+                        templateLangFilter === code
+                          ? "bg-[#3F166B] text-[#EDC271]"
+                          : "text-stone-600 hover:text-stone-900"
+                      }`}
+                    >
+                      {lbl}
+                    </button>
+                  ))}
+                </div>
               </div>
               <div className="flex flex-wrap gap-2">
-                {B2B_TEMPLATES.map((tpl) => (
+                <button
+                  type="button"
+                  onClick={() => {
+                    setSubject("");
+                    setMessage("");
+                  }}
+                  className="px-3 py-1.5 rounded-lg border border-stone-200 bg-stone-50 hover:bg-stone-100 text-xs font-semibold text-stone-600 cursor-pointer"
+                >
+                  Clear
+                </button>
+                {visibleTemplates.map((tpl) => (
                   <button
                     key={tpl.id}
                     type="button"
                     onClick={() => applyTemplate(tpl)}
-                    className="px-3 py-1.5 rounded-lg border border-stone-200 bg-stone-50 hover:bg-[#EDC271]/20 hover:border-[#EDC271] text-xs font-semibold text-stone-700 hover:text-[#3F166B] transition-colors"
+                    className="px-3 py-1.5 rounded-lg border border-stone-200 bg-stone-50 hover:bg-[#EDC271]/20 hover:border-[#EDC271] text-xs font-semibold text-stone-700 hover:text-[#3F166B] transition-colors cursor-pointer"
                   >
                     {tpl.label}
                   </button>
@@ -384,6 +416,63 @@ export default function B2BMailComposer() {
                   onChange={(e) => setReplyTo(e.target.value)}
                   placeholder={COMPANY.primaryEmail}
                   className="w-full px-3.5 py-2.5 rounded-xl border border-stone-300 text-base sm:text-xs focus:outline-none focus:border-[#3F166B]"
+                />
+              </div>
+            </div>
+
+            {/* Official PDF Quote Generator Strip */}
+            <div className="p-3.5 rounded-xl bg-[#FAF8F5] border border-stone-200 space-y-2.5">
+              <div className="flex flex-wrap items-center justify-between gap-2">
+                <span className="text-xs font-extrabold text-[#3F166B]">
+                  Official Proforma Quote Generator (Optional PDF Attachment)
+                </span>
+                <div className="flex items-center gap-1.5">
+                  <button
+                    type="button"
+                    onClick={handleAttachGeneratedPdfQuote}
+                    className="inline-flex items-center gap-1 px-2.5 py-1 rounded-lg bg-[#3F166B] text-[#EDC271] text-[11px] font-bold cursor-pointer"
+                  >
+                    <FileText className="w-3 h-3" />
+                    <span>Attach PDF Quote</span>
+                  </button>
+                  <button
+                    type="button"
+                    onClick={handleOpenPrintableQuote}
+                    className="inline-flex items-center gap-1 px-2.5 py-1 rounded-lg border border-stone-300 bg-white text-stone-700 text-[11px] font-semibold cursor-pointer"
+                  >
+                    <Printer className="w-3 h-3" />
+                    <span>Print / View</span>
+                  </button>
+                </div>
+              </div>
+              <div className="grid grid-cols-1 sm:grid-cols-4 gap-2 text-xs">
+                <input
+                  type="text"
+                  value={quoteProduct}
+                  onChange={(e) => setQuoteProduct(e.target.value)}
+                  placeholder="Grade (e.g. Scutched C1)"
+                  className="px-2.5 py-1.5 rounded-lg border border-stone-300 bg-white"
+                />
+                <input
+                  type="text"
+                  value={quoteVolume}
+                  onChange={(e) => setQuoteVolume(e.target.value)}
+                  placeholder="Volume (e.g. 24 MT)"
+                  className="px-2.5 py-1.5 rounded-lg border border-stone-300 bg-white"
+                />
+                <input
+                  type="text"
+                  value={quoteIncoterm}
+                  onChange={(e) => setQuoteIncoterm(e.target.value)}
+                  placeholder="Incoterm (FOB Alex)"
+                  className="px-2.5 py-1.5 rounded-lg border border-stone-300 bg-white"
+                />
+                <input
+                  type="text"
+                  value={quotePrice}
+                  onChange={(e) => setQuotePrice(e.target.value)}
+                  placeholder="Price (e.g. $2,450/MT)"
+                  className="px-2.5 py-1.5 rounded-lg border border-stone-300 bg-white"
                 />
               </div>
             </div>
@@ -529,7 +618,7 @@ export default function B2BMailComposer() {
                     key={`${att.name}-${idx}`}
                     className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-[#3F166B]/10 text-[#3F166B] text-[11px] font-semibold"
                   >
-                    <span className="max-w-[160px] truncate">{att.name}</span>
+                    <span className="max-w-[180px] truncate">{att.name}</span>
                     <button
                       type="button"
                       onClick={() => setAttachments((prev) => prev.filter((_, i) => i !== idx))}

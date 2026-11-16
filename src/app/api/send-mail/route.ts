@@ -1,6 +1,6 @@
 import { NextResponse } from "next/server";
 import { COMPANY } from "@/data/initialData";
-import { isAdminAuthenticated } from "@/lib/adminAuth";
+import { getAdminSessionUser } from "@/lib/adminAuth";
 import { b2bMailSchema, parseCcList } from "@/lib/b2bMailSchema";
 import { buildB2BEmailContent } from "@/lib/b2bMailTemplate";
 import { ensureCrmSchema, getSql } from "@/lib/db";
@@ -12,6 +12,7 @@ async function logCrmEmail(params: {
   message: string;
   provider: string;
   messageId?: string;
+  sentBy?: string;
 }) {
   try {
     const sql = getSql();
@@ -29,8 +30,8 @@ async function logCrmEmail(params: {
     }
 
     await sql`
-      INSERT INTO crm_email_logs (lead_id, to_email, subject, body, provider, message_id, delivery_status)
-      VALUES (${resolvedLeadId}, ${params.to}, ${params.subject}, ${params.message}, ${params.provider}, ${params.messageId || ""}, 'sent')
+      INSERT INTO crm_email_logs (lead_id, to_email, subject, body, provider, message_id, delivery_status, sent_by)
+      VALUES (${resolvedLeadId}, ${params.to}, ${params.subject}, ${params.message}, ${params.provider}, ${params.messageId || ""}, 'sent', ${params.sentBy || ""})
     `;
 
     if (resolvedLeadId) {
@@ -38,6 +39,7 @@ async function logCrmEmail(params: {
         UPDATE crm_leads
         SET
           status = CASE WHEN status = 'new' THEN 'contacted' ELSE status END,
+          updated_by = ${params.sentBy || ""},
           updated_at = NOW()
         WHERE id = ${resolvedLeadId}
       `;
@@ -49,7 +51,8 @@ async function logCrmEmail(params: {
 
 export async function POST(request: Request) {
   try {
-    if (!(await isAdminAuthenticated())) {
+    const adminUser = await getAdminSessionUser();
+    if (!adminUser) {
       return NextResponse.json(
         { error: "Please sign in with Google to send B2B emails." },
         { status: 401 }
@@ -157,6 +160,7 @@ export async function POST(request: Request) {
         message,
         provider: "brevo",
         messageId: brevoData.messageId || "",
+        sentBy: adminUser.email,
       });
       return NextResponse.json({ ok: true, provider: "brevo" });
     }
@@ -202,6 +206,7 @@ export async function POST(request: Request) {
       message,
       provider: "resend",
       messageId: resendData.id || "",
+      sentBy: adminUser.email,
     });
     return NextResponse.json({ ok: true, provider: "resend" });
   } catch (error) {

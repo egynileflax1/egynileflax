@@ -12,6 +12,9 @@ const supplierSchema = z.object({
   products: z.string().trim().max(500).optional().default(""),
   workers_shifts: z.string().trim().max(300).optional().default(""),
   daily_output: z.string().trim().max(300).optional().default(""),
+  stock_tons: z.string().trim().max(120).optional().default(""),
+  price_per_ton: z.string().trim().max(120).optional().default(""),
+  quality_rating: z.number().int().min(1).max(5).optional().default(5),
   price_notes: z.string().trim().max(2000).optional().default(""),
 });
 
@@ -61,7 +64,7 @@ export async function POST(request: Request) {
 
   const raw = await request.json().catch(() => ({}));
 
-  // Bulk import support: { suppliers: [...] }
+  // Bulk import support: { suppliers: [...] } with deduplication/upsert by name
   if (raw && typeof raw === "object" && Array.isArray((raw as { suppliers?: unknown }).suppliers)) {
     const bulkParsed = z.array(supplierSchema).min(1).max(500).safeParse(
       (raw as { suppliers: unknown[] }).suppliers
@@ -73,21 +76,64 @@ export async function POST(request: Request) {
       );
     }
 
-    const inserted = [];
+    let insertedCount = 0;
+    let updatedCount = 0;
+    const processed = [];
+
     for (const d of bulkParsed.data) {
-      const rows = await sql`
-        INSERT INTO crm_suppliers (
-          name, type, contact_person, phone, location, products, workers_shifts, daily_output, price_notes
-        )
-        VALUES (
-          ${d.name}, ${d.type}, ${d.contact_person}, ${d.phone}, ${d.location},
-          ${d.products}, ${d.workers_shifts}, ${d.daily_output}, ${d.price_notes}
-        )
-        RETURNING *
+      const existing = await sql`
+        SELECT id FROM crm_suppliers
+        WHERE LOWER(name) = LOWER(${d.name})
+        LIMIT 1
       `;
-      if (rows[0]) inserted.push(rows[0]);
+
+      if (existing.length > 0) {
+        const rows = await sql`
+          UPDATE crm_suppliers
+          SET
+            type = ${d.type},
+            contact_person = CASE WHEN ${d.contact_person} <> '' THEN ${d.contact_person} ELSE contact_person END,
+            phone = CASE WHEN ${d.phone} <> '' THEN ${d.phone} ELSE phone END,
+            location = CASE WHEN ${d.location} <> '' THEN ${d.location} ELSE location END,
+            products = CASE WHEN ${d.products} <> '' THEN ${d.products} ELSE products END,
+            workers_shifts = CASE WHEN ${d.workers_shifts} <> '' THEN ${d.workers_shifts} ELSE workers_shifts END,
+            daily_output = CASE WHEN ${d.daily_output} <> '' THEN ${d.daily_output} ELSE daily_output END,
+            stock_tons = CASE WHEN ${d.stock_tons} <> '' THEN ${d.stock_tons} ELSE stock_tons END,
+            price_per_ton = CASE WHEN ${d.price_per_ton} <> '' THEN ${d.price_per_ton} ELSE price_per_ton END,
+            price_notes = CASE WHEN ${d.price_notes} <> '' THEN ${d.price_notes} ELSE price_notes END,
+            updated_at = NOW()
+          WHERE id = ${existing[0].id as number}
+          RETURNING *
+        `;
+        if (rows[0]) processed.push(rows[0]);
+        updatedCount++;
+      } else {
+        const rows = await sql`
+          INSERT INTO crm_suppliers (
+            name, type, contact_person, phone, location, products, workers_shifts,
+            daily_output, stock_tons, price_per_ton, quality_rating, price_notes
+          )
+          VALUES (
+            ${d.name}, ${d.type}, ${d.contact_person}, ${d.phone}, ${d.location},
+            ${d.products}, ${d.workers_shifts}, ${d.daily_output},
+            ${d.stock_tons}, ${d.price_per_ton}, ${d.quality_rating}, ${d.price_notes}
+          )
+          RETURNING *
+        `;
+        if (rows[0]) processed.push(rows[0]);
+        insertedCount++;
+      }
     }
-    return NextResponse.json({ suppliers: inserted, count: inserted.length }, { status: 201 });
+
+    return NextResponse.json(
+      {
+        suppliers: processed,
+        count: processed.length,
+        insertedCount,
+        updatedCount,
+      },
+      { status: 201 }
+    );
   }
 
   const parsed = supplierSchema.safeParse(raw);
@@ -101,11 +147,13 @@ export async function POST(request: Request) {
   const d = parsed.data;
   const rows = await sql`
     INSERT INTO crm_suppliers (
-      name, type, contact_person, phone, location, products, workers_shifts, daily_output, price_notes
+      name, type, contact_person, phone, location, products, workers_shifts,
+      daily_output, stock_tons, price_per_ton, quality_rating, price_notes
     )
     VALUES (
       ${d.name}, ${d.type}, ${d.contact_person}, ${d.phone}, ${d.location},
-      ${d.products}, ${d.workers_shifts}, ${d.daily_output}, ${d.price_notes}
+      ${d.products}, ${d.workers_shifts}, ${d.daily_output},
+      ${d.stock_tons}, ${d.price_per_ton}, ${d.quality_rating}, ${d.price_notes}
     )
     RETURNING *
   `;

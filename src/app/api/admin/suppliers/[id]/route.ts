@@ -12,6 +12,9 @@ const updateSupplierSchema = z.object({
   products: z.string().trim().max(500).optional(),
   workers_shifts: z.string().trim().max(300).optional(),
   daily_output: z.string().trim().max(300).optional(),
+  stock_tons: z.string().trim().max(120).optional(),
+  price_per_ton: z.string().trim().max(120).optional(),
+  quality_rating: z.number().int().min(1).max(5).optional(),
   price_notes: z.string().trim().max(2000).optional(),
 });
 
@@ -65,6 +68,9 @@ export async function PATCH(
       products = ${d.products ?? cur.products},
       workers_shifts = ${d.workers_shifts ?? cur.workers_shifts},
       daily_output = ${d.daily_output ?? cur.daily_output},
+      stock_tons = ${d.stock_tons ?? cur.stock_tons ?? ""},
+      price_per_ton = ${d.price_per_ton ?? cur.price_per_ton ?? ""},
+      quality_rating = ${d.quality_rating ?? cur.quality_rating ?? 5},
       price_notes = ${d.price_notes ?? cur.price_notes},
       updated_at = NOW()
     WHERE id = ${id}

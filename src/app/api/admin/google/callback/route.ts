@@ -72,6 +72,7 @@ export async function GET(request: Request) {
 
     const userInfo = (await userRes.json()) as {
       email?: string;
+      name?: string;
       email_verified?: boolean;
     };
 
@@ -93,7 +94,10 @@ export async function GET(request: Request) {
     const rawNext = cookieStore.get(OAUTH_NEXT_COOKIE)?.value || "/admin";
     const safeNext = rawNext.startsWith("/") && !rawNext.startsWith("//") ? rawNext : "/admin";
 
-    const sessionToken = createAdminSessionToken();
+    const sessionToken = createAdminSessionToken({
+      email,
+      name: userInfo.name || email.split("@")[0],
+    });
     const res = NextResponse.redirect(`${origin}${safeNext}`);
     res.cookies.delete(OAUTH_STATE_COOKIE);
     res.cookies.delete(OAUTH_NEXT_COOKIE);

@@ -150,22 +150,101 @@ const AGENT_UI: Record<LanguageCode, AgentTranslations> = {
   },
 };
 
+function renderInlineFormatting(rawText: string) {
+  // Ensure pipe characters have spaces around them so browser word-wrapping never overflows
+  const text = rawText.replace(/([^\s|])\|([^\s|])/g, "$1 | $2");
+  const parts = text.split(/(\*\*[^*]+\*\*|`[^`]+`)/g);
+  return parts.map((part, idx) => {
+    if (part.startsWith("**") && part.endsWith("**")) {
+      return (
+        <strong key={idx} className="font-bold text-stone-900">
+          {part.slice(2, -2)}
+        </strong>
+      );
+    }
+    if (part.startsWith("`") && part.endsWith("`")) {
+      return (
+        <code
+          key={idx}
+          className="px-1 py-0.5 rounded bg-stone-100 text-[#3F166B] font-mono text-[11px]"
+        >
+          {part.slice(1, -1)}
+        </code>
+      );
+    }
+    return <React.Fragment key={idx}>{part}</React.Fragment>;
+  });
+}
+
 function renderFormattedText(text: string) {
   const lines = text.split("\n");
-  return lines.map((line, lineIdx) => {
-    const parts = line.split(/(\*\*[^*]+\*\*)/g);
+  return lines.map((rawLine, lineIdx) => {
+    const line = rawLine.trim();
+
+    // Empty line spacer
+    if (!line) {
+      return <span key={lineIdx} className="block h-1.5" />;
+    }
+
+    // Skip markdown table separator rows like |---|---|
+    if (/^\|?[\s:-]+\|[\s|:-]+\|?$/.test(line) || /^-{3,}$/.test(line)) {
+      return null;
+    }
+
+    // Markdown headings (###, ##, #)
+    const headingMatch = line.match(/^#{1,4}\s+(.+)$/);
+    if (headingMatch) {
+      return (
+        <span
+          key={lineIdx}
+          className="block font-extrabold text-[#3F166B] text-xs pt-2 pb-0.5"
+        >
+          {renderInlineFormatting(headingMatch[1].replace(/\*\*/g, ""))}
+        </span>
+      );
+    }
+
+    // Markdown pipe table row: | Key | Value | -> clean key/value line
+    if (line.startsWith("|") && line.endsWith("|")) {
+      const cells = line
+        .slice(1, -1)
+        .split("|")
+        .map((c) => c.trim())
+        .filter(Boolean);
+      if (cells.length === 0) return null;
+      return (
+        <span
+          key={lineIdx}
+          className="block py-1 px-2 my-0.5 rounded-lg bg-stone-50 border border-stone-200/70 text-[11px]"
+        >
+          {cells.map((cell, cIdx) => (
+            <React.Fragment key={cIdx}>
+              {cIdx > 0 && <span className="text-stone-400 mx-1.5">•</span>}
+              <span className={cIdx === 0 ? "font-semibold text-stone-800" : ""}>
+                {renderInlineFormatting(cell)}
+              </span>
+            </React.Fragment>
+          ))}
+        </span>
+      );
+    }
+
+    // Bullet points (- , * , • )
+    const bulletMatch = line.match(/^[-*•]\s+(.+)$/);
+    if (bulletMatch) {
+      return (
+        <span key={lineIdx} className="flex items-start gap-1.5 py-0.5 min-w-0">
+          <span className="text-[#3F166B] font-bold select-none shrink-0">•</span>
+          <span className="flex-1 min-w-0 break-words">
+            {renderInlineFormatting(bulletMatch[1])}
+          </span>
+        </span>
+      );
+    }
+
     return (
-      <span key={lineIdx} className="block min-h-[0.4rem]">
-        {parts.map((part, partIdx) => {
-          if (part.startsWith("**") && part.endsWith("**")) {
-            return (
-              <strong key={partIdx} className="font-bold text-stone-900">
-                {part.slice(2, -2)}
-              </strong>
-            );
-          }
-          return <React.Fragment key={partIdx}>{part}</React.Fragment>;
-        })}
+      <span key={lineIdx} className="block py-0.5 break-words">
+        {renderInlineFormatting(rawLine)}
       </span>
     );
   });
@@ -199,10 +278,17 @@ export default function FlaxAiAgent() {
     setSheetDragY(deltaY);
   };
 
+  const closeAiSheet = () => {
+    if (typeof document !== "undefined" && document.activeElement instanceof HTMLElement) {
+      document.activeElement.blur();
+    }
+    setIsOpen(false);
+  };
+
   const handleSheetPointerEnd = () => {
     if (dragStartYRef.current === null) return;
     if (sheetDragY > 70) {
-      setIsOpen(false);
+      closeAiSheet();
     }
     dragStartYRef.current = null;
     setIsDraggingSheet(false);
@@ -223,7 +309,7 @@ export default function FlaxAiAgent() {
   const inputRef = useRef<HTMLInputElement | null>(null);
 
   useEffect(() => {
-    const handleCloseAi = () => setIsOpen(false);
+    const handleCloseAi = () => closeAiSheet();
     const handleOpenAi = () => setIsOpen(true);
     window.addEventListener("egynileflax:close-ai", handleCloseAi);
     window.addEventListener("egynileflax:open-ai", handleOpenAi);
@@ -387,7 +473,7 @@ export default function FlaxAiAgent() {
       {/* Mobile Dimmed Backdrop (z-[55] dims the top navbar so there are never two competing headers) */}
       <div
         aria-hidden={!isOpen}
-        onClick={() => setIsOpen(false)}
+        onClick={closeAiSheet}
         className={`sm:hidden fixed inset-0 z-[55] bg-black/50 backdrop-blur-[2px] transition-opacity duration-300 ${
           isOpen ? "opacity-100 pointer-events-auto" : "opacity-0 pointer-events-none"
         }`}
@@ -396,6 +482,7 @@ export default function FlaxAiAgent() {
       {/* Clean Minimalist Chat Sheet / Card */}
       <div
         aria-hidden={!isOpen}
+        inert={!isOpen ? true : undefined}
         dir={lang === "ar" ? "rtl" : "ltr"}
         style={isDraggingSheet ? { transform: `translateY(${sheetDragY}px)` } : undefined}
         className={`fixed bottom-0 inset-x-0 sm:inset-x-auto sm:bottom-4 sm:end-5 z-[60] w-full sm:w-[380px] max-h-[76dvh] sm:max-h-[560px] flex flex-col bg-white rounded-t-3xl sm:rounded-3xl border border-stone-200 shadow-2xl overflow-hidden origin-bottom sm:origin-bottom-right ${
@@ -470,7 +557,7 @@ export default function FlaxAiAgent() {
             )}
             <button
               type="button"
-              onClick={() => setIsOpen(false)}
+              onClick={closeAiSheet}
               aria-label="Close"
               className="p-1.5 rounded-lg text-stone-400 hover:text-stone-800 hover:bg-stone-100 transition-colors cursor-pointer"
             >
@@ -480,7 +567,7 @@ export default function FlaxAiAgent() {
         </div>
 
         {/* Scrollable Chat Body */}
-        <div className="flex-1 overflow-y-auto p-4 space-y-3 bg-[#FAF8F5] custom-scrollbar">
+        <div className="flex-1 overflow-y-auto overflow-x-hidden p-4 space-y-3 bg-[#FAF8F5] custom-scrollbar">
           {/* Concise Welcome Bubble */}
           <div className="bg-white border border-stone-200/80 rounded-2xl p-3.5 text-xs text-stone-700 leading-relaxed shadow-2xs">
             {renderFormattedText(ui.welcome)}
@@ -510,10 +597,10 @@ export default function FlaxAiAgent() {
               .filter((p): p is ProductItem => Boolean(p));
 
             return (
-              <div key={msg.id} className="space-y-2">
-                <div className={`flex ${isUser ? "justify-end" : "justify-start"}`}>
+              <div key={msg.id} className="space-y-2 min-w-0">
+                <div className={`flex min-w-0 ${isUser ? "justify-end" : "justify-start"}`}>
                   <div
-                    className={`max-w-[86%] rounded-2xl px-3.5 py-2.5 text-xs leading-relaxed ${
+                    className={`max-w-[88%] min-w-0 break-words overflow-hidden rounded-2xl px-3.5 py-2.5 text-xs leading-relaxed ${
                       isUser
                         ? "bg-[#3F166B] text-white rounded-br-xs font-medium"
                         : "bg-white border border-stone-200/90 text-stone-700 rounded-bl-xs shadow-2xs space-y-1"

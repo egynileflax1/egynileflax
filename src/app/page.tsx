@@ -1,6 +1,7 @@
 import Navbar from "@/components/Navbar";
 import ShowcaseView from "@/components/ShowcaseView";
 import Footer from "@/components/Footer";
+import FlaxAiAgent from "@/components/FlaxAiAgent";
 
 export default function HomePage() {
   return (
@@ -10,6 +11,7 @@ export default function HomePage() {
         <ShowcaseView />
       </main>
       <Footer />
+      <FlaxAiAgent />
     </div>
   );
 }

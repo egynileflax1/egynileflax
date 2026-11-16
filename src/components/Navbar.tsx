@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useRef, useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import { useFlax } from "@/context/FlaxContext";
 import { LanguageCode } from "@/data/initialData";
 import EgyNileLogo from "@/components/EgyNileLogo";
@@ -17,6 +17,7 @@ import {
   QrCode,
   Copy,
   Check,
+  Sparkles,
 } from "lucide-react";
 
 const LANGUAGES: { code: LanguageCode; label: string; short: string }[] = [
@@ -65,9 +66,19 @@ export default function Navbar() {
     { id: "contact", label: t.nav.contact },
   ];
 
+  useEffect(() => {
+    const handleCloseNav = () => {
+      setMobileMenuOpen(false);
+      setMobileContactSheetOpen(false);
+    };
+    window.addEventListener("egynileflax:close-nav", handleCloseNav);
+    return () => window.removeEventListener("egynileflax:close-nav", handleCloseNav);
+  }, []);
+
   const closeOverlays = () => {
     setMobileMenuOpen(false);
     setMobileContactSheetOpen(false);
+    window.dispatchEvent(new CustomEvent("egynileflax:close-ai"));
   };
 
   const navigateToSection = (sectionId: string) => {
@@ -179,6 +190,7 @@ export default function Navbar() {
             <button
               onClick={() => {
                 setMobileContactSheetOpen(false);
+                window.dispatchEvent(new CustomEvent("egynileflax:close-ai"));
                 setMobileMenuOpen(!mobileMenuOpen);
               }}
               aria-expanded={mobileMenuOpen}
@@ -259,7 +271,7 @@ export default function Navbar() {
       <div
         onClick={() => setMobileContactSheetOpen(false)}
         aria-hidden="true"
-        className={`md:hidden fixed inset-0 z-40 bg-black/55 backdrop-blur-[2px] transition-opacity duration-300 ease-in-out ${
+        className={`md:hidden fixed inset-0 z-[55] bg-black/55 backdrop-blur-[2px] transition-opacity duration-300 ease-in-out ${
           mobileContactSheetOpen ? "opacity-100 pointer-events-auto" : "opacity-0 pointer-events-none"
         }`}
       />
@@ -268,7 +280,7 @@ export default function Navbar() {
       <div
         aria-hidden={!mobileContactSheetOpen}
         style={isDraggingSheet ? { transform: `translateY(${sheetDragY}px)` } : undefined}
-        className={`md:hidden fixed inset-x-0 bottom-0 z-50 ${
+        className={`md:hidden fixed inset-x-0 bottom-0 z-[60] ${
           isDraggingSheet
             ? "transition-none"
             : "transition-transform duration-300 ease-[cubic-bezier(0.22,1,0.36,1)]"
@@ -493,21 +505,39 @@ export default function Navbar() {
         </div>
       </div>
 
-      {/* Mobile floating contact button (< md) */}
-      <button
-        onClick={() => {
-          setMobileMenuOpen(false);
-          setMobileContactSheetOpen(true);
-        }}
-        aria-expanded={mobileContactSheetOpen}
-        aria-label={t.nav.contact}
-        className={`md:hidden fixed bottom-4 end-4 z-40 inline-flex items-center gap-1.5 px-3.5 py-2.5 rounded-full bg-white/95 backdrop-blur-md border border-stone-300 text-[#3F166B] font-bold text-xs shadow-lg hover:bg-stone-50 active:scale-95 transition-all duration-300 cursor-pointer ${
+      {/* Mobile floating AI & Contact dock (< md) */}
+      <div
+        className={`md:hidden fixed bottom-4 end-4 z-40 flex items-center gap-2 transition-all duration-300 ${
           mobileContactSheetOpen ? "opacity-0 scale-90 pointer-events-none" : "opacity-100 scale-100"
         }`}
       >
-        <MessageSquare className="w-4 h-4 text-[#3F166B] shrink-0" />
-        <span>{t.nav.contact}</span>
-      </button>
+        <button
+          type="button"
+          onClick={() => {
+            setMobileMenuOpen(false);
+            setMobileContactSheetOpen(false);
+            window.dispatchEvent(new CustomEvent("egynileflax:open-ai"));
+          }}
+          className="inline-flex items-center gap-1.5 px-3.5 py-2.5 rounded-full bg-[#3F166B] hover:bg-[#2F1052] text-[#EDC271] font-bold text-xs shadow-lg border border-[#EDC271]/35 active:scale-95 transition-all cursor-pointer"
+        >
+          <Sparkles className="w-3.5 h-3.5 text-[#EDC271] shrink-0" />
+          <span>{lang === "ar" ? "المساعد الذكي" : lang === "zh" ? "AI 助手" : "Ask AI"}</span>
+        </button>
+
+        <button
+          onClick={() => {
+            setMobileMenuOpen(false);
+            window.dispatchEvent(new CustomEvent("egynileflax:close-ai"));
+            setMobileContactSheetOpen(true);
+          }}
+          aria-expanded={mobileContactSheetOpen}
+          aria-label={t.nav.contact}
+          className="inline-flex items-center gap-1.5 px-3.5 py-2.5 rounded-full bg-white/95 backdrop-blur-md border border-stone-300 text-[#3F166B] font-bold text-xs shadow-lg hover:bg-stone-50 active:scale-95 transition-all cursor-pointer"
+        >
+          <MessageSquare className="w-4 h-4 text-[#3F166B] shrink-0" />
+          <span>{t.nav.contact}</span>
+        </button>
+      </div>
     </>
   );
 }

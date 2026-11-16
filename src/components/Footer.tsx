@@ -15,10 +15,12 @@ import {
   Check,
   ChevronRight,
   ChevronLeft,
+  Sparkles,
 } from "lucide-react";
 
 export default function Footer() {
-  const { t, company } = useFlax();
+  const { t, company, lang } = useFlax();
+  const aiLabel = lang === "ar" ? "المساعد الذكي" : lang === "zh" ? "AI 助手" : "Ask AI";
   const [qrModal, setQrModal] = useState<"wechat" | "rednote" | null>(null);
   const [activeQrType, setActiveQrType] = useState<"wechat" | "rednote">("wechat");
   const [copiedId, setCopiedId] = useState(false);
@@ -200,8 +202,20 @@ export default function Footer() {
         </div>
       </footer>
 
-      {/* Floating contact dock (tablet & desktop) */}
-      <div className="hidden md:flex fixed bottom-4 end-5 z-40 items-center">
+      {/* Floating contact & AI dock (tablet & desktop) */}
+      <div className="hidden md:flex fixed bottom-4 end-5 z-40 items-center gap-2.5">
+        <button
+          type="button"
+          onClick={() => {
+            setDockMinimized(true);
+            window.dispatchEvent(new CustomEvent("egynileflax:open-ai"));
+          }}
+          className="inline-flex items-center gap-1.5 px-3.5 py-2.5 rounded-full bg-[#3F166B] hover:bg-[#2F1052] text-[#EDC271] font-bold text-xs shadow-lg border border-[#EDC271]/35 whitespace-nowrap transition-all cursor-pointer"
+        >
+          <Sparkles className="w-3.5 h-3.5 text-[#EDC271] shrink-0" />
+          <span>{aiLabel}</span>
+        </button>
+
         <div
           className={`relative flex items-center rounded-full bg-white/95 backdrop-blur-md shadow-lg transition-all duration-300 ease-in-out ${
             dockMinimized ? "p-0 border border-stone-300 hover:bg-stone-50" : "p-1.5 border border-stone-200"

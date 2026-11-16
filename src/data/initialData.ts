@@ -23,6 +23,7 @@ export interface ProductItem {
   applications: Record<LanguageCode, string[]>;
   badge?: string;
   imageUrl: string;
+  images: string[];
   featured: boolean;
 }
 
@@ -98,6 +99,7 @@ export const PRODUCTS: ProductItem[] = [
     },
     badge: "Flagship Product",
     imageUrl: "/IMG_9066.webp",
+    images: ["/IMG_9066.webp", "/IMG_9317.JPG.webp", "/IMG_9321.webp"],
     featured: true,
   },
   {
@@ -132,6 +134,7 @@ export const PRODUCTS: ProductItem[] = [
       zh: ["汽车内饰板与生物基复合材料", "特种纸浆与卷烟纸", "建筑保温与隔音材料"],
     },
     imageUrl: "/IMG_9314.JPG.webp",
+    images: ["/IMG_9314.JPG.webp", "/IMG_9324.webp", "/IMG_9325.webp"],
     featured: false,
   },
   {
@@ -167,6 +170,7 @@ export const PRODUCTS: ProductItem[] = [
     },
     badge: "Mill Favorite",
     imageUrl: "/IMG_9317.JPG.webp",
+    images: ["/IMG_9317.JPG.webp", "/IMG_9066.webp", "/IMG_9321.webp"],
     featured: true,
   },
   {
@@ -201,6 +205,7 @@ export const PRODUCTS: ProductItem[] = [
       zh: ["长麻湿纺直接并条纺纱", "亚麻/羊毛、亚麻/真丝长纤混纺", "高均匀度特种技术纱线"],
     },
     imageUrl: "/IMG_9321.webp",
+    images: ["/IMG_9321.webp", "/IMG_9317.JPG.webp", "/IMG_9325.webp"],
     featured: true,
   },
   {
@@ -235,6 +240,7 @@ export const PRODUCTS: ProductItem[] = [
       zh: ["亚麻二粗纱 (Nm 6–16)", "厚重亚麻家纺、沙发布与画布", "制绳与高强包装麻线"],
     },
     imageUrl: "/IMG_9324.webp",
+    images: ["/IMG_9324.webp", "/IMG_2673.webp", "/IMG_9066.webp"],
     featured: false,
   },
   {
@@ -270,6 +276,7 @@ export const PRODUCTS: ProductItem[] = [
     },
     badge: "High Demand",
     imageUrl: "/IMG_9325.webp",
+    images: ["/IMG_9325.webp", "/IMG_9321.webp", "/IMG_9314.JPG.webp"],
     featured: true,
   },
   {
@@ -305,6 +312,7 @@ export const PRODUCTS: ProductItem[] = [
     },
     badge: "Sanitary Trade",
     imageUrl: "/IMG_9340.JPG.webp",
+    images: ["/IMG_9340.JPG.webp", "/IMG_9341.JPG.webp", "/IMG_2667.webp"],
     featured: true,
   },
   {
@@ -339,6 +347,7 @@ export const PRODUCTS: ProductItem[] = [
       zh: ["五金建材连锁超市零售", "水暖工随身工具包快速作业", "海外五金品牌OEM定制"],
     },
     imageUrl: "/IMG_9341.JPG.webp",
+    images: ["/IMG_9341.JPG.webp", "/IMG_9340.JPG.webp", "/IMG_2667.webp"],
     featured: false,
   },
   {
@@ -373,6 +382,7 @@ export const PRODUCTS: ProductItem[] = [
       zh: ["工业管道与锅炉安装工程", "水暖器材批发商", "市政与农业灌溉管网密封"],
     },
     imageUrl: "/IMG_2667.webp",
+    images: ["/IMG_2667.webp", "/IMG_9340.JPG.webp", "/IMG_9341.JPG.webp"],
     featured: false,
   },
   {
@@ -408,6 +418,7 @@ export const PRODUCTS: ProductItem[] = [
     },
     badge: "100% Biodegradable",
     imageUrl: "/IMG_2673.webp",
+    images: ["/IMG_2673.webp", "/IMG_9341.JPG.webp", "/IMG_9321.webp"],
     featured: true,
   },
   {
@@ -442,6 +453,7 @@ export const PRODUCTS: ProductItem[] = [
       zh: ["肉制品深加工与香肠腊肉悬挂", "专业肉铺与烤肉餐饮", "商超厨房烘焙用品零售"],
     },
     imageUrl: "/IMG_9321.webp",
+    images: ["/IMG_9321.webp", "/IMG_2673.webp", "/IMG_9341.JPG.webp"],
     featured: false,
   },
   {
@@ -476,6 +488,7 @@ export const PRODUCTS: ProductItem[] = [
       zh: ["航海、建筑装饰与攀爬麻绳", "冷榨亚麻籽油与高端营养饲料", "优质纤维亚麻农业种植"],
     },
     imageUrl: "/IMG_9324.webp",
+    images: ["/IMG_9324.webp", "/IMG_2673.webp", "/IMG_9066.webp"],
     featured: false,
   },
 ];

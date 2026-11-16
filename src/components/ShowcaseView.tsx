@@ -29,6 +29,10 @@ import {
   Copy,
   Check,
   ChevronDown,
+  ChevronLeft,
+  ChevronRight,
+  Maximize2,
+  Images,
   Printer,
 } from "lucide-react";
 
@@ -145,11 +149,21 @@ export default function ShowcaseView() {
 
   const [activeProductModal, setActiveProductModal] = useState<ProductItem | null>(null);
   const [modalVisible, setModalVisible] = useState(false);
+  const [activeImageIdx, setActiveImageIdx] = useState(0);
+  const [lightboxOpen, setLightboxOpen] = useState(false);
   const modalCloseTimerRef = useRef<number | undefined>(undefined);
 
-  const openProductModal = (product: ProductItem) => {
+  const modalImages = activeProductModal
+    ? activeProductModal.images?.length
+      ? activeProductModal.images
+      : [activeProductModal.imageUrl]
+    : [];
+
+  const openProductModal = (product: ProductItem, initialImageIdx = 0) => {
     window.clearTimeout(modalCloseTimerRef.current);
     setActiveProductModal(product);
+    setActiveImageIdx(initialImageIdx);
+    setLightboxOpen(false);
     pushDataLayer("product_spec_view", {
       product_id: product.id,
       product_name: product.name.en,
@@ -161,6 +175,7 @@ export default function ShowcaseView() {
   };
 
   const closeProductModal = () => {
+    setLightboxOpen(false);
     setModalVisible(false);
     window.clearTimeout(modalCloseTimerRef.current);
     modalCloseTimerRef.current = window.setTimeout(() => {
@@ -170,12 +185,23 @@ export default function ShowcaseView() {
 
   useEffect(() => {
     if (!activeProductModal) return;
+    const totalImgs = activeProductModal.images?.length || 1;
     const onKeyDown = (e: KeyboardEvent) => {
-      if (e.key === "Escape") closeProductModal();
+      if (e.key === "Escape") {
+        if (lightboxOpen) {
+          setLightboxOpen(false);
+        } else {
+          closeProductModal();
+        }
+      } else if (e.key === "ArrowRight" && totalImgs > 1) {
+        setActiveImageIdx((prev) => (prev + 1) % totalImgs);
+      } else if (e.key === "ArrowLeft" && totalImgs > 1) {
+        setActiveImageIdx((prev) => (prev - 1 + totalImgs) % totalImgs);
+      }
     };
     window.addEventListener("keydown", onKeyDown);
     return () => window.removeEventListener("keydown", onKeyDown);
-  }, [activeProductModal]);
+  }, [activeProductModal, lightboxOpen]);
 
   useEffect(() => {
     return () => window.clearTimeout(modalCloseTimerRef.current);
@@ -562,7 +588,10 @@ export default function ShowcaseView() {
                   className="anim-card bg-white rounded-2xl border border-stone-200/90 overflow-hidden shadow-xs hover:shadow-xl transition-shadow flex flex-col justify-between group"
                 >
                   <div>
-                    <div className="relative h-48 bg-stone-200 overflow-hidden">
+                    <div
+                      onClick={() => openProductModal(product)}
+                      className="relative h-48 bg-stone-200 overflow-hidden cursor-pointer"
+                    >
                       <img
                         src={product.imageUrl}
                         alt={title}
@@ -572,6 +601,12 @@ export default function ShowcaseView() {
                       {product.badge && (
                         <span className="absolute top-3 start-3 px-2.5 py-1 rounded-md bg-[#EDC271] text-[#260C42] text-[11px] font-extrabold shadow-xs">
                           {product.badge}
+                        </span>
+                      )}
+                      {product.images?.length > 1 && (
+                        <span className="absolute top-3 end-3 inline-flex items-center gap-1 px-2 py-1 rounded-md bg-black/55 backdrop-blur-xs text-white text-[10px] font-bold">
+                          <Images className="w-3 h-3 text-[#EDC271]" />
+                          <span>{product.images.length}</span>
                         </span>
                       )}
                       <div className="absolute bottom-3 start-3 end-3">
@@ -1119,28 +1154,79 @@ export default function ShowcaseView() {
           onClick={closeProductModal}
         >
           <div
-            className={`bg-white rounded-t-3xl sm:rounded-3xl max-w-2xl w-full max-h-[92dvh] flex flex-col overflow-hidden shadow-2xl border border-stone-200 transition-all duration-300 ease-out ${
+            className={`bg-white rounded-t-3xl sm:rounded-3xl max-w-2xl w-full max-h-[92dvh] flex flex-col overflow-hidden shadow-2xl transition-all duration-300 ease-out ${
               modalVisible
                 ? "opacity-100 translate-y-0 sm:scale-100"
                 : "opacity-0 translate-y-12 sm:translate-y-4 sm:scale-95"
             }`}
             onClick={(e) => e.stopPropagation()}
           >
-            <div className="relative h-44 sm:h-56 bg-stone-900 shrink-0">
+            <div className="relative h-52 sm:h-64 bg-stone-900 shrink-0 group/img">
               <img
-                src={activeProductModal.imageUrl}
+                src={modalImages[activeImageIdx] || activeProductModal.imageUrl}
                 alt={activeProductModal.name[lang] || activeProductModal.name.en}
-                className="w-full h-full object-cover opacity-85"
+                onClick={() => setLightboxOpen(true)}
+                className="w-full h-full object-cover opacity-90 cursor-zoom-in transition-transform duration-300"
               />
-              <div className="absolute inset-0 bg-gradient-to-t from-black/85 via-black/30 to-transparent" />
-              <button
-                onClick={closeProductModal}
-                aria-label={t.products.close}
-                className="absolute top-3.5 end-3.5 w-9 h-9 rounded-full bg-black/65 text-white flex items-center justify-center hover:bg-black cursor-pointer"
-              >
-                <X className="w-5 h-5" />
-              </button>
-              <div className="absolute bottom-3.5 start-5 end-5">
+              <div className="pointer-events-none absolute inset-0 bg-gradient-to-t from-black/85 via-black/25 to-transparent" />
+
+              {/* Top Controls: Zoom + Counter + Close */}
+              <div className="absolute top-3.5 start-3.5 end-3.5 flex items-center justify-between gap-2">
+                <div className="flex items-center gap-1.5">
+                  <button
+                    type="button"
+                    onClick={() => setLightboxOpen(true)}
+                    aria-label="View full size image"
+                    className="inline-flex items-center gap-1.5 px-2.5 py-1.5 rounded-full bg-black/60 hover:bg-black/85 text-white text-[11px] font-bold backdrop-blur-xs cursor-pointer"
+                  >
+                    <Maximize2 className="w-3.5 h-3.5 text-[#EDC271]" />
+                    <span>{lang === "ar" ? "تكبير الصورة" : lang === "zh" ? "查看大图" : "View Full"}</span>
+                  </button>
+                  {modalImages.length > 1 && (
+                    <span className="px-2.5 py-1 rounded-full bg-black/60 text-white text-[11px] font-bold tabular-nums backdrop-blur-xs">
+                      {activeImageIdx + 1} / {modalImages.length}
+                    </span>
+                  )}
+                </div>
+
+                <button
+                  onClick={closeProductModal}
+                  aria-label={t.products.close}
+                  className="w-9 h-9 rounded-full bg-black/65 text-white flex items-center justify-center hover:bg-black cursor-pointer"
+                >
+                  <X className="w-5 h-5" />
+                </button>
+              </div>
+
+              {/* Left/Right Gallery Arrows */}
+              {modalImages.length > 1 && (
+                <>
+                  <button
+                    type="button"
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      setActiveImageIdx((prev) => (prev - 1 + modalImages.length) % modalImages.length);
+                    }}
+                    aria-label="Previous image"
+                    className="absolute start-3 top-1/2 -translate-y-1/2 w-8 h-8 rounded-full bg-black/55 hover:bg-black/80 text-white flex items-center justify-center cursor-pointer"
+                  >
+                    <ChevronLeft className="w-4 h-4 rtl:rotate-180" />
+                  </button>
+                  <button
+                    type="button"
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      setActiveImageIdx((prev) => (prev + 1) % modalImages.length);
+                    }}
+                    aria-label="Next image"
+                    className="absolute end-3 top-1/2 -translate-y-1/2 w-8 h-8 rounded-full bg-black/55 hover:bg-black/80 text-white flex items-center justify-center cursor-pointer"
+                  >
+                    <ChevronRight className="w-4 h-4 rtl:rotate-180" />
+                  </button>
+                </>
+              )}
+
+              <div className="pointer-events-none absolute bottom-3.5 start-5 end-5">
                 <span className="text-[11px] sm:text-xs font-bold text-[#EDC271] uppercase tracking-wider block truncate">
                   {activeProductModal.subtitle[lang] || activeProductModal.subtitle.en}
                 </span>
@@ -1149,6 +1235,30 @@ export default function ShowcaseView() {
                 </h3>
               </div>
             </div>
+
+            {/* Thumbnail Strip */}
+            {modalImages.length > 1 && (
+              <div className="px-5 sm:px-8 pt-3 pb-1 flex items-center gap-2 overflow-x-auto no-scrollbar bg-stone-50/80 border-b border-stone-200/70 shrink-0">
+                {modalImages.map((imgSrc, idx) => (
+                  <button
+                    key={`${imgSrc}-${idx}`}
+                    type="button"
+                    onClick={() => setActiveImageIdx(idx)}
+                    className={`relative w-16 h-12 rounded-lg overflow-hidden shrink-0 border-2 transition-all cursor-pointer ${
+                      activeImageIdx === idx
+                        ? "border-[#3F166B] ring-2 ring-[#EDC271]/60 scale-102"
+                        : "border-transparent opacity-65 hover:opacity-100"
+                    }`}
+                  >
+                    <img
+                      src={imgSrc}
+                      alt={`${activeProductModal.name[lang] || activeProductModal.name.en} ${idx + 1}`}
+                      className="w-full h-full object-cover"
+                    />
+                  </button>
+                ))}
+              </div>
+            )}
 
             <div className="p-5 sm:p-8 space-y-5 sm:space-y-6 overflow-y-auto custom-scrollbar">
               <p className="text-xs sm:text-sm text-stone-600 leading-relaxed">
@@ -1291,6 +1401,95 @@ export default function ShowcaseView() {
               </div>
             </div>
           </div>
+        </div>
+      )}
+
+      {/* =========================================================
+          FULL-SCREEN IMAGE LIGHTBOX VIEWER
+      ========================================================= */}
+      {activeProductModal && lightboxOpen && (
+        <div
+          onClick={() => setLightboxOpen(false)}
+          className="fixed inset-0 z-[60] bg-black/95 backdrop-blur-sm flex flex-col items-center justify-between p-4 sm:p-6"
+        >
+          <div
+            onClick={(e) => e.stopPropagation()}
+            className="w-full max-w-5xl flex items-center justify-between text-white"
+          >
+            <div className="min-w-0">
+              <div className="text-xs font-bold text-[#EDC271] truncate">
+                {activeProductModal.name[lang] || activeProductModal.name.en}
+              </div>
+              {modalImages.length > 1 && (
+                <div className="text-[11px] text-stone-300 tabular-nums">
+                  {activeImageIdx + 1} / {modalImages.length}
+                </div>
+              )}
+            </div>
+            <button
+              type="button"
+              onClick={() => setLightboxOpen(false)}
+              aria-label={t.products.close}
+              className="w-10 h-10 rounded-full bg-white/15 hover:bg-white/25 text-white flex items-center justify-center cursor-pointer"
+            >
+              <X className="w-5 h-5" />
+            </button>
+          </div>
+
+          <div
+            onClick={(e) => e.stopPropagation()}
+            className="relative w-full max-w-5xl flex-1 min-h-0 flex items-center justify-center my-3"
+          >
+            <img
+              src={modalImages[activeImageIdx] || activeProductModal.imageUrl}
+              alt={activeProductModal.name[lang] || activeProductModal.name.en}
+              className="max-w-full max-h-full object-contain rounded-xl shadow-2xl select-none"
+            />
+            {modalImages.length > 1 && (
+              <>
+                <button
+                  type="button"
+                  onClick={() =>
+                    setActiveImageIdx((prev) => (prev - 1 + modalImages.length) % modalImages.length)
+                  }
+                  aria-label="Previous image"
+                  className="absolute start-2 sm:start-4 top-1/2 -translate-y-1/2 w-10 h-10 rounded-full bg-black/65 hover:bg-black text-white flex items-center justify-center cursor-pointer"
+                >
+                  <ChevronLeft className="w-5 h-5 rtl:rotate-180" />
+                </button>
+                <button
+                  type="button"
+                  onClick={() => setActiveImageIdx((prev) => (prev + 1) % modalImages.length)}
+                  aria-label="Next image"
+                  className="absolute end-2 sm:end-4 top-1/2 -translate-y-1/2 w-10 h-10 rounded-full bg-black/65 hover:bg-black text-white flex items-center justify-center cursor-pointer"
+                >
+                  <ChevronRight className="w-5 h-5 rtl:rotate-180" />
+                </button>
+              </>
+            )}
+          </div>
+
+          {modalImages.length > 1 && (
+            <div
+              onClick={(e) => e.stopPropagation()}
+              className="flex items-center gap-2 overflow-x-auto max-w-full pb-1"
+            >
+              {modalImages.map((imgSrc, idx) => (
+                <button
+                  key={`lb-${imgSrc}-${idx}`}
+                  type="button"
+                  onClick={() => setActiveImageIdx(idx)}
+                  className={`w-16 h-12 rounded-lg overflow-hidden shrink-0 border-2 transition-all cursor-pointer ${
+                    activeImageIdx === idx
+                      ? "border-[#EDC271] opacity-100"
+                      : "border-transparent opacity-55 hover:opacity-100"
+                  }`}
+                >
+                  <img src={imgSrc} alt="" className="w-full h-full object-cover" />
+                </button>
+              ))}
+            </div>
+          )}
         </div>
       )}
     </div>

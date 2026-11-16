@@ -273,6 +273,7 @@ export default function FlaxAiAgent() {
             content: m.content,
           })),
         }),
+        signal: AbortSignal.timeout(9000),
       });
 
       const data = await res.json();

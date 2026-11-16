@@ -30,6 +30,7 @@ import {
   Printer,
   Truck,
   UserCheck,
+  Globe,
 } from "lucide-react";
 import { CrmEmailLog, CrmLead, LEAD_STATUSES, LeadStatus } from "@/lib/db";
 import SuppliersTab from "@/components/SuppliersTab";
@@ -42,38 +43,34 @@ import {
   toTrackingHref,
   toWhatsAppHref,
 } from "@/lib/crmHelpers";
+import { useFlax } from "@/context/FlaxContext";
+import { ADMIN_TRANSLATIONS } from "@/lib/adminI18n";
 
 const STATUS_META: Record<
   LeadStatus,
-  { label: string; badgeClass: string; headerClass: string }
+  { badgeClass: string; headerClass: string }
 > = {
   new: {
-    label: "New",
     badgeClass: "bg-amber-100 text-amber-900 border-amber-200",
     headerClass: "border-t-4 border-t-amber-400",
   },
   contacted: {
-    label: "Contacted",
     badgeClass: "bg-sky-100 text-sky-900 border-sky-200",
     headerClass: "border-t-4 border-t-sky-400",
   },
   sample_sent: {
-    label: "Sample Sent",
     badgeClass: "bg-violet-100 text-violet-900 border-violet-200",
     headerClass: "border-t-4 border-t-violet-400",
   },
   quoted: {
-    label: "Quoted",
     badgeClass: "bg-[#EDC271]/35 text-[#3F166B] border-[#EDC271]",
     headerClass: "border-t-4 border-t-[#EDC271]",
   },
   won: {
-    label: "Won",
     badgeClass: "bg-emerald-100 text-emerald-900 border-emerald-200",
     headerClass: "border-t-4 border-t-emerald-500",
   },
   lost: {
-    label: "Lost",
     badgeClass: "bg-stone-200 text-stone-700 border-stone-300",
     headerClass: "border-t-4 border-t-stone-400",
   },
@@ -140,6 +137,11 @@ function parseCsvRows(text: string): string[][] {
 }
 
 export default function AdminCrmDashboard() {
+  const { lang, setLang } = useFlax();
+  const isAr = lang === "ar";
+  const t = ADMIN_TRANSLATIONS[isAr ? "ar" : "en"];
+  const toggleAdminLang = () => setLang(isAr ? "en" : "ar");
+
   const [activeTab, setActiveTab] = useState<"leads" | "suppliers">("leads");
   const [viewMode, setViewMode] = useState<"table" | "kanban">("table");
   const [showAddSupplierModal, setShowAddSupplierModal] = useState(false);
@@ -241,14 +243,14 @@ export default function AdminCrmDashboard() {
       const params = new URLSearchParams(window.location.search);
       const err = params.get("error");
       if (err === "unauthorized_email") {
-        setLoginError("Access denied: this Google account is not authorized for Egy Nile Flax CRM.");
+        setLoginError(t.unauthorizedEmail);
       } else if (err) {
-        setLoginError("Google Sign-In did not complete. Please try again.");
+        setLoginError(t.googleSignInError);
       }
     } finally {
       setCheckingAuth(false);
     }
-  }, []);
+  }, [t.googleSignInError, t.unauthorizedEmail]);
 
   const fetchLeads = useCallback(async () => {
     setLoadingLeads(true);
@@ -412,7 +414,7 @@ export default function AdminCrmDashboard() {
 
   const handleDeleteLead = async () => {
     if (!activeLead) return;
-    if (!window.confirm(`Delete lead for ${activeLead.name}?`)) return;
+    if (!window.confirm(t.deleteLeadConfirm(activeLead.name))) return;
     const res = await fetch(`/api/admin/leads/${activeLead.id}`, { method: "DELETE" });
     if (res.ok) {
       setLeads((prev) => prev.filter((l) => l.id !== activeLead.id));
@@ -683,29 +685,39 @@ export default function AdminCrmDashboard() {
 
   if (checkingAuth) {
     return (
-      <div className="min-h-dvh bg-[#FAF8F5] flex items-center justify-center text-sm text-stone-500">
-        Loading Admin CRM...
+      <div dir={t.dir} className="min-h-dvh bg-[#FAF8F5] flex items-center justify-center text-sm text-stone-500">
+        {t.loadingCrm}
       </div>
     );
   }
 
   if (!authenticated) {
     return (
-      <div className="min-h-dvh bg-[#FAF8F5] flex items-center justify-center p-4">
+      <div dir={t.dir} className="min-h-dvh bg-[#FAF8F5] flex items-center justify-center p-4">
         <div className="w-full max-w-md bg-white rounded-2xl border border-stone-200 shadow-sm p-6 sm:p-8 space-y-5">
-          <div className="flex items-center gap-3">
-            <div className="w-10 h-10 rounded-xl bg-[#3F166B] text-[#EDC271] flex items-center justify-center">
-              <Lock className="w-5 h-5" />
+          <div className="flex items-center justify-between gap-3">
+            <div className="flex items-center gap-3">
+              <div className="w-10 h-10 rounded-xl bg-[#3F166B] text-[#EDC271] flex items-center justify-center">
+                <Lock className="w-5 h-5" />
+              </div>
+              <div>
+                <h1 className="text-lg font-extrabold text-[#3F166B]">{t.loginTitle}</h1>
+                <p className="text-xs text-stone-500">{t.loginSubtitle}</p>
+              </div>
             </div>
-            <div>
-              <h1 className="text-lg font-extrabold text-[#3F166B]">Egy Nile Flax CRM</h1>
-              <p className="text-xs text-stone-500">Admin Lead &amp; Quotation Management</p>
-            </div>
+            <button
+              type="button"
+              onClick={toggleAdminLang}
+              className="inline-flex items-center gap-1 px-2.5 py-1.5 rounded-lg border border-stone-200 bg-stone-50 hover:bg-stone-100 text-xs font-bold text-[#3F166B] cursor-pointer"
+            >
+              <Globe className="w-3.5 h-3.5" />
+              <span>{t.langToggleLabel}</span>
+            </button>
           </div>
 
           {!googleConfigured && (
             <div className="p-3 rounded-xl bg-amber-50 border border-amber-200 text-amber-900 text-xs">
-              Set <code>GOOGLE_CLIENT_ID</code> and <code>GOOGLE_CLIENT_SECRET</code> in your environment variables to enable Google Sign-In.
+              {t.googleNotConfigured}
             </div>
           )}
 
@@ -738,7 +750,7 @@ export default function AdminCrmDashboard() {
                   d="M12 4.75c1.77 0 3.35.61 4.6 1.8l3.42-3.42C17.95 1.19 15.24 0 12 0 7.31 0 3.26 2.7 1.29 6.62l3.99 3.14c.95-2.85 3.6-4.96 6.72-4.96Z"
                 />
               </svg>
-              <span>Sign in with Google</span>
+              <span>{t.signInGoogle}</span>
             </a>
           )}
         </div>
@@ -747,29 +759,38 @@ export default function AdminCrmDashboard() {
   }
 
   return (
-    <div className="min-h-dvh bg-[#FAF8F5] text-stone-900">
+    <div dir={t.dir} className="min-h-dvh bg-[#FAF8F5] text-stone-900">
       {/* Header */}
       <header className="border-b border-stone-200 bg-white/90 backdrop-blur-md sticky top-0 z-20">
         <div className="max-w-[1440px] mx-auto px-3 sm:px-6 lg:px-10 h-14 sm:h-16 flex items-center justify-between gap-2 sm:gap-3">
           <div className="min-w-0">
             <h1 className="text-sm sm:text-base font-extrabold text-[#3F166B] truncate">
-              <span className="sm:hidden">Admin CRM</span>
-              <span className="hidden sm:inline">Egy Nile Flax — Admin CRM</span>
+              <span className="sm:hidden">{t.headerTitleShort}</span>
+              <span className="hidden sm:inline">{t.headerTitleFull}</span>
             </h1>
             <p className="text-[11px] text-stone-500 hidden sm:block truncate">
-              Export Leads, Quotations &amp; Mill Suppliers
-              {adminEmail ? ` • Signed in as ${adminName || adminEmail}` : ""}
+              {t.headerSubtitle}
+              {adminEmail ? ` • ${t.signedInAs} ${adminName || adminEmail}` : ""}
             </p>
           </div>
 
           <div className="flex items-center gap-1.5 sm:gap-2 shrink-0">
+            <button
+              type="button"
+              onClick={toggleAdminLang}
+              title={t.langToggleLabel}
+              className="inline-flex items-center justify-center gap-1 h-9 px-2.5 rounded-lg border border-stone-200 bg-white hover:bg-stone-100 text-xs font-bold text-[#3F166B] whitespace-nowrap cursor-pointer"
+            >
+              <Globe className="w-3.5 h-3.5 shrink-0" />
+              <span>{t.langToggleLabel}</span>
+            </button>
             <Link
               href="/admin/mail"
-              title="B2B Mail Sender"
+              title={t.b2bMailBtn}
               className="inline-flex items-center justify-center gap-1.5 h-9 px-2.5 sm:px-3 rounded-lg border border-stone-200 bg-white hover:bg-stone-100 text-xs font-semibold text-stone-700 whitespace-nowrap"
             >
               <Mail className="w-3.5 h-3.5 text-[#3F166B] shrink-0" />
-              <span className="hidden sm:inline">B2B Mail</span>
+              <span className="hidden sm:inline">{t.b2bMailBtn}</span>
             </Link>
             <button
               type="button"
@@ -779,7 +800,7 @@ export default function AdminCrmDashboard() {
               className="inline-flex items-center justify-center gap-1.5 h-9 px-2.5 sm:px-3 rounded-lg bg-[#3F166B] hover:bg-[#2F1052] text-[#EDC271] text-xs font-bold whitespace-nowrap cursor-pointer"
             >
               <Plus className="w-3.5 h-3.5 shrink-0" />
-              <span>{activeTab === "leads" ? "Add Lead" : "Add Supplier"}</span>
+              <span>{activeTab === "leads" ? t.addLeadBtn : t.addSupplierBtn}</span>
             </button>
             {activeTab === "leads" && (
               <>
@@ -794,29 +815,29 @@ export default function AdminCrmDashboard() {
                   type="button"
                   onClick={() => leadCsvInputRef.current?.click()}
                   disabled={importingCsv}
-                  title="Import Buyers CSV"
+                  title={t.importCsvBtn}
                   className="inline-flex items-center justify-center gap-1.5 h-9 px-2.5 sm:px-3 rounded-lg border border-stone-200 bg-white hover:bg-stone-100 text-xs font-semibold text-stone-700 whitespace-nowrap cursor-pointer"
                 >
                   <Upload className="w-3.5 h-3.5 text-[#3F166B] shrink-0" />
                   <span className="hidden sm:inline">
-                    {importingCsv ? "Importing..." : "Import CSV"}
+                    {importingCsv ? t.importingCsvBtn : t.importCsvBtn}
                   </span>
                 </button>
                 <button
                   type="button"
                   onClick={exportCsv}
-                  title="Export Buyers CSV"
+                  title={t.exportCsvBtn}
                   className="inline-flex items-center justify-center gap-1.5 h-9 px-2.5 sm:px-3 rounded-lg border border-stone-200 bg-white hover:bg-stone-100 text-xs font-semibold text-stone-700 whitespace-nowrap cursor-pointer"
                 >
                   <Download className="w-3.5 h-3.5 text-[#3F166B] shrink-0" />
-                  <span className="hidden sm:inline">Export CSV</span>
+                  <span className="hidden sm:inline">{t.exportCsvBtn}</span>
                 </button>
               </>
             )}
             <button
               type="button"
               onClick={handleLogout}
-              title="Sign Out"
+              title={t.signOutBtn}
               className="inline-flex items-center justify-center h-9 px-2.5 rounded-lg border border-stone-200 bg-white hover:bg-stone-100 text-xs font-semibold text-stone-600 cursor-pointer"
             >
               <LogOut className="w-3.5 h-3.5 shrink-0" />
@@ -839,7 +860,7 @@ export default function AdminCrmDashboard() {
               }`}
             >
               <Users className="w-3.5 h-3.5" />
-              <span>Buyers / Leads</span>
+              <span>{t.tabLeads}</span>
             </button>
             <button
               type="button"
@@ -851,7 +872,7 @@ export default function AdminCrmDashboard() {
               }`}
             >
               <Factory className="w-3.5 h-3.5" />
-              <span>Suppliers &amp; Mills</span>
+              <span>{t.tabSuppliers}</span>
             </button>
           </div>
 
@@ -867,7 +888,7 @@ export default function AdminCrmDashboard() {
                 }`}
               >
                 <TableIcon className="w-3.5 h-3.5" />
-                <span>Table</span>
+                <span>{t.viewTable}</span>
               </button>
               <button
                 type="button"
@@ -879,7 +900,7 @@ export default function AdminCrmDashboard() {
                 }`}
               >
                 <LayoutGrid className="w-3.5 h-3.5" />
-                <span>Kanban Board</span>
+                <span>{t.viewKanban}</span>
               </button>
             </div>
           )}
@@ -887,10 +908,8 @@ export default function AdminCrmDashboard() {
 
         {!dbConfigured && (
           <div className="p-4 rounded-2xl bg-amber-50 border border-amber-200 text-amber-900 text-xs space-y-1">
-            <div className="font-bold">Database not connected yet (DATABASE_URL missing)</div>
-            <p>
-              Add your Neon Postgres <code>DATABASE_URL</code> in <code>.env.local</code> and Vercel Environment Variables, then refresh—tables will be created automatically.
-            </p>
+            <div className="font-bold">{t.dbMissingTitle}</div>
+            <p>{t.dbMissingBody}</p>
           </div>
         )}
 
@@ -904,11 +923,11 @@ export default function AdminCrmDashboard() {
             {/* KPI Cards */}
             <div className="grid grid-cols-2 sm:grid-cols-5 gap-2.5 sm:gap-3">
               {[
-                ["Total Leads", stats.total, "text-[#3F166B]"],
-                ["New Inquiries", stats.newCount, "text-amber-700"],
-                ["Sample / Quoted", stats.quotedCount, "text-[#3F166B]"],
-                ["Won Deals", stats.wonCount, "text-emerald-700"],
-                ["Follow-ups Due", stats.dueCount, "text-rose-700"],
+                [t.kpiTotalLeads, stats.total, "text-[#3F166B]"],
+                [t.kpiNewInquiries, stats.newCount, "text-amber-700"],
+                [t.kpiSampleQuoted, stats.quotedCount, "text-[#3F166B]"],
+                [t.kpiWonDeals, stats.wonCount, "text-emerald-700"],
+                [t.kpiFollowUpsDue, stats.dueCount, "text-rose-700"],
               ].map(([label, val, cls], idx) => (
                 <div
                   key={String(label)}
@@ -933,14 +952,14 @@ export default function AdminCrmDashboard() {
               <div className="no-scrollbar flex items-center gap-1.5 overflow-x-auto pb-1 sm:pb-0">
                 {(
                   [
-                    ["all", "All"],
-                    ["new", "New"],
-                    ["contacted", "Contacted"],
-                    ["sample_sent", "Sample Sent"],
-                    ["quoted", "Quoted"],
-                    ["won", "Won"],
-                    ["lost", "Lost"],
-                    ["due", `Due (${stats.dueCount})`],
+                    ["all", t.filterAll],
+                    ["new", t.statuses.new],
+                    ["contacted", t.statuses.contacted],
+                    ["sample_sent", t.statuses.sample_sent],
+                    ["quoted", t.statuses.quoted],
+                    ["won", t.statuses.won],
+                    ["lost", t.statuses.lost],
+                    ["due", `${t.filterDue} (${stats.dueCount})`],
                   ] as const
                 ).map(([key, label]) => (
                   <button
@@ -965,14 +984,14 @@ export default function AdminCrmDashboard() {
                     type="text"
                     value={searchQuery}
                     onChange={(e) => setSearchQuery(e.target.value)}
-                    placeholder="Search buyer, company, country..."
+                    placeholder={t.searchLeadsPlaceholder}
                     className="w-full ps-8 pe-3 py-2 rounded-xl border border-stone-200 bg-white text-base sm:text-xs focus:outline-none focus:border-[#3F166B]"
                   />
                 </div>
                 <button
                   type="button"
                   onClick={fetchLeads}
-                  title="Refresh"
+                  title={t.refreshTitle}
                   className="p-2 rounded-xl border border-stone-200 bg-white hover:bg-stone-100 text-stone-600 cursor-pointer"
                 >
                   <RefreshCw className={`w-4 h-4 ${loadingLeads ? "animate-spin" : ""}`} />
@@ -1005,7 +1024,7 @@ export default function AdminCrmDashboard() {
                       className={`w-[82vw] sm:w-[300px] md:w-auto shrink-0 snap-center bg-white rounded-2xl border border-stone-200 ${meta.headerClass} p-3 space-y-2.5 min-h-[280px]`}
                     >
                       <div className="flex items-center justify-between">
-                        <span className="text-xs font-extrabold text-stone-800">{meta.label}</span>
+                        <span className="text-xs font-extrabold text-stone-800">{t.statuses[st]}</span>
                         <span className="px-2 py-0.5 rounded-full text-[11px] font-bold bg-stone-100 text-stone-700">
                           {stageLeads.length}
                         </span>
@@ -1014,7 +1033,7 @@ export default function AdminCrmDashboard() {
                       <div className="space-y-2">
                         {stageLeads.length === 0 ? (
                           <div className="py-8 text-center text-[11px] text-stone-400 border border-dashed border-stone-200 rounded-xl">
-                            Drop lead here
+                            {t.dropLeadHere}
                           </div>
                         ) : (
                           stageLeads.map((lead) => {
@@ -1040,20 +1059,20 @@ export default function AdminCrmDashboard() {
                                   </div>
                                 )}
                                 <div className="text-[11px] font-semibold text-[#3F166B] truncate">
-                                  {lead.product || "General Inquiry"}
+                                  {lead.product || t.generalInquiry}
                                   {lead.container_volume || lead.quantity
                                     ? ` • ${lead.container_volume || lead.quantity}`
                                     : ""}
                                 </div>
                                 {lead.quoted_price && (
                                   <div className="text-[11px] font-bold text-emerald-800">
-                                    Quote: {lead.quoted_price}
+                                    {lead.quoted_price}
                                   </div>
                                 )}
                                 <div className="flex items-center justify-between pt-1 border-t border-stone-200/70 text-[10px] text-stone-500">
                                   <span>{lead.country || "—"}</span>
                                   {due && (
-                                    <span className="font-bold text-rose-700">Follow-up Due</span>
+                                    <span className="font-bold text-rose-700">{t.followUpDueBadge}</span>
                                   )}
                                 </div>
                                 <div
@@ -1065,12 +1084,12 @@ export default function AdminCrmDashboard() {
                                     onChange={(e) =>
                                       handleQuickStageChange(lead.id, e.target.value as LeadStatus)
                                     }
-                                    aria-label="Change Stage"
+                                    aria-label={t.fieldStage}
                                     className="text-[10px] font-semibold bg-white border border-stone-200 rounded px-1.5 py-0.5"
                                   >
                                     {LEAD_STATUSES.map((sKey) => (
                                       <option key={sKey} value={sKey}>
-                                        {STATUS_META[sKey].label}
+                                        {t.statuses[sKey]}
                                       </option>
                                     ))}
                                   </select>
@@ -1079,7 +1098,7 @@ export default function AdminCrmDashboard() {
                                       href={waHref}
                                       target="_blank"
                                       rel="noopener noreferrer"
-                                      title="WhatsApp Buyer"
+                                      title={t.whatsappBtn}
                                       className="p-1 rounded bg-emerald-50 text-emerald-700 hover:bg-emerald-100"
                                     >
                                       <MessageCircle className="w-3 h-3" />
@@ -1101,7 +1120,7 @@ export default function AdminCrmDashboard() {
                 <div className="md:hidden space-y-2.5">
                   {filteredLeads.length === 0 ? (
                     <div className="bg-white rounded-2xl border border-stone-200 p-8 text-center text-xs text-stone-500">
-                      {loadingLeads ? "Loading leads..." : "No leads match this filter yet."}
+                      {loadingLeads ? t.loadingLeads : t.noLeadsMatch}
                     </div>
                   ) : (
                     filteredLeads.map((lead) => {
@@ -1116,7 +1135,7 @@ export default function AdminCrmDashboard() {
                         <div
                           key={lead.id}
                           onClick={() => openLeadDrawer(lead)}
-                          className="w-full text-left bg-white rounded-2xl border border-stone-200 p-4 space-y-2.5 cursor-pointer"
+                          className="w-full text-start bg-white rounded-2xl border border-stone-200 p-4 space-y-2.5 cursor-pointer"
                         >
                           <div className="flex items-start justify-between gap-2">
                             <div className="min-w-0">
@@ -1131,13 +1150,13 @@ export default function AdminCrmDashboard() {
                             <span
                               className={`shrink-0 inline-flex px-2.5 py-0.5 rounded-full text-[11px] font-semibold border ${meta.badgeClass}`}
                             >
-                              {meta.label}
+                              {t.statuses[lead.status] || t.statuses.new}
                             </span>
                           </div>
 
                           <div className="flex flex-wrap items-center gap-x-3 gap-y-1 text-[11px] text-stone-600">
                             <span className="font-semibold text-stone-800">
-                              {lead.product || "General Inquiry"}
+                              {lead.product || t.generalInquiry}
                               {lead.container_volume || lead.quantity
                                 ? ` (${lead.container_volume || lead.quantity})`
                                 : ""}
@@ -1161,7 +1180,7 @@ export default function AdminCrmDashboard() {
                                   className="inline-flex items-center gap-1 font-semibold text-[#3F166B]"
                                 >
                                   <Phone className="w-3 h-3" />
-                                  <span>Call</span>
+                                  <span>{t.callBtn}</span>
                                 </a>
                               )}
                               {waHref && (
@@ -1172,12 +1191,12 @@ export default function AdminCrmDashboard() {
                                   className="inline-flex items-center gap-1 font-semibold text-emerald-700"
                                 >
                                   <MessageCircle className="w-3 h-3" />
-                                  <span>WhatsApp</span>
+                                  <span>{t.whatsappBtn}</span>
                                 </a>
                               )}
                             </div>
                             <span className={due ? "font-bold text-rose-700" : ""}>
-                              Follow-up: {formatDate(lead.next_follow_up_at)}
+                              {t.followUpLabel}: {formatDate(lead.next_follow_up_at)}
                             </span>
                           </div>
                         </div>
@@ -1189,23 +1208,23 @@ export default function AdminCrmDashboard() {
                 {/* Desktop Leads Table (>= md) */}
                 <div className="hidden md:block bg-white rounded-2xl border border-stone-200 shadow-xs overflow-hidden">
                   <div className="overflow-x-auto">
-                    <table className="w-full text-left border-collapse text-xs">
+                    <table className="w-full text-start border-collapse text-xs">
                       <thead>
                         <tr className="border-b border-stone-200 bg-stone-50/80 text-stone-500 font-bold">
-                          <th className="py-3 px-4">Buyer / Company</th>
-                          <th className="py-3 px-4">Quick Contact</th>
-                          <th className="py-3 px-4">Product &amp; Volume</th>
-                          <th className="py-3 px-4">Quote / Tracking</th>
-                          <th className="py-3 px-4">Country</th>
-                          <th className="py-3 px-4">Status</th>
-                          <th className="py-3 px-4">Follow-Up</th>
+                          <th className="py-3 px-4">{t.thBuyerCompany}</th>
+                          <th className="py-3 px-4">{t.thQuickContact}</th>
+                          <th className="py-3 px-4">{t.thProductVolume}</th>
+                          <th className="py-3 px-4">{t.thQuoteTracking}</th>
+                          <th className="py-3 px-4">{t.thCountry}</th>
+                          <th className="py-3 px-4">{t.thStatus}</th>
+                          <th className="py-3 px-4">{t.thFollowUp}</th>
                         </tr>
                       </thead>
                       <tbody className="divide-y divide-stone-100">
                         {filteredLeads.length === 0 ? (
                           <tr>
                             <td colSpan={7} className="py-10 text-center text-stone-500">
-                              {loadingLeads ? "Loading leads..." : "No leads match this filter yet."}
+                              {loadingLeads ? t.loadingLeads : t.noLeadsMatch}
                             </td>
                           </tr>
                         ) : (
@@ -1232,7 +1251,7 @@ export default function AdminCrmDashboard() {
                                   </div>
                                   {lead.assigned_to && (
                                     <div className="text-[10px] text-stone-400">
-                                      Owner: {lead.assigned_to.split("@")[0]}
+                                      {t.ownerLabel}: {lead.assigned_to.split("@")[0]}
                                     </div>
                                   )}
                                 </td>
@@ -1246,7 +1265,7 @@ export default function AdminCrmDashboard() {
                                         href={waHref}
                                         target="_blank"
                                         rel="noopener noreferrer"
-                                        title={`WhatsApp ${lead.phone}`}
+                                        title={`${t.whatsappBtn} ${lead.phone}`}
                                         className="inline-flex items-center gap-1 px-2 py-1 rounded-lg bg-emerald-50 hover:bg-emerald-100 text-emerald-800 border border-emerald-200 font-semibold text-[11px]"
                                       >
                                         <MessageCircle className="w-3 h-3" />
@@ -1256,7 +1275,7 @@ export default function AdminCrmDashboard() {
                                     {telHref && (
                                       <a
                                         href={telHref}
-                                        title={`Call ${lead.phone}`}
+                                        title={`${t.callBtn} ${lead.phone}`}
                                         className="p-1.5 rounded-lg bg-stone-100 hover:bg-stone-200 text-[#3F166B]"
                                       >
                                         <Phone className="w-3 h-3" />
@@ -1306,7 +1325,7 @@ export default function AdminCrmDashboard() {
                                   <span
                                     className={`inline-flex px-2.5 py-0.5 rounded-full text-[11px] font-semibold border ${meta.badgeClass}`}
                                   >
-                                    {meta.label}
+                                    {t.statuses[lead.status] || t.statuses.new}
                                   </span>
                                 </td>
                                 <td className="py-3 px-4">
@@ -1349,8 +1368,8 @@ export default function AdminCrmDashboard() {
                 </h2>
                 <p className="text-[11px] sm:text-xs text-stone-600 truncate">
                   {editCompany ? `${editCompany} • ` : ""}
-                  Source: {activeLead.source} • Created {formatDate(activeLead.created_at)}
-                  {activeLead.updated_by ? ` • Updated by ${activeLead.updated_by.split("@")[0]}` : ""}
+                  {t.sourceLabel}: {activeLead.source} • {t.createdLabel} {formatDate(activeLead.created_at)}
+                  {activeLead.updated_by ? ` • ${t.updatedByLabel} ${activeLead.updated_by.split("@")[0]}` : ""}
                 </p>
               </div>
               <div className="flex items-center gap-1.5 shrink-0">
@@ -1370,7 +1389,7 @@ export default function AdminCrmDashboard() {
                     className="inline-flex items-center gap-1 px-2.5 py-1.5 rounded-lg bg-emerald-600 hover:bg-emerald-700 text-white text-xs font-bold"
                   >
                     <MessageCircle className="w-3.5 h-3.5" />
-                    <span className="hidden sm:inline">WhatsApp</span>
+                    <span className="hidden sm:inline">{t.whatsappBtn}</span>
                   </a>
                 )}
                 <button
@@ -1391,16 +1410,16 @@ export default function AdminCrmDashboard() {
                       notes: editNotes,
                     })
                   }
-                  title="Print / Save Official PDF Quotation"
+                  title={t.pdfQuoteBtn}
                   className="inline-flex items-center gap-1 px-2.5 py-1.5 rounded-lg border border-stone-200 bg-white hover:bg-stone-100 text-[#3F166B] text-xs font-bold cursor-pointer"
                 >
                   <Printer className="w-3.5 h-3.5" />
-                  <span className="hidden sm:inline">PDF Quote</span>
+                  <span className="hidden sm:inline">{t.pdfQuoteBtn}</span>
                 </button>
                 <button
                   type="button"
                   onClick={handleDeleteLead}
-                  title="Delete Lead"
+                  title={t.deleteLeadTitle}
                   className="p-2 rounded-lg border border-stone-200 bg-white hover:bg-red-50 text-stone-500 hover:text-red-700 cursor-pointer"
                 >
                   <Trash2 className="w-4 h-4" />
@@ -1420,7 +1439,7 @@ export default function AdminCrmDashboard() {
             {activeLead.message && (
               <div className="p-3.5 rounded-xl bg-white border border-stone-200 text-xs space-y-1">
                 <div className="font-bold text-stone-500 uppercase text-[10px]">
-                  Buyer Inquiry Message
+                  {t.buyerInquiryMsg}
                 </div>
                 <div className="text-stone-800 whitespace-pre-wrap">{activeLead.message}</div>
               </div>
@@ -1430,7 +1449,7 @@ export default function AdminCrmDashboard() {
             <div className="bg-white rounded-xl border border-stone-200 p-4 space-y-3">
               <div className="flex items-center justify-between">
                 <h3 className="text-xs font-extrabold text-[#3F166B]">
-                  Buyer Contact, Deal &amp; Sample Tracking
+                  {t.drawerSectionTitle}
                 </h3>
                 {editSampleTracking && toTrackingHref(editSampleTracking) && (
                   <a
@@ -1440,7 +1459,7 @@ export default function AdminCrmDashboard() {
                     className="inline-flex items-center gap-1 text-[11px] font-bold text-violet-700 hover:underline"
                   >
                     <Truck className="w-3.5 h-3.5" />
-                    <span>Track Courier Shipment</span>
+                    <span>{t.trackCourierShipment}</span>
                     <ExternalLink className="w-3 h-3" />
                   </a>
                 )}
@@ -1449,7 +1468,7 @@ export default function AdminCrmDashboard() {
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
                 <div>
                   <label className="block text-[11px] font-bold text-stone-600 mb-1">
-                    Buyer Name
+                    {t.fieldBuyerName}
                   </label>
                   <input
                     type="text"
@@ -1460,7 +1479,7 @@ export default function AdminCrmDashboard() {
                 </div>
                 <div>
                   <label className="block text-[11px] font-bold text-stone-600 mb-1">
-                    Company / Spinning Mill
+                    {t.fieldCompany}
                   </label>
                   <input
                     type="text"
@@ -1472,7 +1491,7 @@ export default function AdminCrmDashboard() {
                 <div>
                   <label className="block text-[11px] font-bold text-stone-600 mb-1">
                     <Mail className="w-3 h-3 inline me-1" />
-                    Email
+                    {t.fieldEmail}
                   </label>
                   <input
                     type="email"
@@ -1484,7 +1503,7 @@ export default function AdminCrmDashboard() {
                 <div>
                   <label className="block text-[11px] font-bold text-stone-600 mb-1">
                     <Phone className="w-3 h-3 inline me-1" />
-                    Phone / WhatsApp
+                    {t.fieldPhone}
                   </label>
                   <input
                     type="text"
@@ -1496,7 +1515,7 @@ export default function AdminCrmDashboard() {
                 <div>
                   <label className="block text-[11px] font-bold text-stone-600 mb-1">
                     <MapPin className="w-3 h-3 inline me-1" />
-                    Destination Country / Port
+                    {t.fieldCountry}
                   </label>
                   <input
                     type="text"
@@ -1508,7 +1527,7 @@ export default function AdminCrmDashboard() {
                 <div>
                   <label className="block text-[11px] font-bold text-stone-600 mb-1">
                     <Package className="w-3 h-3 inline me-1" />
-                    Flax Product / Grade
+                    {t.fieldProduct}
                   </label>
                   <input
                     type="text"
@@ -1519,25 +1538,25 @@ export default function AdminCrmDashboard() {
                 </div>
                 <div>
                   <label className="block text-[11px] font-bold text-stone-600 mb-1">
-                    Container / Volume
+                    {t.fieldContainerVolume}
                   </label>
                   <input
                     type="text"
                     value={editContainerVolume}
                     onChange={(e) => setEditContainerVolume(e.target.value)}
-                    placeholder={editQuantity || "e.g. 1x 40ft HC (24 MT)"}
+                    placeholder={editQuantity || "1x 40ft HC (24 MT)"}
                     className="w-full px-3 py-2 rounded-lg border border-stone-300 text-base sm:text-xs"
                   />
                 </div>
                 <div>
                   <label className="block text-[11px] font-bold text-stone-600 mb-1">
-                    Quoted Price ($/MT)
+                    {t.fieldQuotedPrice}
                   </label>
                   <input
                     type="text"
                     value={editQuotedPrice}
                     onChange={(e) => setEditQuotedPrice(e.target.value)}
-                    placeholder="e.g. $2,450 / MT"
+                    placeholder="$2,450 / MT"
                     className="w-full px-3 py-2 rounded-lg border border-stone-300 text-base sm:text-xs"
                   />
                 </div>
@@ -1545,7 +1564,7 @@ export default function AdminCrmDashboard() {
 
               <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 pt-1">
                 <div>
-                  <label className="block text-[11px] font-bold text-stone-600 mb-1">Stage</label>
+                  <label className="block text-[11px] font-bold text-stone-600 mb-1">{t.fieldStage}</label>
                   <select
                     value={editStatus}
                     onChange={(e) => setEditStatus(e.target.value as LeadStatus)}
@@ -1553,27 +1572,27 @@ export default function AdminCrmDashboard() {
                   >
                     {LEAD_STATUSES.map((st) => (
                       <option key={st} value={st}>
-                        {STATUS_META[st].label}
+                        {t.statuses[st]}
                       </option>
                     ))}
                   </select>
                 </div>
                 <div>
                   <label className="block text-[11px] font-bold text-stone-600 mb-1">
-                    Incoterm
+                    {t.fieldIncoterm}
                   </label>
                   <input
                     type="text"
                     value={editIncoterm}
                     onChange={(e) => setEditIncoterm(e.target.value)}
-                    placeholder="e.g. FOB Alexandria"
+                    placeholder="FOB Alexandria"
                     className="w-full px-3 py-2 rounded-lg border border-stone-300 text-base sm:text-xs"
                   />
                 </div>
                 <div>
                   <label className="block text-[11px] font-bold text-stone-600 mb-1">
                     <Calendar className="w-3 h-3 inline me-1" />
-                    Next Follow-Up
+                    {t.fieldNextFollowUp}
                   </label>
                   <input
                     type="date"
@@ -1588,27 +1607,27 @@ export default function AdminCrmDashboard() {
                 <div>
                   <label className="block text-[11px] font-bold text-stone-600 mb-1">
                     <Truck className="w-3 h-3 inline me-1" />
-                    Sample Courier Tracking #
+                    {t.fieldSampleTracking}
                   </label>
                   <input
                     type="text"
                     value={editSampleTracking}
                     onChange={(e) => setEditSampleTracking(e.target.value)}
-                    placeholder="e.g. DHL 1234567890"
+                    placeholder="DHL 1234567890"
                     className="w-full px-3 py-2 rounded-lg border border-stone-300 text-base sm:text-xs"
                   />
                 </div>
                 <div>
                   <label className="block text-[11px] font-bold text-stone-600 mb-1">
                     <UserCheck className="w-3 h-3 inline me-1" />
-                    Assigned Admin
+                    {t.fieldAssignedAdmin}
                   </label>
                   <select
                     value={editAssignedTo}
                     onChange={(e) => setEditAssignedTo(e.target.value)}
                     className="w-full px-3 py-2 rounded-lg border border-stone-300 text-base sm:text-xs bg-white"
                   >
-                    <option value="">Unassigned</option>
+                    <option value="">{t.unassigned}</option>
                     {(allowedAdmins.length > 0
                       ? allowedAdmins
                       : [
@@ -1627,26 +1646,26 @@ export default function AdminCrmDashboard() {
 
               <div>
                 <label className="block text-[11px] font-bold text-stone-600 mb-1">
-                  Internal Notes
+                  {t.fieldInternalNotes}
                 </label>
                 <textarea
                   rows={3}
                   value={editNotes}
                   onChange={(e) => setEditNotes(e.target.value)}
-                  placeholder="Buyer lab requirements, target staple length, payment terms..."
+                  placeholder={t.notesPlaceholder}
                   className="w-full px-3 py-2 rounded-lg border border-stone-300 text-base sm:text-xs"
                 />
               </div>
 
               <div className="flex items-center justify-between">
-                <span className="text-xs text-emerald-700 font-semibold">{saveFeedback || ""}</span>
+                <span className="text-xs text-emerald-700 font-semibold">{saveFeedback ? t.savedMsg : ""}</span>
                 <button
                   type="button"
                   onClick={handleSaveLead}
                   disabled={savingLead}
                   className="px-4 py-2 rounded-lg bg-[#3F166B] hover:bg-[#2F1052] text-[#EDC271] text-xs font-bold cursor-pointer"
                 >
-                  {savingLead ? "Saving..." : "Save Changes"}
+                  {savingLead ? t.savingBtn : t.saveChangesBtn}
                 </button>
               </div>
             </div>
@@ -1658,13 +1677,13 @@ export default function AdminCrmDashboard() {
             >
               <div className="flex flex-wrap items-center justify-between gap-2">
                 <h3 className="text-xs font-extrabold text-[#3F166B]">
-                  Send B2B Email / Quote to {editEmail || activeLead.email}
+                  {t.quickReplyTitle(editEmail || activeLead.email)}
                 </h3>
                 <Link
                   href={`/admin/mail?to=${encodeURIComponent(editEmail || activeLead.email)}&name=${encodeURIComponent(editName || activeLead.name)}&leadId=${activeLead.id}&product=${encodeURIComponent(editProduct)}&volume=${encodeURIComponent(editContainerVolume || editQuantity)}&incoterm=${encodeURIComponent(editIncoterm)}&price=${encodeURIComponent(editQuotedPrice)}&lang=${replyLang}`}
                   className="inline-flex items-center gap-1 text-[11px] font-semibold text-[#3F166B] hover:underline"
                 >
-                  <span>Full Composer</span>
+                  <span>{t.fullComposerLink}</span>
                   <ExternalLink className="w-3 h-3" />
                 </Link>
               </div>
@@ -1701,7 +1720,7 @@ export default function AdminCrmDashboard() {
                 required
                 value={replySubject}
                 onChange={(e) => setReplySubject(e.target.value)}
-                placeholder="Email Subject"
+                placeholder={t.emailSubjectPlaceholder}
                 className="w-full px-3 py-2 rounded-lg border border-stone-300 text-base sm:text-xs"
               />
               <textarea
@@ -1738,7 +1757,7 @@ export default function AdminCrmDashboard() {
                     className="w-4 h-4 rounded border-stone-300 accent-[#3F166B]"
                   />
                   <FileText className="w-3.5 h-3.5 text-[#3F166B]" />
-                  <span>Auto-attach Official PDF Quotation</span>
+                  <span>{t.autoAttachPdfQuote}</span>
                 </label>
 
                 <button
@@ -1747,18 +1766,18 @@ export default function AdminCrmDashboard() {
                   className="inline-flex items-center gap-1.5 px-4 py-2 rounded-lg bg-[#3F166B] hover:bg-[#2F1052] text-[#EDC271] text-xs font-bold cursor-pointer"
                 >
                   <Send className="w-3.5 h-3.5" />
-                  <span>{sendingReply ? "Sending..." : "Send & Log Email"}</span>
+                  <span>{sendingReply ? t.sendingBtn : t.sendAndLogBtn}</span>
                 </button>
               </div>
             </form>
 
             {/* Email History */}
             <div className="bg-white rounded-xl border border-stone-200 p-4 space-y-2.5">
-              <h3 className="text-xs font-extrabold text-stone-700">Email History</h3>
+              <h3 className="text-xs font-extrabold text-stone-700">{t.emailHistoryTitle}</h3>
               {loadingDetail ? (
-                <p className="text-xs text-stone-400">Loading history...</p>
+                <p className="text-xs text-stone-400">{t.loadingHistory}</p>
               ) : activeEmails.length === 0 ? (
-                <p className="text-xs text-stone-400">No emails logged for this buyer yet.</p>
+                <p className="text-xs text-stone-400">{t.noEmailsLogged}</p>
               ) : (
                 <div className="space-y-2">
                   {activeEmails.map((em) => (
@@ -1814,7 +1833,7 @@ export default function AdminCrmDashboard() {
             className="w-full max-w-lg max-h-[92dvh] overflow-y-auto bg-white rounded-t-3xl sm:rounded-2xl border border-stone-200 shadow-xl p-4 sm:p-6 space-y-4"
           >
             <div className="flex items-center justify-between">
-              <h2 className="text-base font-extrabold text-[#3F166B]">Add B2B Lead</h2>
+              <h2 className="text-base font-extrabold text-[#3F166B]">{t.addLeadModalTitle}</h2>
               <button
                 type="button"
                 onClick={() => setShowAddModal(false)}
@@ -1828,14 +1847,14 @@ export default function AdminCrmDashboard() {
               <input
                 type="text"
                 required
-                placeholder="Contact Name *"
+                placeholder={t.phContactName}
                 value={newLead.name}
                 onChange={(e) => setNewLead((p) => ({ ...p, name: e.target.value }))}
                 className="px-3 py-2 rounded-lg border border-stone-300"
               />
               <input
                 type="text"
-                placeholder="Company / Mill"
+                placeholder={t.phCompanyMill}
                 value={newLead.company}
                 onChange={(e) => setNewLead((p) => ({ ...p, company: e.target.value }))}
                 className="px-3 py-2 rounded-lg border border-stone-300"
@@ -1843,35 +1862,35 @@ export default function AdminCrmDashboard() {
               <input
                 type="email"
                 required
-                placeholder="Email *"
+                placeholder={t.phEmail}
                 value={newLead.email}
                 onChange={(e) => setNewLead((p) => ({ ...p, email: e.target.value }))}
                 className="px-3 py-2 rounded-lg border border-stone-300"
               />
               <input
                 type="text"
-                placeholder="Phone / WhatsApp"
+                placeholder={t.phPhoneWhatsapp}
                 value={newLead.phone}
                 onChange={(e) => setNewLead((p) => ({ ...p, phone: e.target.value }))}
                 className="px-3 py-2 rounded-lg border border-stone-300"
               />
               <input
                 type="text"
-                placeholder="Country"
+                placeholder={t.phCountry}
                 value={newLead.country}
                 onChange={(e) => setNewLead((p) => ({ ...p, country: e.target.value }))}
                 className="px-3 py-2 rounded-lg border border-stone-300"
               />
               <input
                 type="text"
-                placeholder="Product of Interest"
+                placeholder={t.phProductInterest}
                 value={newLead.product}
                 onChange={(e) => setNewLead((p) => ({ ...p, product: e.target.value }))}
                 className="px-3 py-2 rounded-lg border border-stone-300"
               />
               <input
                 type="text"
-                placeholder="Container / Volume (e.g. 24 MT)"
+                placeholder={t.phContainerVolume}
                 value={newLead.container_volume}
                 onChange={(e) =>
                   setNewLead((p) => ({
@@ -1884,7 +1903,7 @@ export default function AdminCrmDashboard() {
               />
               <input
                 type="text"
-                placeholder="Quoted Price (e.g. $2,450/MT)"
+                placeholder={t.phQuotedPrice}
                 value={newLead.quoted_price}
                 onChange={(e) => setNewLead((p) => ({ ...p, quoted_price: e.target.value }))}
                 className="px-3 py-2 rounded-lg border border-stone-300"
@@ -1894,26 +1913,26 @@ export default function AdminCrmDashboard() {
                 onChange={(e) => setNewLead((p) => ({ ...p, lang: e.target.value }))}
                 className="px-3 py-2 rounded-lg border border-stone-300 bg-white"
               >
-                <option value="en">Language: English (EN)</option>
-                <option value="zh">Language: Chinese (中文)</option>
-                <option value="ar">Language: Arabic (AR)</option>
+                <option value="en">{t.langEnOption}</option>
+                <option value="zh">{t.langZhOption}</option>
+                <option value="ar">{t.langArOption}</option>
               </select>
               <select
                 value={newLead.source}
                 onChange={(e) => setNewLead((p) => ({ ...p, source: e.target.value }))}
                 className="px-3 py-2 rounded-lg border border-stone-300 bg-white"
               >
-                <option value="whatsapp">WhatsApp</option>
-                <option value="wechat">WeChat</option>
-                <option value="email">Direct Email</option>
-                <option value="trade_show">Trade Show</option>
-                <option value="manual">Manual Entry</option>
+                <option value="whatsapp">{t.srcWhatsapp}</option>
+                <option value="wechat">{t.srcWechat}</option>
+                <option value="email">{t.srcEmail}</option>
+                <option value="trade_show">{t.srcTradeShow}</option>
+                <option value="manual">{t.srcManual}</option>
               </select>
             </div>
 
             <textarea
               rows={3}
-              placeholder="Notes..."
+              placeholder={t.phNotes}
               value={newLead.notes}
               onChange={(e) => setNewLead((p) => ({ ...p, notes: e.target.value }))}
               className="w-full px-3 py-2 rounded-lg border border-stone-300 text-base sm:text-xs"
@@ -1931,14 +1950,14 @@ export default function AdminCrmDashboard() {
                 onClick={() => setShowAddModal(false)}
                 className="px-4 py-2 rounded-lg border border-stone-300 text-xs font-semibold text-stone-700 cursor-pointer"
               >
-                Cancel
+                {t.cancelBtn}
               </button>
               <button
                 type="submit"
                 disabled={addingLead}
                 className="px-4 py-2 rounded-lg bg-[#3F166B] text-[#EDC271] text-xs font-bold cursor-pointer"
               >
-                {addingLead ? "Adding..." : "Create Lead"}
+                {addingLead ? t.addingBtn : t.createLeadBtn}
               </button>
             </div>
           </form>

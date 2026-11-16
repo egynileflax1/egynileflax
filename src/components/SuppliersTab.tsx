@@ -17,11 +17,13 @@ import {
 } from "lucide-react";
 import { CrmSupplier, SUPPLIER_TYPES, SupplierType } from "@/lib/db";
 import { toTelHref, toWhatsAppHref } from "@/lib/crmHelpers";
+import { useFlax } from "@/context/FlaxContext";
+import { ADMIN_TRANSLATIONS } from "@/lib/adminI18n";
 
-const TYPE_META: Record<SupplierType, { label: string; badgeClass: string }> = {
-  factory: { label: "Factory", badgeClass: "bg-[#EDC271]/35 text-[#3F166B] border-[#EDC271]" },
-  farmer: { label: "Farmer", badgeClass: "bg-emerald-100 text-emerald-900 border-emerald-200" },
-  trader: { label: "Trader", badgeClass: "bg-sky-100 text-sky-900 border-sky-200" },
+const TYPE_META: Record<SupplierType, { badgeClass: string }> = {
+  factory: { badgeClass: "bg-[#EDC271]/35 text-[#3F166B] border-[#EDC271]" },
+  farmer: { badgeClass: "bg-emerald-100 text-emerald-900 border-emerald-200" },
+  trader: { badgeClass: "bg-sky-100 text-sky-900 border-sky-200" },
 };
 
 function toMapsHref(location: string): string | null {
@@ -88,6 +90,8 @@ export default function SuppliersTab({
   showAddModal: boolean;
   setShowAddModal: (v: boolean) => void;
 }) {
+  const { lang } = useFlax();
+  const t = ADMIN_TRANSLATIONS[lang === "ar" ? "ar" : "en"];
   const [suppliers, setSuppliers] = useState<CrmSupplier[]>([]);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -209,7 +213,7 @@ export default function SuppliersTab({
 
   const handleDelete = async () => {
     if (!active) return;
-    if (!window.confirm(`Delete supplier "${active.name}"?`)) return;
+    if (!window.confirm(t.supDeleteConfirm(active.name))) return;
     const res = await fetch(`/api/admin/suppliers/${active.id}`, { method: "DELETE" });
     if (res.ok) {
       setSuppliers((prev) => prev.filter((x) => x.id !== active.id));
@@ -408,10 +412,10 @@ export default function SuppliersTab({
       {/* KPI Cards */}
       <div className="grid grid-cols-2 sm:grid-cols-4 gap-2.5 sm:gap-3">
         {[
-          ["Total Suppliers", stats.total, "text-[#3F166B]"],
-          ["Factories", stats.factories, "text-[#3F166B]"],
-          ["Farmers", stats.farmers, "text-emerald-700"],
-          ["Traders", stats.traders, "text-sky-700"],
+          [t.supKpiTotal, stats.total, "text-[#3F166B]"],
+          [t.supKpiFactories, stats.factories, "text-[#3F166B]"],
+          [t.supKpiFarmers, stats.farmers, "text-emerald-700"],
+          [t.supKpiTraders, stats.traders, "text-sky-700"],
         ].map(([label, val, cls]) => (
           <div key={String(label)} className="bg-white rounded-xl border border-stone-200 p-3 sm:p-3.5">
             <div className={`text-lg sm:text-xl font-extrabold tabular-nums ${cls}`}>{val}</div>
@@ -425,10 +429,10 @@ export default function SuppliersTab({
         <div className="no-scrollbar flex items-center gap-1.5 overflow-x-auto pb-1 sm:pb-0">
           {(
             [
-              ["all", "All"],
-              ["factory", `Factories (${stats.factories})`],
-              ["farmer", `Farmers (${stats.farmers})`],
-              ["trader", `Traders (${stats.traders})`],
+              ["all", t.filterAll],
+              ["factory", `${t.supTypesPlural.factory} (${stats.factories})`],
+              ["farmer", `${t.supTypesPlural.farmer} (${stats.farmers})`],
+              ["trader", `${t.supTypesPlural.trader} (${stats.traders})`],
             ] as const
           ).map(([key, label]) => (
             <button
@@ -453,7 +457,7 @@ export default function SuppliersTab({
               type="text"
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
-              placeholder="Search mill, phone, product..."
+              placeholder={t.supSearchPlaceholder}
               className="w-full ps-8 pe-3 py-2 rounded-xl border border-stone-200 bg-white text-base sm:text-xs focus:outline-none focus:border-[#3F166B]"
             />
           </div>
@@ -468,25 +472,25 @@ export default function SuppliersTab({
             type="button"
             onClick={() => fileInputRef.current?.click()}
             disabled={importing}
-            title="Import Suppliers CSV (Deduplicates by Name)"
+            title={t.importCsvBtn}
             className="inline-flex items-center gap-1.5 px-3 py-2 rounded-xl border border-stone-200 bg-white hover:bg-stone-100 text-xs font-semibold text-stone-700 whitespace-nowrap cursor-pointer"
           >
             <Upload className="w-3.5 h-3.5 text-[#3F166B]" />
-            <span className="hidden sm:inline">{importing ? "Importing..." : "Import CSV"}</span>
+            <span className="hidden sm:inline">{importing ? t.importingCsvBtn : t.importCsvBtn}</span>
           </button>
           <button
             type="button"
             onClick={exportSuppliersCsv}
-            title="Export Suppliers CSV"
+            title={t.exportCsvBtn}
             className="inline-flex items-center gap-1.5 px-3 py-2 rounded-xl border border-stone-200 bg-white hover:bg-stone-100 text-xs font-semibold text-stone-700 whitespace-nowrap cursor-pointer"
           >
             <Download className="w-3.5 h-3.5 text-[#3F166B]" />
-            <span className="hidden sm:inline">Export CSV</span>
+            <span className="hidden sm:inline">{t.exportCsvBtn}</span>
           </button>
           <button
             type="button"
             onClick={fetchSuppliers}
-            title="Refresh"
+            title={t.refreshTitle}
             className="p-2 rounded-xl border border-stone-200 bg-white hover:bg-stone-100 text-stone-600 cursor-pointer"
           >
             <RefreshCw className={`w-4 h-4 ${loading ? "animate-spin" : ""}`} />
@@ -507,7 +511,7 @@ export default function SuppliersTab({
       <div className="md:hidden space-y-2.5">
         {filtered.length === 0 ? (
           <div className="bg-white rounded-2xl border border-stone-200 p-8 text-center text-xs text-stone-500">
-            {loading ? "Loading suppliers..." : "No suppliers match this filter."}
+            {loading ? t.supLoading : t.supNoMatch}
           </div>
         ) : (
           filtered.map((s) => {
@@ -531,15 +535,15 @@ export default function SuppliersTab({
                   <span
                     className={`shrink-0 inline-flex px-2.5 py-0.5 rounded-full text-[11px] font-semibold border ${meta.badgeClass}`}
                   >
-                    {meta.label}
+                    {t.supTypes[s.type] || t.supTypes.factory}
                   </span>
                 </div>
 
                 {s.products && <div className="text-xs font-semibold text-stone-800">{s.products}</div>}
                 <div className="flex flex-wrap gap-2 text-[11px] text-stone-600">
-                  {s.daily_output && <span>Output: {s.daily_output}</span>}
-                  {s.stock_tons && <span className="font-semibold text-[#3F166B]">Stock: {s.stock_tons}</span>}
-                  {s.price_per_ton && <span className="font-semibold text-emerald-800">Price: {s.price_per_ton}</span>}
+                  {s.daily_output && <span>{t.supOutputLabel}: {s.daily_output}</span>}
+                  {s.stock_tons && <span className="font-semibold text-[#3F166B]">{t.supStockLabel}: {s.stock_tons}</span>}
+                  {s.price_per_ton && <span className="font-semibold text-emerald-800">{t.supPriceLabel}: {s.price_per_ton}</span>}
                 </div>
                 {s.price_notes && <div className="text-[11px] text-stone-500 line-clamp-2">{s.price_notes}</div>}
 
@@ -553,7 +557,7 @@ export default function SuppliersTab({
                       className="inline-flex items-center gap-1 font-semibold text-[#3F166B]"
                     >
                       <Phone className="w-3 h-3" />
-                      <span>Call</span>
+                      <span>{t.callBtn}</span>
                     </a>
                   )}
                   {waHref && (
@@ -564,7 +568,7 @@ export default function SuppliersTab({
                       className="inline-flex items-center gap-1 font-semibold text-emerald-700"
                     >
                       <MessageCircle className="w-3 h-3" />
-                      <span>WhatsApp</span>
+                      <span>{t.whatsappBtn}</span>
                     </a>
                   )}
                   {mapsHref && (
@@ -575,7 +579,7 @@ export default function SuppliersTab({
                       className="inline-flex items-center gap-1 font-semibold text-sky-700"
                     >
                       <MapPin className="w-3 h-3" />
-                      <span>Maps</span>
+                      <span>{t.supMapsLink}</span>
                     </a>
                   )}
                 </div>
@@ -588,23 +592,23 @@ export default function SuppliersTab({
       {/* Desktop Table (>= md) */}
       <div className="hidden md:block bg-white rounded-2xl border border-stone-200 shadow-xs overflow-hidden">
         <div className="overflow-x-auto">
-          <table className="w-full text-left border-collapse text-xs">
+          <table className="w-full text-start border-collapse text-xs">
             <thead>
               <tr className="border-b border-stone-200 bg-stone-50/80 text-stone-500 font-bold">
-                <th className="py-3 px-4">Factory / Farmer</th>
-                <th className="py-3 px-4">Type</th>
-                <th className="py-3 px-4">Contact &amp; Actions</th>
-                <th className="py-3 px-4">Products &amp; Stock</th>
-                <th className="py-3 px-4">Price / Rating</th>
-                <th className="py-3 px-4">Map</th>
-                <th className="py-3 px-4">Notes</th>
+                <th className="py-3 px-4">{t.supThName}</th>
+                <th className="py-3 px-4">{t.supThType}</th>
+                <th className="py-3 px-4">{t.supThContactActions}</th>
+                <th className="py-3 px-4">{t.supThProductsStock}</th>
+                <th className="py-3 px-4">{t.supThPriceRating}</th>
+                <th className="py-3 px-4">{t.supThMap}</th>
+                <th className="py-3 px-4">{t.supThNotes}</th>
               </tr>
             </thead>
             <tbody className="divide-y divide-stone-100">
               {filtered.length === 0 ? (
                 <tr>
                   <td colSpan={7} className="py-10 text-center text-stone-500">
-                    {loading ? "Loading suppliers..." : "No suppliers match this filter."}
+                    {loading ? t.supLoading : t.supNoMatch}
                   </td>
                 </tr>
               ) : (
@@ -630,7 +634,7 @@ export default function SuppliersTab({
                         <span
                           className={`inline-flex px-2.5 py-0.5 rounded-full text-[11px] font-semibold border ${meta.badgeClass}`}
                         >
-                          {meta.label}
+                          {t.supTypes[s.type] || t.supTypes.factory}
                         </span>
                       </td>
                       <td className="py-3 px-4 max-w-[220px]" onClick={(e) => e.stopPropagation()}>
@@ -641,7 +645,7 @@ export default function SuppliersTab({
                             {telHref && (
                               <a
                                 href={telHref}
-                                title="Call"
+                                title={t.callBtn}
                                 className="p-1 rounded bg-stone-100 hover:bg-stone-200 text-[#3F166B]"
                               >
                                 <Phone className="w-3 h-3" />
@@ -652,7 +656,7 @@ export default function SuppliersTab({
                                 href={waHref}
                                 target="_blank"
                                 rel="noopener noreferrer"
-                                title="WhatsApp"
+                                title={t.whatsappBtn}
                                 className="p-1 rounded bg-emerald-50 hover:bg-emerald-100 text-emerald-700"
                               >
                                 <MessageCircle className="w-3 h-3" />
@@ -665,7 +669,7 @@ export default function SuppliersTab({
                         <div className="font-semibold text-stone-800">{s.products || "—"}</div>
                         <div className="text-[11px] text-stone-500">
                           {s.daily_output || ""}
-                          {s.stock_tons ? ` • Stock: ${s.stock_tons}` : ""}
+                          {s.stock_tons ? ` • ${t.supStockLabel}: ${s.stock_tons}` : ""}
                         </div>
                       </td>
                       <td className="py-3 px-4">
@@ -688,7 +692,7 @@ export default function SuppliersTab({
                             className="inline-flex items-center gap-1 px-2.5 py-1 rounded-lg bg-emerald-50 text-emerald-800 border border-emerald-200 font-semibold text-[11px] hover:bg-emerald-100"
                           >
                             <MapPin className="w-3 h-3" />
-                            <span>Map</span>
+                            <span>{t.supThMap}</span>
                           </a>
                         ) : (
                           <span className="text-stone-400">—</span>
@@ -721,7 +725,7 @@ export default function SuppliersTab({
                 <h2 className="text-base sm:text-lg font-extrabold text-[#3F166B] truncate">{active.name}</h2>
                 <p className="text-xs text-stone-500 flex items-center gap-1.5 mt-0.5">
                   <Factory className="w-3.5 h-3.5 shrink-0" />
-                  <span>Supplier #{active.id}</span>
+                  <span>{t.supDrawerId(active.id)}</span>
                 </p>
               </div>
               <div className="flex items-center gap-2 shrink-0">
@@ -733,7 +737,7 @@ export default function SuppliersTab({
                     className="inline-flex items-center gap-1 px-2.5 py-1.5 rounded-lg bg-emerald-600 hover:bg-emerald-700 text-white text-xs font-bold"
                   >
                     <MessageCircle className="w-3.5 h-3.5" />
-                    <span>WhatsApp</span>
+                    <span>{t.whatsappBtn}</span>
                   </a>
                 )}
                 <button
@@ -757,7 +761,7 @@ export default function SuppliersTab({
             <div className="bg-white rounded-xl border border-stone-200 p-4 space-y-3">
               <div>
                 <label className="block text-[11px] font-bold text-stone-600 mb-1">
-                  Factory / Farmer Name
+                  {t.supFieldName}
                 </label>
                 <input
                   type="text"
@@ -769,21 +773,21 @@ export default function SuppliersTab({
 
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
                 <div>
-                  <label className="block text-[11px] font-bold text-stone-600 mb-1">Type</label>
+                  <label className="block text-[11px] font-bold text-stone-600 mb-1">{t.supFieldType}</label>
                   <select
                     value={editType}
                     onChange={(e) => setEditType(e.target.value as SupplierType)}
                     className="w-full px-3 py-2 rounded-lg border border-stone-300 text-base sm:text-xs bg-white"
                   >
-                    {SUPPLIER_TYPES.map((t) => (
-                      <option key={t} value={t}>
-                        {TYPE_META[t].label}
+                    {SUPPLIER_TYPES.map((typeKey) => (
+                      <option key={typeKey} value={typeKey}>
+                        {t.supTypes[typeKey]}
                       </option>
                     ))}
                   </select>
                 </div>
                 <div>
-                  <label className="block text-[11px] font-bold text-stone-600 mb-1">Phone</label>
+                  <label className="block text-[11px] font-bold text-stone-600 mb-1">{t.supFieldPhone}</label>
                   <input
                     type="text"
                     value={editPhone}
@@ -796,7 +800,7 @@ export default function SuppliersTab({
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
                 <div>
                   <label className="block text-[11px] font-bold text-stone-600 mb-1">
-                    Contact Person / Owner
+                    {t.supFieldContact}
                   </label>
                   <input
                     type="text"
@@ -807,7 +811,7 @@ export default function SuppliersTab({
                 </div>
                 <div>
                   <label className="block text-[11px] font-bold text-stone-600 mb-1">
-                    Quality Rating (1–5)
+                    {t.supFieldRating}
                   </label>
                   <select
                     value={editRating}
@@ -825,7 +829,7 @@ export default function SuppliersTab({
 
               <div>
                 <label className="block text-[11px] font-bold text-stone-600 mb-1">
-                  Google Maps Link or Coordinates
+                  {t.supFieldMaps}
                 </label>
                 <input
                   type="text"
@@ -837,7 +841,7 @@ export default function SuppliersTab({
               </div>
 
               <div>
-                <label className="block text-[11px] font-bold text-stone-600 mb-1">Products</label>
+                <label className="block text-[11px] font-bold text-stone-600 mb-1">{t.supFieldProducts}</label>
                 <input
                   type="text"
                   value={editProducts}
@@ -849,25 +853,25 @@ export default function SuppliersTab({
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
                 <div>
                   <label className="block text-[11px] font-bold text-stone-600 mb-1">
-                    Current Stock (MT)
+                    {t.supFieldStock}
                   </label>
                   <input
                     type="text"
                     value={editStockTons}
                     onChange={(e) => setEditStockTons(e.target.value)}
-                    placeholder="e.g. 45 MT Long Flax"
+                    placeholder="45 MT"
                     className="w-full px-3 py-2 rounded-lg border border-stone-300 text-base sm:text-xs"
                   />
                 </div>
                 <div>
                   <label className="block text-[11px] font-bold text-stone-600 mb-1">
-                    Price per Ton (EGP / USD)
+                    {t.supFieldPricePerTon}
                   </label>
                   <input
                     type="text"
                     value={editPricePerTon}
                     onChange={(e) => setEditPricePerTon(e.target.value)}
-                    placeholder="e.g. 95,000 EGP / Ton"
+                    placeholder="95,000 EGP"
                     className="w-full px-3 py-2 rounded-lg border border-stone-300 text-base sm:text-xs"
                   />
                 </div>
@@ -876,7 +880,7 @@ export default function SuppliersTab({
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
                 <div>
                   <label className="block text-[11px] font-bold text-stone-600 mb-1">
-                    Workers / Shifts
+                    {t.supFieldWorkers}
                   </label>
                   <input
                     type="text"
@@ -887,7 +891,7 @@ export default function SuppliersTab({
                 </div>
                 <div>
                   <label className="block text-[11px] font-bold text-stone-600 mb-1">
-                    Daily Output
+                    {t.supFieldDailyOutput}
                   </label>
                   <input
                     type="text"
@@ -900,7 +904,7 @@ export default function SuppliersTab({
 
               <div>
                 <label className="block text-[11px] font-bold text-stone-600 mb-1">
-                  Price &amp; Inspection Notes
+                  {t.supFieldNotes}
                 </label>
                 <textarea
                   rows={4}
@@ -911,14 +915,14 @@ export default function SuppliersTab({
               </div>
 
               <div className="flex items-center justify-between pt-1">
-                <span className="text-xs font-semibold text-emerald-700">{saveMsg || ""}</span>
+                <span className="text-xs font-semibold text-emerald-700">{saveMsg ? t.savedMsg : ""}</span>
                 <button
                   type="button"
                   onClick={handleSave}
                   disabled={saving}
                   className="px-4 py-2 rounded-lg bg-[#3F166B] hover:bg-[#2F1052] text-[#EDC271] text-xs font-bold cursor-pointer"
                 >
-                  {saving ? "Saving..." : "Save Changes"}
+                  {saving ? t.savingBtn : t.saveChangesBtn}
                 </button>
               </div>
             </div>
@@ -941,7 +945,7 @@ export default function SuppliersTab({
             <div className="flex items-center justify-between">
               <h2 className="text-base font-extrabold text-[#3F166B] flex items-center gap-2">
                 <Plus className="w-4 h-4" />
-                <span>Add Supplier / Mill</span>
+                <span>{t.supAddModalTitle}</span>
               </h2>
               <button
                 type="button"
@@ -956,7 +960,7 @@ export default function SuppliersTab({
               <input
                 type="text"
                 required
-                placeholder="Factory / Farmer Name *"
+                placeholder={`${t.supFieldName} *`}
                 value={newSupplier.name}
                 onChange={(e) => setNewSupplier((p) => ({ ...p, name: e.target.value }))}
                 className="px-3 py-2 rounded-lg border border-stone-300"
@@ -968,62 +972,62 @@ export default function SuppliersTab({
                 }
                 className="px-3 py-2 rounded-lg border border-stone-300 bg-white"
               >
-                <option value="factory">Factory</option>
-                <option value="farmer">Farmer</option>
-                <option value="trader">Trader</option>
+                <option value="factory">{t.supTypes.factory}</option>
+                <option value="farmer">{t.supTypes.farmer}</option>
+                <option value="trader">{t.supTypes.trader}</option>
               </select>
               <input
                 type="text"
-                placeholder="Contact Person"
+                placeholder={t.supFieldContact}
                 value={newSupplier.contact_person}
                 onChange={(e) => setNewSupplier((p) => ({ ...p, contact_person: e.target.value }))}
                 className="px-3 py-2 rounded-lg border border-stone-300"
               />
               <input
                 type="text"
-                placeholder="Phone / WhatsApp"
+                placeholder={t.phPhoneWhatsapp}
                 value={newSupplier.phone}
                 onChange={(e) => setNewSupplier((p) => ({ ...p, phone: e.target.value }))}
                 className="px-3 py-2 rounded-lg border border-stone-300"
               />
               <input
                 type="text"
-                placeholder="Google Maps Link or Lat,Lng"
+                placeholder={t.supFieldMaps}
                 value={newSupplier.location}
                 onChange={(e) => setNewSupplier((p) => ({ ...p, location: e.target.value }))}
                 className="px-3 py-2 rounded-lg border border-stone-300"
               />
               <input
                 type="text"
-                placeholder="Products (Long / Short Flax)"
+                placeholder={t.supFieldProducts}
                 value={newSupplier.products}
                 onChange={(e) => setNewSupplier((p) => ({ ...p, products: e.target.value }))}
                 className="px-3 py-2 rounded-lg border border-stone-300"
               />
               <input
                 type="text"
-                placeholder="Current Stock (MT)"
+                placeholder={t.supFieldStock}
                 value={newSupplier.stock_tons}
                 onChange={(e) => setNewSupplier((p) => ({ ...p, stock_tons: e.target.value }))}
                 className="px-3 py-2 rounded-lg border border-stone-300"
               />
               <input
                 type="text"
-                placeholder="Price per Ton (EGP / USD)"
+                placeholder={t.supFieldPricePerTon}
                 value={newSupplier.price_per_ton}
                 onChange={(e) => setNewSupplier((p) => ({ ...p, price_per_ton: e.target.value }))}
                 className="px-3 py-2 rounded-lg border border-stone-300"
               />
               <input
                 type="text"
-                placeholder="Workers / Shifts"
+                placeholder={t.supFieldWorkers}
                 value={newSupplier.workers_shifts}
                 onChange={(e) => setNewSupplier((p) => ({ ...p, workers_shifts: e.target.value }))}
                 className="px-3 py-2 rounded-lg border border-stone-300"
               />
               <input
                 type="text"
-                placeholder="Daily Output"
+                placeholder={t.supFieldDailyOutput}
                 value={newSupplier.daily_output}
                 onChange={(e) => setNewSupplier((p) => ({ ...p, daily_output: e.target.value }))}
                 className="px-3 py-2 rounded-lg border border-stone-300"
@@ -1032,7 +1036,7 @@ export default function SuppliersTab({
 
             <textarea
               rows={3}
-              placeholder="Price & Notes..."
+              placeholder={t.supFieldNotes}
               value={newSupplier.price_notes}
               onChange={(e) => setNewSupplier((p) => ({ ...p, price_notes: e.target.value }))}
               className="w-full px-3 py-2 rounded-lg border border-stone-300 text-base sm:text-xs"
@@ -1050,14 +1054,14 @@ export default function SuppliersTab({
                 onClick={() => setShowAddModal(false)}
                 className="px-4 py-2 rounded-lg border border-stone-300 text-xs font-semibold text-stone-700 cursor-pointer"
               >
-                Cancel
+                {t.cancelBtn}
               </button>
               <button
                 type="submit"
                 disabled={adding}
                 className="px-4 py-2 rounded-lg bg-[#3F166B] text-[#EDC271] text-xs font-bold cursor-pointer"
               >
-                {adding ? "Saving..." : "Save Supplier"}
+                {adding ? t.savingBtn : t.supSaveBtn}
               </button>
             </div>
           </form>

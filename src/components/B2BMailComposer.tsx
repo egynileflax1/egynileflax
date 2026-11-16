@@ -14,6 +14,7 @@ import {
   Paperclip,
   FileText,
   Printer,
+  Globe,
   X,
 } from "lucide-react";
 import { COMPANY } from "@/data/initialData";
@@ -26,8 +27,15 @@ import {
   openPrintableQuotationWindow,
   TemplateLang,
 } from "@/lib/crmHelpers";
+import { useFlax } from "@/context/FlaxContext";
+import { ADMIN_TRANSLATIONS } from "@/lib/adminI18n";
 
 export default function B2BMailComposer() {
+  const { lang, setLang } = useFlax();
+  const isAr = lang === "ar";
+  const t = ADMIN_TRANSLATIONS[isAr ? "ar" : "en"];
+  const toggleAdminLang = () => setLang(isAr ? "en" : "ar");
+
   const [checkingAuth, setCheckingAuth] = useState(true);
   const [authenticated, setAuthenticated] = useState(false);
   const [adminEmail, setAdminEmail] = useState("");
@@ -208,26 +216,36 @@ export default function B2BMailComposer() {
 
   if (checkingAuth) {
     return (
-      <div className="min-h-dvh bg-[#FAF8F5] flex items-center justify-center text-sm text-stone-500">
-        Loading B2B Mail Sender...
+      <div dir={t.dir} className="min-h-dvh bg-[#FAF8F5] flex items-center justify-center text-sm text-stone-500">
+        {t.mailLoading}
       </div>
     );
   }
 
   if (!authenticated) {
     return (
-      <div className="min-h-dvh bg-[#FAF8F5] flex items-center justify-center p-4">
+      <div dir={t.dir} className="min-h-dvh bg-[#FAF8F5] flex items-center justify-center p-4">
         <div className="w-full max-w-md bg-white rounded-2xl border border-stone-200 shadow-sm p-6 sm:p-8 space-y-5">
-          <div className="flex items-center gap-3">
-            <div className="w-10 h-10 rounded-xl bg-[#3F166B] text-[#EDC271] flex items-center justify-center">
-              <Lock className="w-5 h-5" />
+          <div className="flex items-center justify-between gap-3">
+            <div className="flex items-center gap-3">
+              <div className="w-10 h-10 rounded-xl bg-[#3F166B] text-[#EDC271] flex items-center justify-center">
+                <Lock className="w-5 h-5" />
+              </div>
+              <div>
+                <h1 className="text-lg font-extrabold text-[#3F166B]">{t.mailAuthTitle}</h1>
+                <p className="text-xs text-stone-500">
+                  {t.mailAuthSubtitle}
+                </p>
+              </div>
             </div>
-            <div>
-              <h1 className="text-lg font-extrabold text-[#3F166B]">B2B Mail Sender</h1>
-              <p className="text-xs text-stone-500">
-                Sign in with an authorized Egy Nile Flax Google account
-              </p>
-            </div>
+            <button
+              type="button"
+              onClick={toggleAdminLang}
+              className="inline-flex items-center gap-1 px-2.5 py-1.5 rounded-lg border border-stone-200 bg-stone-50 hover:bg-stone-100 text-xs font-bold text-[#3F166B] cursor-pointer"
+            >
+              <Globe className="w-3.5 h-3.5" />
+              <span>{t.langToggleLabel}</span>
+            </button>
           </div>
 
           <a
@@ -252,12 +270,12 @@ export default function B2BMailComposer() {
                 d="M12 4.75c1.77 0 3.35.61 4.6 1.8l3.42-3.42C17.95 1.19 15.24 0 12 0 7.31 0 3.26 2.7 1.29 6.62l3.99 3.14c.95-2.85 3.6-4.96 6.72-4.96Z"
               />
             </svg>
-            <span>Sign in with Google</span>
+            <span>{t.signInGoogle}</span>
           </a>
 
           <div className="text-center">
             <Link href="/admin" className="text-xs font-semibold text-[#3F166B] hover:underline">
-              Or sign in via Admin CRM
+              {t.mailOrViaCrm}
             </Link>
           </div>
         </div>
@@ -266,7 +284,7 @@ export default function B2BMailComposer() {
   }
 
   return (
-    <div className="min-h-dvh bg-[#FAF8F5] text-stone-900">
+    <div dir={t.dir} className="min-h-dvh bg-[#FAF8F5] text-stone-900">
       {/* Top Bar */}
       <header className="border-b border-stone-200 bg-white/90 backdrop-blur-md sticky top-0 z-20">
         <div className="max-w-[1360px] mx-auto px-4 sm:px-6 lg:px-10 h-16 flex items-center justify-between gap-4">
@@ -276,22 +294,30 @@ export default function B2BMailComposer() {
             </div>
             <div className="min-w-0">
               <h1 className="text-sm sm:text-base font-extrabold text-[#3F166B] truncate">
-                Egy Nile Flax — B2B Mail Sender
+                {t.mailTitle}
               </h1>
               <p className="text-[11px] text-stone-500 truncate">
-                Sending from {COMPANY.primaryEmail}
-                {adminEmail ? ` • Signed in as ${adminEmail}` : ""}
+                {t.mailSubtitle(COMPANY.primaryEmail)}
+                {adminEmail ? ` • ${t.signedInAs} ${adminEmail}` : ""}
               </p>
             </div>
           </div>
 
           <div className="flex items-center gap-2 shrink-0">
+            <button
+              type="button"
+              onClick={toggleAdminLang}
+              className="inline-flex items-center gap-1.5 px-2.5 py-1.5 rounded-lg border border-stone-200 bg-white hover:bg-stone-100 text-xs font-bold text-[#3F166B] cursor-pointer"
+            >
+              <Globe className="w-3.5 h-3.5" />
+              <span>{t.langToggleLabel}</span>
+            </button>
             <Link
               href="/admin"
               className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg border border-stone-200 bg-white hover:bg-stone-100 text-xs font-semibold text-[#3F166B] transition-colors"
             >
-              <ArrowLeft className="w-3.5 h-3.5" />
-              <span>Admin CRM</span>
+              <ArrowLeft className="w-3.5 h-3.5 rtl:rotate-180" />
+              <span>{t.mailBackToCrm}</span>
             </Link>
           </div>
         </div>
@@ -309,12 +335,12 @@ export default function B2BMailComposer() {
               <div className="flex flex-wrap items-center justify-between gap-2">
                 <div className="flex items-center gap-1.5 text-xs font-bold text-stone-700">
                   <Sparkles className="w-3.5 h-3.5 text-[#3F166B]" />
-                  <span>Quick B2B Templates (EN / 中文 / AR)</span>
+                  <span>{t.mailTemplatesTitle}</span>
                 </div>
                 <div className="inline-flex p-0.5 rounded-lg bg-stone-100 border border-stone-200">
                   {(
                     [
-                      ["all", "All"],
+                      ["all", t.filterAll],
                       ["en", "EN"],
                       ["zh", "中文"],
                       ["ar", "AR"],
@@ -344,7 +370,7 @@ export default function B2BMailComposer() {
                   }}
                   className="px-3 py-1.5 rounded-lg border border-stone-200 bg-stone-50 hover:bg-stone-100 text-xs font-semibold text-stone-600 cursor-pointer"
                 >
-                  Clear
+                  {t.mailClearBtn}
                 </button>
                 {visibleTemplates.map((tpl) => (
                   <button
@@ -363,7 +389,7 @@ export default function B2BMailComposer() {
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
               <div>
                 <label htmlFor="b2b-to" className="block text-xs font-bold text-stone-700 mb-1">
-                  To Email *
+                  {t.mailToEmail}
                 </label>
                 <input
                   id="b2b-to"
@@ -377,7 +403,7 @@ export default function B2BMailComposer() {
               </div>
               <div>
                 <label htmlFor="b2b-to-name" className="block text-xs font-bold text-stone-700 mb-1">
-                  Recipient / Company Name
+                  {t.mailToName}
                 </label>
                 <input
                   id="b2b-to-name"
@@ -394,7 +420,7 @@ export default function B2BMailComposer() {
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
               <div>
                 <label htmlFor="b2b-cc" className="block text-xs font-bold text-stone-700 mb-1">
-                  CC (optional, comma-separated)
+                  {t.mailCc}
                 </label>
                 <input
                   id="b2b-cc"
@@ -407,7 +433,7 @@ export default function B2BMailComposer() {
               </div>
               <div>
                 <label htmlFor="b2b-reply-to" className="block text-xs font-bold text-stone-700 mb-1">
-                  Reply-To Email
+                  {t.mailReplyTo}
                 </label>
                 <input
                   id="b2b-reply-to"
@@ -424,7 +450,7 @@ export default function B2BMailComposer() {
             <div className="p-3.5 rounded-xl bg-[#FAF8F5] border border-stone-200 space-y-2.5">
               <div className="flex flex-wrap items-center justify-between gap-2">
                 <span className="text-xs font-extrabold text-[#3F166B]">
-                  Official Proforma Quote Generator (Optional PDF Attachment)
+                  {t.mailQuoteGenTitle}
                 </span>
                 <div className="flex items-center gap-1.5">
                   <button
@@ -433,7 +459,7 @@ export default function B2BMailComposer() {
                     className="inline-flex items-center gap-1 px-2.5 py-1 rounded-lg bg-[#3F166B] text-[#EDC271] text-[11px] font-bold cursor-pointer"
                   >
                     <FileText className="w-3 h-3" />
-                    <span>Attach PDF Quote</span>
+                    <span>{t.mailAttachPdfQuote}</span>
                   </button>
                   <button
                     type="button"
@@ -441,7 +467,7 @@ export default function B2BMailComposer() {
                     className="inline-flex items-center gap-1 px-2.5 py-1 rounded-lg border border-stone-300 bg-white text-stone-700 text-[11px] font-semibold cursor-pointer"
                   >
                     <Printer className="w-3 h-3" />
-                    <span>Print / View</span>
+                    <span>{t.mailPrintView}</span>
                   </button>
                 </div>
               </div>
@@ -480,7 +506,7 @@ export default function B2BMailComposer() {
             {/* Subject */}
             <div>
               <label htmlFor="b2b-subject" className="block text-xs font-bold text-stone-700 mb-1">
-                Subject *
+                {t.mailSubject}
               </label>
               <input
                 id="b2b-subject"
@@ -488,7 +514,7 @@ export default function B2BMailComposer() {
                 required
                 value={subject}
                 onChange={(e) => setSubject(e.target.value)}
-                placeholder="Egyptian Flax Fibre Quotation — Egy Nile Flax"
+                placeholder={t.emailSubjectPlaceholder}
                 className="w-full px-3.5 py-2.5 rounded-xl border border-stone-300 text-base sm:text-xs focus:outline-none focus:border-[#3F166B]"
               />
             </div>
@@ -496,7 +522,7 @@ export default function B2BMailComposer() {
             {/* Message */}
             <div>
               <label htmlFor="b2b-message" className="block text-xs font-bold text-stone-700 mb-1">
-                Message *
+                {t.mailMessage}
               </label>
               <textarea
                 id="b2b-message"
@@ -504,7 +530,7 @@ export default function B2BMailComposer() {
                 required
                 value={message}
                 onChange={(e) => setMessage(e.target.value)}
-                placeholder="Write your B2B email message..."
+                placeholder="..."
                 className="w-full px-3.5 py-2.5 rounded-xl border border-stone-300 text-base sm:text-xs leading-relaxed focus:outline-none focus:border-[#3F166B]"
               />
             </div>
@@ -522,7 +548,7 @@ export default function B2BMailComposer() {
                         : "text-stone-600 hover:text-stone-900"
                     }`}
                   >
-                    Branded Card
+                    {t.mailLayoutBranded}
                   </button>
                   <button
                     type="button"
@@ -533,14 +559,14 @@ export default function B2BMailComposer() {
                         : "text-stone-600 hover:text-stone-900"
                     }`}
                   >
-                    Primary Inbox (Clean)
+                    {t.mailLayoutPersonal}
                   </button>
                 </div>
 
                 <div className="inline-flex p-1 rounded-lg bg-stone-100 border border-stone-200">
                   {(
                     [
-                      ["auto", "Auto"],
+                      ["auto", t.mailProviderAuto],
                       ["brevo", "Brevo"],
                       ["resend", "Resend"],
                     ] as const
@@ -569,14 +595,14 @@ export default function B2BMailComposer() {
                   className="w-4 h-4 rounded border-stone-300 accent-[#3F166B]"
                 />
                 <span className="text-xs font-semibold text-stone-700">
-                  Include Factory Signature
+                  {t.mailIncludeSignature}
                 </span>
               </label>
 
               <div className="w-full pt-2 border-t border-stone-100 flex flex-wrap items-center gap-2">
                 <label className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg border border-stone-200 bg-stone-50 hover:bg-stone-100 text-xs font-semibold text-stone-700 cursor-pointer">
                   <Paperclip className="w-3.5 h-3.5 text-[#3F166B]" />
-                  <span>Attach PDF / File (max 3)</span>
+                  <span>{t.mailAttachFile}</span>
                   <input
                     type="file"
                     multiple
@@ -658,7 +684,7 @@ export default function B2BMailComposer() {
                 className="lg:hidden inline-flex items-center gap-1.5 px-4 py-2.5 rounded-xl border border-stone-300 bg-white text-xs font-semibold text-stone-700"
               >
                 <Eye className="w-4 h-4" />
-                <span>{showMobilePreview ? "Hide Preview" : "Preview Email"}</span>
+                <span>{showMobilePreview ? t.mailHidePreviewBtn : t.mailPreviewBtn}</span>
               </button>
 
               <button
@@ -667,7 +693,7 @@ export default function B2BMailComposer() {
                 className="ms-auto inline-flex items-center justify-center gap-2 px-6 py-3 rounded-xl bg-[#3F166B] hover:bg-[#2F1052] disabled:opacity-60 text-[#EDC271] font-bold text-xs sm:text-sm shadow-sm transition-all cursor-pointer"
               >
                 <Send className="w-4 h-4" />
-                <span>{isSending ? "Sending..." : "Send B2B Email"}</span>
+                <span>{isSending ? t.mailSendingBtn : t.mailSendBtn}</span>
               </button>
             </div>
           </form>
@@ -678,8 +704,8 @@ export default function B2BMailComposer() {
           >
             <div className="bg-white rounded-2xl border border-stone-200 shadow-xs overflow-hidden sticky top-24">
               <div className="px-4 py-3 border-b border-stone-200 bg-stone-50 flex items-center justify-between">
-                <span className="text-xs font-bold text-stone-700">Live Branded Email Preview</span>
-                <span className="text-[11px] text-stone-500">From: {COMPANY.primaryEmail}</span>
+                <span className="text-xs font-bold text-stone-700">{t.mailPreviewHeader}</span>
+                <span className="text-[11px] text-stone-500">{t.mailFromLabel} {COMPANY.primaryEmail}</span>
               </div>
               <iframe
                 title="B2B Email Preview"

@@ -867,10 +867,10 @@ export default function ShowcaseView() {
             </div>
 
             {/* Right: Minimal Contact Form */}
-            <div className="anim-reveal lg:col-span-7">
+            <div className="anim-reveal lg:col-span-7 min-w-0">
               <div
                 ref={contactCardRef}
-                className="bg-white rounded-2xl sm:rounded-3xl p-5 sm:p-8 border border-stone-200 shadow-xs transition-all duration-300 ease-in-out"
+                className="bg-white rounded-2xl sm:rounded-3xl p-5 sm:p-8 border border-stone-200 shadow-xs transition-all duration-300 ease-in-out min-w-0"
               >
                 {/* Confirmation state */}
                 <div
@@ -910,13 +910,14 @@ export default function ShowcaseView() {
                 {/* Form state */}
                 <div
                   aria-hidden={formSubmitted}
+                  inert={formSubmitted ? true : undefined}
                   className={`grid transition-all duration-300 ease-in-out ${
                     formSubmitted
                       ? "grid-rows-[0fr] opacity-0 pointer-events-none"
                       : "grid-rows-[1fr] opacity-100"
                   }`}
                 >
-                  <div className={formSubmitted ? "overflow-hidden" : "overflow-visible"}>
+                  <div className={`min-w-0 ${formSubmitted ? "overflow-hidden" : "overflow-visible"}`}>
                     <h3 className="text-lg sm:text-xl font-extrabold text-stone-900 mb-5">{t.contact.formTitle}</h3>
 
                     {submitError && (
@@ -1000,23 +1001,23 @@ export default function ShowcaseView() {
                     </div>
                   </div>
 
-                  <div>
+                  <div className="min-w-0">
                     <label className="block text-xs font-bold text-stone-700 mb-1">
                       {t.contact.productLabel}
                     </label>
-                    <div ref={productDropdownRef} className="relative">
+                    <div ref={productDropdownRef} className="relative min-w-0">
                       <button
                         type="button"
                         aria-haspopup="listbox"
                         aria-expanded={productDropdownOpen}
                         onClick={() => setProductDropdownOpen((prev) => !prev)}
-                        className={`w-full px-3.5 py-2.5 rounded-xl border text-base sm:text-xs bg-white flex items-center justify-between gap-2 text-start transition-colors cursor-pointer ${
+                        className={`w-full min-w-0 px-3.5 py-2.5 rounded-xl border text-base sm:text-xs bg-white flex items-center justify-between gap-2 text-start transition-colors cursor-pointer ${
                           productDropdownOpen
                             ? "border-[#3F166B] ring-2 ring-[#3F166B]/10"
                             : "border-stone-300 hover:border-stone-400"
                         }`}
                       >
-                        <span className={`truncate ${contactForm.product ? "text-stone-900" : "text-stone-400"}`}>
+                        <span className={`min-w-0 flex-1 truncate ${contactForm.product ? "text-stone-900" : "text-stone-400"}`}>
                           {contactForm.product || "—"}
                         </span>
                         <ChevronDown
@@ -1029,6 +1030,7 @@ export default function ShowcaseView() {
                       <div
                         role="listbox"
                         aria-hidden={!productDropdownOpen}
+                        inert={!productDropdownOpen ? true : undefined}
                         className={`absolute z-30 mt-1.5 w-full rounded-2xl bg-white border border-stone-200 shadow-xl py-1.5 max-h-60 overflow-y-auto custom-scrollbar origin-top transition-all duration-200 ${
                           productDropdownOpen
                             ? "opacity-100 scale-100 translate-y-0 pointer-events-auto"
@@ -1039,7 +1041,8 @@ export default function ShowcaseView() {
                           type="button"
                           role="option"
                           aria-selected={contactForm.product === ""}
-                          onClick={() => {
+                          onClick={(e) => {
+                            e.currentTarget.blur();
                             setContactForm({ ...contactForm, product: "" });
                             setProductDropdownOpen(false);
                           }}
@@ -1061,7 +1064,8 @@ export default function ShowcaseView() {
                               type="button"
                               role="option"
                               aria-selected={isSelected}
-                              onClick={() => {
+                              onClick={(e) => {
+                                e.currentTarget.blur();
                                 setContactForm({ ...contactForm, product: label });
                                 setProductDropdownOpen(false);
                               }}
@@ -1071,7 +1075,7 @@ export default function ShowcaseView() {
                                   : "text-stone-700 hover:bg-stone-100"
                               }`}
                             >
-                              <span className="truncate">{label}</span>
+                              <span className="min-w-0 flex-1 truncate">{label}</span>
                               {isSelected && <Check className="w-3.5 h-3.5 text-[#3F166B] shrink-0" />}
                             </button>
                           );

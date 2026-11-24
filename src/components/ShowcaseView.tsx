@@ -363,7 +363,7 @@ export default function ShowcaseView() {
       {/* =========================================================
           1. HERO (Minimal Light Canvas)
       ========================================================= */}
-      <section className="hero-section relative bg-[#FAF8F5] border-b border-stone-200/80 lg:min-h-[calc(100dvh-6.25rem)] flex items-center">
+      <section className="hero-section relative bg-[#FAF8F5] border-b border-stone-200/80 lg:min-h-[calc(100dvh-7.25rem)] flex items-center">
         <div className="w-full max-w-[1440px] mx-auto px-4 sm:px-6 lg:px-10 xl:px-14 py-6 sm:py-10 lg:py-12">
           <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 sm:gap-8 lg:gap-10 xl:gap-12 items-center">
             <div className="lg:col-span-7 space-y-4 sm:space-y-5">
@@ -455,7 +455,7 @@ export default function ShowcaseView() {
       {/* =========================================================
           2. ABOUT
       ========================================================= */}
-      <section id="about" className="scroll-mt-24 py-10 sm:py-16 lg:py-20 border-b border-stone-200/80">
+      <section id="about" className="scroll-mt-28 sm:scroll-mt-32 py-10 sm:py-16 lg:py-20 border-b border-stone-200/80">
         <div className="w-full max-w-[1440px] mx-auto px-4 sm:px-6 lg:px-10 xl:px-14">
           <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 sm:gap-8 lg:gap-12 items-center">
             <div className="anim-reveal lg:col-span-6 space-y-4 sm:space-y-6">
@@ -563,7 +563,7 @@ export default function ShowcaseView() {
       {/* =========================================================
           3. PRODUCTS
       ========================================================= */}
-      <section id="products" className="scroll-mt-24 py-12 sm:py-16 lg:py-20 bg-[#F3EFE6] border-b border-stone-200/80">
+      <section id="products" className="scroll-mt-28 sm:scroll-mt-32 py-12 sm:py-16 lg:py-20 bg-[#F3EFE6] border-b border-stone-200/80">
         <div className="w-full max-w-[1440px] mx-auto px-4 sm:px-6 lg:px-10 xl:px-14 space-y-8 sm:space-y-10">
           <div className="anim-reveal space-y-2.5 sm:space-y-3 max-w-2xl">
             <span className="inline-block text-xs font-bold uppercase tracking-widest text-[#3F166B] bg-[#EDC271]/25 border border-[#EDC271]/60 px-3 py-1 rounded-full">
@@ -668,7 +668,7 @@ export default function ShowcaseView() {
       {/* =========================================================
           4. PRODUCTION & QUALITY PROCESS
       ========================================================= */}
-      <section id="process" className="scroll-mt-24 py-10 sm:py-16 lg:py-20 bg-white border-b border-stone-200/80">
+      <section id="process" className="scroll-mt-28 sm:scroll-mt-32 py-10 sm:py-16 lg:py-20 bg-white border-b border-stone-200/80">
         <div className="w-full max-w-[1440px] mx-auto px-4 sm:px-6 lg:px-10 xl:px-14 space-y-6 sm:space-y-12">
           <div className="anim-reveal text-center max-w-3xl mx-auto space-y-2.5 sm:space-y-3">
             <span className="inline-block text-xs font-bold uppercase tracking-widest text-[#3F166B] bg-[#EDC271]/25 border border-[#EDC271]/60 px-3 py-1 rounded-full">
@@ -701,7 +701,7 @@ export default function ShowcaseView() {
       {/* =========================================================
           5. CONTACT
       ========================================================= */}
-      <section id="contact" className="scroll-mt-24 py-12 sm:py-16 lg:py-20 bg-[#FAF8F5]">
+      <section id="contact" className="scroll-mt-28 sm:scroll-mt-32 py-12 sm:py-16 lg:py-20 bg-[#FAF8F5]">
         <div className="w-full max-w-[1440px] mx-auto px-4 sm:px-6 lg:px-10 xl:px-14">
           <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 lg:gap-12 items-start">
             {/* Left: Factory info & direct channels */}

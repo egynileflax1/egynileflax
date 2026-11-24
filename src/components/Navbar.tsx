@@ -143,22 +143,22 @@ export default function Navbar() {
 
         {/* Main navigation */}
         <div className="bg-white/90 backdrop-blur-md border-b border-stone-200/80">
-          <div className="w-full max-w-[1440px] mx-auto px-4 sm:px-6 lg:px-10 xl:px-14 h-14 sm:h-16 flex items-center justify-between gap-2 sm:gap-3">
+          <div className="w-full max-w-[1440px] mx-auto px-4 sm:px-6 lg:px-10 xl:px-14 h-16 sm:h-20 flex items-center justify-between gap-2 sm:gap-3">
             <button
               onClick={scrollToTop}
-              className="flex items-center gap-2 sm:gap-3 text-start cursor-pointer min-w-0 shrink-0"
+              className="flex items-center gap-2.5 sm:gap-3.5 text-start cursor-pointer min-w-0 shrink-0"
             >
-              <EgyNileLogo className="w-9 h-9 sm:w-11 sm:h-11 shrink-0 drop-shadow-xs" />
+              <EgyNileLogo className="w-11 h-11 sm:w-14 sm:h-14 lg:w-[60px] lg:h-[60px] shrink-0 drop-shadow-xs" />
               <div className="min-w-0">
-                <div className="flex items-center gap-1.5">
-                  <span className="text-base sm:text-lg font-extrabold tracking-tight text-stone-900 truncate">
+                <div className="flex items-center gap-1.5 sm:gap-2">
+                  <span className="text-lg sm:text-2xl lg:text-[1.65rem] leading-tight font-extrabold tracking-tight text-stone-900 truncate">
                     {company.brandName}
                   </span>
-                  <span className="text-[9px] sm:text-[10px] font-bold uppercase tracking-widest px-1.5 py-0.5 rounded bg-[#EDC271]/25 text-[#3F166B] border border-[#EDC271] shrink-0">
+                  <span className="text-[10px] sm:text-[11px] font-bold uppercase tracking-widest px-1.5 sm:px-2 py-0.5 rounded bg-[#EDC271]/25 text-[#3F166B] border border-[#EDC271] shrink-0">
                     {t.brand.country}
                   </span>
                 </div>
-                <p className="text-[9px] sm:text-[10px] text-stone-500 font-medium tracking-wide truncate">
+                <p className="text-[10px] sm:text-xs text-stone-500 font-medium tracking-wide truncate">
                   {t.brand.subtitle}
                 </p>
               </div>
@@ -256,7 +256,7 @@ export default function Navbar() {
       </header>
 
       {/* Spacer for fixed header */}
-      <div className="h-[5.625rem] sm:h-[6.25rem]" aria-hidden="true" />
+      <div className="h-[6.125rem] sm:h-[7.25rem]" aria-hidden="true" />
 
       {/* Backdrop for mobile drawer */}
       <div

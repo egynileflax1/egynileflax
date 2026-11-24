@@ -178,7 +178,12 @@ export const PRODUCTS: ProductItem[] = [
     },
     badge: "Mill Favorite",
     imageUrl: "/Hackled flax.webp",
-    images: ["/Hackled flax.webp"],
+    images: [
+      "/Hackled flax.webp",
+      "/Hackled flax1.webp",
+      "/Hackled flax2.webp",
+      "/Hackled flax3.webp",
+    ],
     featured: true,
   },
   {
@@ -232,10 +237,7 @@ export const PRODUCTS: ProductItem[] = [
     imageUrl: "/Flax dolls.webp",
     images: [
       "/Flax dolls.webp",
-      "/Flax dolls1.webp",
-      "/Flax dolls2.webp",
       "/Flax dolls3.webp",
-      "/Flax dolls4.webp",
       "/Flax dolls5.webp",
     ],
     featured: true,

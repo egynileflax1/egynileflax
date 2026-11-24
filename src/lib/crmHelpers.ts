@@ -22,10 +22,11 @@ export const MULTILANG_B2B_TEMPLATES: LocalizedMailTemplate[] = [
 We are Egy Nile Flax Overseas Co., an ISO 9001:2015 certified flax fibre processor and exporter based in Tanta, Gharbia, Egypt, serving spinning mills and industrial buyers in 23+ countries since 2008.
 
 With an annual processing capacity of 14,500+ MT, we supply:
-• Scutched Long Flax & Short Flax (Arrous)
-• Hackled Long Flax, Slivers & Machine Tow
-• Cottonised Flax Fibre
-• Plumbing Flax & Natural Flax Twines
+• Scutched Flax (Grade A & Grade B — 250 kg bales)
+• Flax Arrous (1 to 5 purification stages — 200 kg bales)
+• Hackled Flax (200 or 250 kg bales)
+• Flax Dolls (2/4/5-Head & Jokia shapes, custom weights — 50 kg bales)
+• Sliver (Hackled flax 15–35 gr/m — 40–50 kg bales)
 
 If you are currently sourcing Egyptian flax for upcoming production runs, we would be glad to share our latest grade specifications, laboratory test reports (moisture & shive %), and FOB/CIF quotations.
 
@@ -44,7 +45,7 @@ Please find our preliminary quotation details below:
 • Product / Grade: [Specify Grade]
 • Staple Length / Shive %: [Specify Specs]
 • Moisture Regain: ≤ 11.5%
-• Packing: Hydraulic Pressed Bales (120–200 kg)
+• Packing: Hydraulic Pressed Bales (250 kg / 200 kg / 40–50 kg depending on product)
 • Price Basis: FOB Alexandria / Damietta or CIF [Destination Port]
 • Lead Time: 14–21 days from order confirmation
 
@@ -59,7 +60,7 @@ Best regards,`,
     subject: "Flax Fibre Samples & Lab Evaluation — Egy Nile Flax",
     message: `Dear Partner,
 
-Following up on your interest in Egy Nile Flax, we can dispatch courier samples of our scutched, hackled, or cottonised grades for your spinning mill's evaluation.
+Following up on your interest in Egy Nile Flax, we can dispatch courier samples of our scutched flax, flax arrous, hackled flax, flax dolls, or sliver for your evaluation.
 
 Kindly confirm your preferred grades, shipping address, and contact phone number for courier dispatch.
 
@@ -77,9 +78,11 @@ Best regards,`,
 我们是埃及尼罗亚麻公司 (Egy Nile Flax Overseas Co.)，位于埃及坦塔 (Tanta) 核心亚麻产区，是通过 ISO 9001:2015 认证的亚麻纤维加工与出口工厂，年加工能力超过 14,500 吨，长期稳定向中国及全球纺纱厂供货。
 
 我厂主要供应品种包括：
-• 打成亚麻长麻 (Scutched Long Flax C1–C4) 及短麻/二粗 (Short Flax / Arrous)
-• 梳成亚麻 (Hackled Flax)、亚麻条 (Slivers) 及机梳落麻 (Machine Tow)
-• 棉化亚麻纤维 (Cottonised Flax Fibre) 及亚麻籽
+• 打成亚麻 (Scutched Flax，A级 / B级，250 kg/包)
+• 亚麻短纤 (Flax Arrous，1至5道净化分级，200 kg/包)
+• 梳成亚麻 (Hackled Flax，200 或 250 kg/包)
+• 手工亚麻束 (Flax Dolls，双/四/五头及 Jokia 造型，50 kg/包)
+• 精梳亚麻条 (Sliver，15–35 克/米，40–50 kg/包)
 
 如贵司近期有埃及亚麻原料采购计划，我们非常乐意为您提供最新批次指标（长度、含杂率、回潮率）、样品寄送及亚历山大港 FOB / 中国主要港口 CIF 报价。
 
@@ -97,7 +100,7 @@ Best regards,`,
 • 产品等级：[填写品名与等级]
 • 纤维长度 / 含杂率：[填写指标]
 • 回潮率：≤ 11.5%
-• 包装规格：高密度液压打包（120–200 kg/包，40尺高柜可装约 22–24 吨）
+• 包装规格：液压打包（250 kg / 200 kg / 40–50 kg，视产品而定）
 • 价格条款：FOB 亚历山大港 / 达米埃塔港 或 CIF 中国主要港口
 • 交货期：确认订单后 14–21 天装船
 
@@ -129,10 +132,12 @@ Best regards,`,
 
 نحن شركة إيجي نايل فلاكس (Egy Nile Flax Overseas Co.) لتصنيع وتصدير ألياف الكتان المصري بمدينة طنطا - محافظة الغربية، حاصلون على شهادة الأيزو ISO 9001:2015 بطاقة إنتاجية تتجاوز 14,500 طن سنوياً.
 
-نقوم بتوريد وتصدير كافة درجات الكتان المصري:
-• كتان طويل مدمك (Scutched Long Flax) وكتان قصير / عروس (Arrous)
-• كتان ممشط (Hackled) وشرائط كتان ومشاقة (Tow)
-• كتان مقطن للغزل وحبال ودوبارة وبذور كتان
+نقوم بتوريد وتصدير منتجات الكتان المصري:
+• كتان مقشور (Scutched Flax — درجة A ودرجة B، بالات 250 كجم)
+• عروس الكتان (Flax Arrous — من 1 إلى 5 مراحل تنقية، بالات 200 كجم)
+• كتان ممشط (Hackled Flax — بالات 200 أو 250 كجم)
+• عرائس الكتان (Flax Dolls — برأسين و4 و5 رؤوس وأشكال جوكيا، بالات 50 كجم)
+• شريط الكتان (Sliver — من 15 إلى 35 جم/متر، بالات 40–50 كجم)
 
 يسعدنا تزويدكم بأحدث المواصفات الفنية ونتائج الفحص المعملي وعروض الأسعار (تسليم المصنع أو FOB الإسكندرية / دمياط).
 
@@ -149,7 +154,7 @@ Best regards,`,
 
 • الصنف والدرجة: [تحديد الصنف]
 • نسبة الرطوبة: ≤ 11.5%
-• التعبئة: بالات مكبوسة هيدروليكياً (120–200 كجم)
+• التعبئة: بالات مكبوسة (250 كجم / 200 كجم / 40–50 كجم حسب المنتج)
 • شروط التسليم: FOB الإسكندرية / دمياط أو CIF ميناء الوصول
 • مدة التجهيز والشحن: 14–21 يوماً من تأكيد الطلب
 
@@ -192,7 +197,7 @@ export function buildLeadQuickReply(
     }
     return {
       subject: `回复：${productLabel} 报价与指标 — Egy Nile Flax`,
-      message: `尊敬的 ${lead.name}，您好：\n\n感谢贵司${lead.company ? ` (${lead.company})` : ""}联系 Egy Nile Flax 询购 ${productLabel}。\n\n以下为我厂针对贵司需求整理的报价参数：\n• 产品等级：${productLabel}\n• 数量 / 柜量：${volumeLine}\n• 贸易条款：${incotermLine}\n• 参考单价：${priceLine}\n• 回潮率：≤ 11.5%（高密度液压打包 120–200 kg/包）\n\n请问贵司是否需要我们先寄送大货样检测，或出具正式形式发票 (Proforma Invoice)？\n\n顺祝商祺！`,
+      message: `尊敬的 ${lead.name}，您好：\n\n感谢贵司${lead.company ? ` (${lead.company})` : ""}联系 Egy Nile Flax 询购 ${productLabel}。\n\n以下为我厂针对贵司需求整理的报价参数：\n• 产品等级：${productLabel}\n• 数量 / 柜量：${volumeLine}\n• 贸易条款：${incotermLine}\n• 参考单价：${priceLine}\n• 回潮率：≤ 11.5%（液压打包 40–250 kg/包，视产品规格而定）\n\n请问贵司是否需要我们先寄送大货样检测，或出具正式形式发票 (Proforma Invoice)？\n\n顺祝商祺！`,
     };
   }
 
@@ -209,7 +214,7 @@ export function buildLeadQuickReply(
     }
     return {
       subject: `عرض سعر: ${productLabel} — إيجي نايل فلاكس`,
-      message: `الأستاذ / ${lead.name} المحترم،\n\nشكراً لتواصلكم مع شركة إيجي نايل فلاكس بخصوص ${productLabel}.\n\nتفاصيل العرض المبدئي:\n• الصنف: ${productLabel}\n• الكمية / الحاوية: ${volumeLine}\n• شروط التسليم: ${incotermLine}\n• السعر: ${priceLine}\n• نسبة الرطوبة: ≤ 11.5% (بالات مكبوسة 120–200 كجم)\n\nيرجى إبلاغنا في حال رغبتكم في إصدار فاتورة مبدئية أو إرسال عينات.\n\nوتفضلوا بقبول فائق الاحترام،`,
+      message: `الأستاذ / ${lead.name} المحترم،\n\nشكراً لتواصلكم مع شركة إيجي نايل فلاكس بخصوص ${productLabel}.\n\nتفاصيل العرض المبدئي:\n• الصنف: ${productLabel}\n• الكمية / الحاوية: ${volumeLine}\n• شروط التسليم: ${incotermLine}\n• السعر: ${priceLine}\n• نسبة الرطوبة: ≤ 11.5% (بالات مكبوسة 40–250 كجم حسب الصنف)\n\nيرجى إبلاغنا في حال رغبتكم في إصدار فاتورة مبدئية أو إرسال عينات.\n\nوتفضلوا بقبول فائق الاحترام،`,
     };
   }
 
@@ -227,7 +232,7 @@ export function buildLeadQuickReply(
 
   return {
     subject: `Re: ${productLabel} Quotation — Egy Nile Flax`,
-    message: `Dear ${lead.name},\n\nThank you for contacting Egy Nile Flax regarding ${productLabel}.\n\nBased on your inquiry, please find our mill quotation summary:\n• Product / Grade: ${productLabel}\n• Volume / Packing: ${volumeLine} (Hydraulic Pressed Bales, 120–200 kg)\n• Incoterm: ${incotermLine}\n• Quoted Price: ${priceLine}\n• Quality Standard: ISO 9001:2015 • Moisture ≤ 11.5%\n\nWould you like us to issue a formal Proforma Invoice or dispatch physical samples for your spinning trial?\n\nBest regards,`,
+    message: `Dear ${lead.name},\n\nThank you for contacting Egy Nile Flax regarding ${productLabel}.\n\nBased on your inquiry, please find our mill quotation summary:\n• Product / Grade: ${productLabel}\n• Volume / Packing: ${volumeLine} (Pressed Bales, 40–250 kg depending on product)\n• Incoterm: ${incotermLine}\n• Quoted Price: ${priceLine}\n• Quality Standard: ISO 9001:2015 • Moisture ≤ 11.5%\n\nWould you like us to issue a formal Proforma Invoice or dispatch physical samples for your spinning trial?\n\nBest regards,`,
   };
 }
 
@@ -346,7 +351,7 @@ export function generateQuotationPdfBase64(input: QuotationDocumentInput): {
     { y: 470, size: 11, bold: true, text: "3. STANDARD MILL SPECIFICATIONS & EXPORT PACKING" },
     { y: 452, size: 10, text: "* Origin:          100% Nile Delta Crop, Tanta Mill, Arab Republic of Egypt" },
     { y: 436, size: 10, text: "* Moisture Regain: <= 11.5% (ISO 9001:2015 Lab Certified prior to loading)" },
-    { y: 420, size: 10, text: "* Packing:         High-Density Hydraulic Pressed Bales (120-200 kg/bale, polypropylene strapped)" },
+    { y: 420, size: 10, text: "* Packing:         Pressed Bales (250 kg / 200 kg / 40-50 kg depending on product)" },
     { y: 404, size: 10, text: "* Container Load:  20ft FCL (~9-11 MT) | 40ft High Cube (~22-24 MT)" },
     { y: 388, size: 10, text: "* Export Docs:     Commercial Invoice, Packing List, Certificate of Origin, Phytosanitary Cert, B/L" },
     { y: 372, size: 10, text: "* Lead Time:       14-21 days from confirmed order / L/C or T/T deposit" },
@@ -639,7 +644,7 @@ export function openPrintableQuotationWindow(input: QuotationDocumentInput): voi
       <div class="specs">
         &bull; <strong>Origin:</strong> 100% Nile Delta Flax Crop — Processed at Tanta Mill, Egypt<br/>
         &bull; <strong>Moisture Regain:</strong> &le; 11.5% (ISO 9001:2015 laboratory tested prior to container stuffing)<br/>
-        &bull; <strong>Export Packing:</strong> High-density hydraulic pressed bales (120–200 kg per bale, PP woven wrap &amp; straps)<br/>
+        &bull; <strong>Export Packing:</strong> Pressed bales (250 kg / 200 kg / 40–50 kg depending on product, PP woven wrap &amp; straps)<br/>
         &bull; <strong>Standard Container Capacity:</strong> 20ft FCL (~9–11 MT) &bull; 40ft High Cube (~22–24 MT)<br/>
         &bull; <strong>Export Documentation:</strong> Commercial Invoice, Packing List, Certificate of Origin, Phytosanitary Certificate, Fumigation Certificate, Bill of Lading<br/>
         ${input.sampleTracking ? `&bull; <strong>Sample Courier Tracking:</strong> ${esc(input.sampleTracking)}<br/>` : ""}

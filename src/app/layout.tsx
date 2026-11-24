@@ -21,15 +21,15 @@ export const metadata: Metadata = {
   },
   title: "Egy Nile Flax™ | ISO 9001:2015 Certified Egyptian Flax Fibre Factory",
   description:
-    "Egyptian processor of Scutched Flax, Hackled Flax, Slivers, Tow, Cottonised Flax, Plumbing Flax, and Natural Twines since 2008 in Tanta, Egypt.",
+    "Egyptian processor of Scutched Flax (Grade A & B), Flax Arrous, Hackled Flax, Flax Dolls, and Sliver since 2008 in Tanta, Egypt.",
   keywords: [
     "Egyptian flax fiber",
     "scutched flax",
+    "flax arrous",
     "hackled flax",
-    "flax tow",
-    "cottonised flax",
-    "plumbing flax",
-    "flax twine",
+    "flax dolls",
+    "jokia flax",
+    "flax sliver",
     "Egy Nile Flax",
     "Tanta flax factory",
   ],
@@ -45,12 +45,12 @@ export const metadata: Metadata = {
   openGraph: {
     title: "Egy Nile Flax™ | Egyptian Flax Fibre Factory",
     description:
-      "ISO 9001:2015 certified processor of Scutched Flax, Hackled Flax, Slivers, Tow, Cottonised Flax, Plumbing Flax, and Natural Twines since 2008 in Tanta, Egypt.",
+      "ISO 9001:2015 certified processor of Scutched Flax, Flax Arrous, Hackled Flax, Flax Dolls, and Sliver since 2008 in Tanta, Egypt.",
     type: "website",
     siteName: "Egy Nile Flax™",
     images: [
       {
-        url: "/IMG_9066.webp",
+        url: "/Scutched flax.webp",
         alt: "Egy Nile Flax — Tanta Flax Fibre Processing",
       },
     ],
@@ -60,7 +60,7 @@ export const metadata: Metadata = {
     title: "Egy Nile Flax™ | Egyptian Flax Fibre Factory",
     description:
       "ISO 9001:2015 certified Egyptian flax fibre processor since 2008 in Tanta, Egypt.",
-    images: ["/IMG_9066.webp"],
+    images: ["/Scutched flax.webp"],
   },
 };
 

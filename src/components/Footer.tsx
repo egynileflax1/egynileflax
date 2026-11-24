@@ -19,7 +19,7 @@ import {
 } from "lucide-react";
 
 export default function Footer() {
-  const { t, company, lang } = useFlax();
+  const { t, company, lang, products } = useFlax();
   const aiLabel = lang === "ar" ? "المساعد الذكي" : lang === "zh" ? "AI 助手" : "Ask AI";
   const [qrModal, setQrModal] = useState<"wechat" | "rednote" | null>(null);
   const [activeQrType, setActiveQrType] = useState<"wechat" | "rednote">("wechat");
@@ -107,10 +107,16 @@ export default function Footer() {
             <div className="hidden sm:block lg:col-span-3 space-y-3 text-xs">
               <h4 className="font-bold text-stone-900 uppercase tracking-wider">{t.footer.productLines}</h4>
               <ul className="space-y-2 text-stone-600">
-                <li>{t.products.catScutched}</li>
-                <li>{t.products.catHackled}</li>
-                <li>{t.products.catPlumbing}</li>
-                <li>{t.products.catTwine}</li>
+                {products.map((product) => (
+                  <li key={product.id}>
+                    <button
+                      onClick={() => scrollTo("products")}
+                      className="hover:text-[#3F166B] cursor-pointer text-start"
+                    >
+                      {product.name[lang] || product.name.en}
+                    </button>
+                  </li>
+                ))}
               </ul>
             </div>
 

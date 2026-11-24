@@ -405,7 +405,7 @@ export default function ShowcaseView() {
               />
               <div className="hero-media relative aspect-[16/10] lg:aspect-square max-h-[210px] sm:max-h-[340px] lg:max-h-[430px] w-full rounded-2xl sm:rounded-3xl overflow-hidden border border-stone-200/90 ring-1 ring-[#3F166B]/10 shadow-md bg-stone-100">
                 <img
-                  src="/IMG_9066.webp"
+                  src="/Scutched flax.webp"
                   alt="Egy Nile Flax Factory"
                   loading="eager"
                   fetchPriority="high"
@@ -419,7 +419,7 @@ export default function ShowcaseView() {
                 </div>
                 <div className="hidden sm:block absolute bottom-3 end-3 w-20 h-20 lg:w-24 lg:h-24 rounded-xl overflow-hidden border-2 border-[#FAF8F5] shadow-lg bg-stone-200">
                   <img
-                    src="/IMG_9314.JPG.webp"
+                    src="/Hackled flax.webp"
                     alt="Egyptian Flax Fibre Detail"
                     loading="eager"
                     decoding="async"
@@ -548,7 +548,7 @@ export default function ShowcaseView() {
             <div className="lg:col-span-7 bg-stone-950 aspect-video max-h-[360px] w-full">
               <video
                 src="/IMG_0027.MP4"
-                poster="/IMG_9314.JPG.webp"
+                poster="/Flax Arrous.webp"
                 controls
                 playsInline
                 preload="metadata"
@@ -576,8 +576,8 @@ export default function ShowcaseView() {
           </div>
 
           {/* Product grid */}
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-5 sm:gap-6">
-            {products.slice(0, 8).map((product) => {
+          <div className="flex flex-wrap justify-center gap-5 sm:gap-6">
+            {products.map((product) => {
               const title = product.name[lang] || product.name.en;
               const sub = product.subtitle[lang] || product.subtitle.en;
               const desc = product.description[lang] || product.description.en;
@@ -585,7 +585,7 @@ export default function ShowcaseView() {
               return (
                 <div
                   key={product.id}
-                  className="anim-card bg-white rounded-2xl border border-stone-200/90 overflow-hidden shadow-xs hover:shadow-xl transition-shadow flex flex-col justify-between group"
+                  className="anim-card w-full sm:w-[calc(50%-0.75rem)] lg:w-[calc(33.333%-1rem)] bg-white rounded-2xl border border-stone-200/90 overflow-hidden shadow-xs hover:shadow-xl transition-shadow flex flex-col justify-between group"
                 >
                   <div>
                     <div
@@ -620,9 +620,9 @@ export default function ShowcaseView() {
 
                       <div className="bg-stone-50 rounded-xl p-2.5 sm:p-3 border border-stone-200/70 space-y-1.5 text-xs">
                         {[
+                          [t.products.baleWeight, product.specs.baleWeight],
                           [t.products.stapleLength, product.specs.stapleLength],
                           [t.products.shiveContent, product.specs.shiveContent],
-                          [t.products.moisture, product.specs.moisture],
                         ].map(([label, value]) => (
                           <div key={label} className="flex justify-between gap-2">
                             <span className="text-stone-500 shrink-0">{label}:</span>
